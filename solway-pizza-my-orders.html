@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Friends of Solway — View My Orders</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #2BBCB3;
+    --teal-dark: #1A9E96;
+    --teal-light: #E0F7F6;
+    --blue: #3B7DD8;
+    --blue-light: #E3EEF9;
+    --orange: #FF9800;
+    --orange-dark: #EF6C00;
+    --orange-light: #FFF3E0;
+    --red: #E53935;
+    --red-light: #FFEBEE;
+    --green: #4CAF50;
+    --green-light: #E8F5E9;
+    --bg: #F0FAFA;
+    --card: #FFFFFF;
+    --text: #2D2D2D;
+    --text-light: #5A6B6B;
+    --border: #C8E6E4;
+    --shadow: 0 2px 16px rgba(43,188,179,0.10);
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; padding: 20px; }
+  .container { max-width: 640px; margin: 0 auto; }
+
+  .header { text-align: center; padding: 24px 20px 20px; margin-bottom: 24px; }
+  .header-logo { width: 130px; height: 130px; margin: 0 auto 16px; display: block; }
+  .header h1 { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 700; color: var(--teal-dark); margin-bottom: 4px; }
+  .header p { color: var(--text-light); font-size: 15px; }
+
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .card-title { font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; color: var(--teal-dark); margin-bottom: 16px; }
+
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  input { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text); transition: border-color 0.2s; background: white; }
+  input:focus { outline: none; border-color: var(--teal); }
+  .field { margin-bottom: 14px; }
+
+  .lookup-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; border: none; border-radius: 10px; font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+  .lookup-btn:hover { opacity: 0.9; }
+  .lookup-btn:disabled { background: #CCC; cursor: not-allowed; opacity: 1; }
+  .lookup-btn.loading { opacity: 0.8; pointer-events: none; }
+
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .results { margin-top: 16px; }
+  .no-results { text-align: center; padding: 24px; color: var(--text-light); font-size: 15px; }
+
+  .order-group { margin-bottom: 16px; }
+  .order-date { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--teal-dark); padding: 10px 14px; background: var(--teal-light); border-radius: 8px 8px 0 0; border: 1px solid var(--border); border-bottom: none; }
+  .order-items { border: 1px solid var(--border); border-radius: 0 0 8px 8px; overflow: hidden; }
+  .order-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: white; border-bottom: 1px solid var(--border); gap: 8px; }
+  .order-item:last-child { border-bottom: none; }
+  .order-item-details { flex: 1; }
+  .order-item-child { font-weight: 700; font-size: 14px; }
+  .order-item-desc { font-size: 13px; color: var(--text-light); }
+  .order-item-price { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 15px; color: var(--teal-dark); white-space: nowrap; }
+  .order-item-status { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+  .status-paid { background: var(--green-light); color: var(--green); }
+  .status-pending { background: var(--orange-light); color: var(--orange-dark); }
+  .status-refunded { background: var(--red-light); color: var(--red); }
+
+  .back-link { display: block; text-align: center; margin-top: 16px; color: var(--teal-dark); font-weight: 600; font-size: 14px; text-decoration: none; }
+  .back-link:hover { text-decoration: underline; }
+
+  .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
+
+  @media (max-width: 480px) {
+    .header h1 { font-size: 24px; }
+    .header-logo { width: 90px; height: 90px; }
+    .order-item { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="header-logo">
+    <h1>📋 My Pizza Orders</h1>
+    <p>Enter your email to see your order history</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔍 Look Up Orders</div>
+    <div class="field">
+      <label for="lookupEmail">Email Address</label>
+      <input type="email" id="lookupEmail" placeholder="e.g. sarah@example.com" required>
+    </div>
+    <button class="lookup-btn" id="lookupBtn" onclick="lookupOrders()">🔎 Find My Orders</button>
+  </div>
+
+  <div class="results" id="results"></div>
+
+  <a href="index.html" class="back-link">🍕 Back to Order Form</a>
+
+  <div class="footer">
+    🌊 Friends of Solway — Fundraising for Solway Primary School 🌿
+  </div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNX8kPNKRdlAD4qxrY1mgoYj5x8iJ-DOQd-MpILc8yxwugDiPqxgYdr7HuR_aeOVLwcg/exec';
+
+document.getElementById('lookupEmail').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    lookupOrders();
+  }
+});
+
+async function lookupOrders() {
+  const email = document.getElementById('lookupEmail').value.trim();
+  if (!email) return;
+
+  const btn = document.getElementById('lookupBtn');
+  const results = document.getElementById('results');
+
+  btn.classList.add('loading');
+  btn.innerHTML = '<span class="spinner"></span> Searching...';
+  btn.disabled = true;
+  results.innerHTML = '';
+
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'lookup_orders', email: email })
+    });
+
+    const result = await response.json();
+
+    if (result.success && result.orders) {
+      displayOrders(result.orders);
+    } else {
+      results.innerHTML = '<div class="no-results">😕 Something went wrong. Please try again.</div>';
+    }
+  } catch (err) {
+    results.innerHTML = '<div class="no-results">😕 Could not look up orders. Please try again.</div>';
+  }
+
+  btn.classList.remove('loading');
+  btn.innerHTML = '🔎 Find My Orders';
+  btn.disabled = false;
+}
+
+function displayOrders(orders) {
+  const results = document.getElementById('results');
+
+  if (orders.length === 0) {
+    results.innerHTML = '<div class="no-results">🤔 No orders found for this email address.<br>Make sure you\'re using the same email you ordered with.</div>';
+    return;
+  }
+
+  // Group orders by delivery date
+  const grouped = {};
+  orders.forEach(order => {
+    const date = order.deliveryDate || 'Unknown date';
+    if (!grouped[date]) grouped[date] = [];
+    grouped[date].push(order);
+  });
+
+  let html = '';
+
+  // Sort dates (most recent first)
+  const dates = Object.keys(grouped).sort().reverse();
+
+  dates.forEach(date => {
+    html += '<div class="order-group">';
+    html += '<div class="order-date">📅 ' + date + '</div>';
+    html += '<div class="order-items">';
+
+    grouped[date].forEach(order => {
+      const statusClass = order.status === 'Paid' ? 'status-paid' : order.status === 'Refunded' ? 'status-refunded' : 'status-pending';
+      const statusEmoji = order.status === 'Paid' ? '✅' : order.status === 'Refunded' ? '↩️' : '⏳';
+
+      html += '<div class="order-item">';
+      html += '  <div class="order-item-details">';
+      html += '    <div class="order-item-child">🧒 ' + (order.childName || 'Unknown') + ' <span style="font-weight:400;color:#5A6B6B;">(' + (order.childClass || '') + ')</span></div>';
+      html += '    <div class="order-item-desc">🍕 ' + (order.product || '') + ' — ' + (order.flavour || '') + '</div>';
+      html += '  </div>';
+      html += '  <div class="order-item-price">$' + (Number(order.price) || 0).toFixed(2) + '</div>';
+      html += '  <div class="order-item-status ' + statusClass + '">' + statusEmoji + ' ' + (order.status || 'Unknown') + '</div>';
+      html += '</div>';
+    });
+
+    html += '</div></div>';
+  });
+
+  results.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
