@@ -357,14 +357,7 @@ function refreshChildLabels() {
   });
 }
 
-function selectProduct(uid, productId) {
-  const container = document.getElementById(`child-${uid}`);
-  if (!container) return;
-  container.querySelectorAll('.product-option').forEach(opt => {
-    opt.classList.toggle('selected', opt.dataset.product === productId);
-  });
-  updateSummary();
-}
+
 
 function updateAddButton() {
   const btn = document.getElementById('addChildBtn');
