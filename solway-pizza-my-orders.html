@@ -112,6 +112,10 @@
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNX8kPNKRdlAD4qxrY1mgoYj5x8iJ-DOQd-MpILc8yxwugDiPqxgYdr7HuR_aeOVLwcg/exec';
 
+// Set to true while testing with Stripe test mode — looks up from Test Orders tab.
+// Set to false (or remove) when you go live.
+const TEST_MODE = true;
+
 document.getElementById('lookupEmail').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') {
     e.preventDefault();
@@ -135,7 +139,7 @@ async function lookupOrders() {
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'lookup_orders', email: email })
+      body: JSON.stringify({ action: 'lookup_orders', email: email, testMode: TEST_MODE })
     });
 
     const result = await response.json();
@@ -176,17 +180,8 @@ function displayOrders(orders) {
   const dates = Object.keys(grouped).sort().reverse();
 
   dates.forEach(date => {
-    // Format the date nicely
-    var displayDate = date;
-    try {
-      var d = new Date(date);
-      if (!isNaN(d.getTime())) {
-        displayDate = d.toLocaleDateString('en-NZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland' });
-      }
-    } catch(e) {}
-
     html += '<div class="order-group">';
-    html += '<div class="order-date">📅 Delivery: ' + displayDate + '</div>';
+    html += '<div class="order-date">📅 ' + date + '</div>';
     html += '<div class="order-items">';
 
     grouped[date].forEach(order => {
@@ -197,16 +192,6 @@ function displayOrders(orders) {
       html += '  <div class="order-item-details">';
       html += '    <div class="order-item-child">🧒 ' + (order.childName || 'Unknown') + ' <span style="font-weight:400;color:#5A6B6B;">(' + (order.childClass || '') + ')</span></div>';
       html += '    <div class="order-item-desc">🍕 ' + (order.product || '') + ' — ' + (order.flavour || '') + '</div>';
-      var orderDateStr = '';
-      try {
-        var od = new Date(order.timestamp);
-        if (!isNaN(od.getTime())) {
-          orderDateStr = od.toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland' });
-        } else {
-          orderDateStr = order.timestamp;
-        }
-      } catch(e) { orderDateStr = order.timestamp || ''; }
-      html += '    <div class="order-item-desc" style="font-size:12px;margin-top:2px;">🛒 Ordered: ' + orderDateStr + '</div>';
       html += '  </div>';
       html += '  <div class="order-item-price">$' + (Number(order.price) || 0).toFixed(2) + '</div>';
       html += '  <div class="order-item-status ' + statusClass + '">' + statusEmoji + ' ' + (order.status || 'Unknown') + '</div>';
