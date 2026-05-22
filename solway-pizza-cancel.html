@@ -3,85 +3,506 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Payment Cancelled — Friends of Solway Pizza Lunch</title>
+<title>Friends of Solway — Pizza Lunch Order</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --green: #4CAF50;
+    --green-dark: #388E3C;
+    --green-light: #E8F5E9;
+    --orange: #FF9800;
+    --orange-dark: #EF6C00;
+    --orange-light: #FFF3E0;
+    --red: #E53935;
+    --red-light: #FFEBEE;
+    --bg: #FAFAF5;
+    --card: #FFFFFF;
+    --text: #2D2D2D;
+    --text-light: #666;
+    --border: #E0E0E0;
+    --shadow: 0 2px 12px rgba(0,0,0,0.06);
+    --radius: 12px;
+  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: #FAFAF5;
-    color: #2D2D2D;
-    line-height: 1.6;
-    min-height: 100vh;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .container {
-    max-width: 520px;
-    margin: 0 auto;
-    background: #FFFFFF;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-    border: 1px solid #E0E0E0;
-    padding: 48px 40px;
-    text-align: center;
-  }
-  .emoji { font-size: 64px; margin-bottom: 20px; }
-  h1 {
-    font-family: 'Fredoka', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: #EF6C00;
-    margin-bottom: 12px;
-  }
-  p {
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 16px;
-    line-height: 1.7;
-  }
-  .highlight {
-    background: #FFF3E0;
-    border-radius: 10px;
-    padding: 18px 24px;
-    margin: 24px 0;
-    font-size: 15px;
-    color: #2D2D2D;
-  }
-  .btn {
-    display: inline-block;
-    padding: 14px 32px;
-    background: #4CAF50;
-    color: white;
-    text-decoration: none;
-    border-radius: 10px;
-    font-family: 'Fredoka', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    margin-top: 8px;
-    transition: background 0.2s;
-  }
-  .btn:hover { background: #388E3C; }
-  .footer {
-    margin-top: 32px;
-    font-size: 13px;
-    color: #999;
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; padding: 20px; }
+  .container { max-width: 640px; margin: 0 auto; }
+  .header { text-align: center; padding: 32px 20px 24px; margin-bottom: 24px; }
+  .header-emoji { font-size: 48px; margin-bottom: 12px; }
+  .header h1 { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 700; color: var(--green-dark); margin-bottom: 4px; }
+  .header p { color: var(--text-light); font-size: 15px; }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .card-title { font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; color: var(--green-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .card-title .step { background: var(--green); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .required::after { content: ' *'; color: var(--red); font-weight: 700; }
+  input, select { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text); transition: border-color 0.2s; background: white; -webkit-appearance: none; }
+  input:focus, select:focus { outline: none; border-color: var(--green); }
+  .field { margin-bottom: 14px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .child-order { background: var(--green-light); border-radius: 10px; padding: 18px; margin-bottom: 12px; border: 2px solid transparent; transition: border-color 0.2s; }
+  .child-order.active { border-color: var(--green); }
+  .child-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .child-label { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--green-dark); }
+  .remove-child { background: none; border: none; color: var(--red); font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: background 0.2s; }
+  .remove-child:hover { background: var(--red-light); }
+  .products { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .product-option { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: white; border-radius: 8px; cursor: pointer; border: 2px solid var(--border); transition: all 0.2s; }
+  .product-option:hover { border-color: var(--green); }
+  .product-option.selected { border-color: var(--green); background: #F1F8E9; }
+  .product-option input[type="radio"] { width: auto; accent-color: var(--green); cursor: pointer; }
+  .product-info { flex: 1; }
+  .product-name { font-weight: 700; font-size: 14px; }
+  .product-desc { display: none; }
+  .product-price { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 16px; color: var(--green-dark); }
+  .flavour-row { margin-top: 10px; }
+  .add-child-btn { width: 100%; padding: 14px; border: 2px dashed var(--green); border-radius: 10px; background: transparent; color: var(--green-dark); font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .add-child-btn:hover { background: var(--green-light); }
+  .add-child-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .summary { background: var(--orange-light); border-radius: 10px; padding: 18px; }
+  .summary-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--orange-dark); margin-bottom: 10px; }
+  .summary-items { list-style: none; }
+  .summary-items li { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .summary-items li:last-child { border-bottom: none; }
+  .summary-date { font-size: 13px; color: var(--orange-dark); font-weight: 600; margin-bottom: 8px; }
+  .summary-total { display: flex; justify-content: space-between; padding-top: 12px; margin-top: 8px; border-top: 2px solid var(--orange); font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 700; color: var(--orange-dark); }
+  .empty-summary { color: var(--text-light); font-size: 14px; font-style: italic; }
+  .submit-btn { width: 100%; padding: 16px; background: var(--green); color: white; border: none; border-radius: 10px; font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 16px; }
+  .submit-btn:hover { background: var(--green-dark); }
+  .submit-btn:disabled { background: #CCC; cursor: not-allowed; }
+  .submit-btn.loading { background: var(--green-dark); pointer-events: none; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-banner { background: var(--red-light); color: var(--red); padding: 14px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-bottom: 16px; display: none; }
+  .error-banner.visible { display: block; }
+  .closed-banner { background: var(--orange-light); color: var(--orange-dark); padding: 20px 24px; border-radius: var(--radius); font-size: 16px; font-weight: 600; text-align: center; margin-bottom: 16px; border: 2px solid var(--orange); }
+  .cutoff-note { font-size: 12px; color: var(--text-light); margin-top: 4px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
+  @media (max-width: 480px) {
+    .field-row { grid-template-columns: 1fr; }
+    .header h1 { font-size: 24px; }
   }
 </style>
 </head>
 <body>
+
 <div class="container">
-  <div class="emoji">🍕</div>
-  <h1>Payment Not Completed</h1>
-  <p>It looks like you closed the payment page before completing your order. No payment has been taken.</p>
-  <div class="highlight">
-    Your order hasn't been confirmed yet. If you'd still like to place an order, click below to try again.
+
+  <div class="header">
+    <div class="header-emoji">🍕</div>
+    <h1>Friends of Solway Pizza Lunch</h1>
+    <p>Order your child's pizza lunch — one form for the whole family</p>
   </div>
-  <!-- UPDATE THIS LINK to your hosted order form URL -->
-  <a href="https://Friendsofsolway.github.io/solway-pizza/" class="btn">Back to Order Form</a>
-  <div class="footer">Friends of Solway — Fundraising for Solway Primary School</div>
+
+  <div class="error-banner" id="errorBanner"></div>
+
+  <!-- Shown when no dates are available -->
+  <div class="closed-banner" id="closedBanner" style="display:none">
+    🍕 Orders are currently closed. Check back when the next order window opens!
+  </div>
+
+  <form id="orderForm">
+    <!-- Step 1: Delivery date -->
+    <div class="card" id="dateCard">
+      <div class="card-title"><span class="step">1</span> Delivery Date</div>
+      <div class="field">
+        <label for="deliveryDate" class="required">Choose a Friday</label>
+        <select id="deliveryDate" required>
+          <option value="">Select delivery date...</option>
+        </select>
+        <div class="cutoff-note">Orders close at 12pm on the Wednesday before each delivery date.</div>
+      </div>
+    </div>
+
+    <!-- Step 2: Parent details -->
+    <div class="card">
+      <div class="card-title"><span class="step">2</span> Your Details</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="parentName" class="required">Parent / Caregiver Name</label>
+          <input type="text" id="parentName" required placeholder="e.g. Sarah Jones">
+        </div>
+        <div class="field">
+          <label for="parentPhone" class="required">Phone Number</label>
+          <input type="tel" id="parentPhone" required placeholder="e.g. 027 123 4567">
+        </div>
+      </div>
+      <div class="field">
+        <label for="parentEmail" class="required">Email Address</label>
+        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
+      </div>
+    </div>
+
+    <!-- Step 3: Children's orders -->
+    <div class="card">
+      <div class="card-title"><span class="step">3</span> Children's Orders</div>
+      <div id="childrenContainer"></div>
+      <button type="button" class="add-child-btn" id="addChildBtn" onclick="addChild()">+ Add Another Child</button>
+    </div>
+
+    <!-- Step 4: Summary & pay -->
+    <div class="card">
+      <div class="card-title"><span class="step">4</span> Order Summary & Payment</div>
+      <div class="summary">
+        <div class="summary-title">Your Order</div>
+        <div class="summary-date" id="summaryDate"></div>
+        <ul class="summary-items" id="summaryItems">
+          <li class="empty-summary">No items yet — add a child above</li>
+        </ul>
+        <div class="summary-total" id="summaryTotal" style="display:none">
+          <span>Total</span>
+          <span id="totalAmount">$0.00</span>
+        </div>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn" disabled>Pay Now — $0.00</button>
+    </div>
+  </form>
+
+  <div class="footer">
+    Friends of Solway — Fundraising for Solway Primary School
+  </div>
 </div>
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+// DELIVERY DATES — Update this list each term.
+// Add all available Fridays as 'YYYY-MM-DD'.
+// Skip public holidays and non-term days.
+// Orders close at 12pm on the Wednesday before each date.
+const DELIVERY_DATES = [
+  '2026-06-05',
+  '2026-06-12',
+  '2026-06-19',
+  '2026-06-26',
+  '2026-07-03',
+  // Term 2 break
+  '2026-07-24',
+  '2026-07-31',
+  '2026-08-07',
+  '2026-08-14',
+  '2026-08-21',
+  '2026-08-28',
+  '2026-09-04',
+  '2026-09-11',
+  '2026-09-18',
+  '2026-09-25',
+  // Add more dates as needed
+];
+
+const PRODUCTS = [
+  { id: 'pizza-combo', name: 'Pizza Combo', desc: '', price: 7.50 },
+  { id: 'single-pizza', name: 'Single Pizza', desc: '', price: 6.50 },
+  { id: 'gf-pizza', name: 'Gluten Free Single Pizza', desc: '', price: 11.50 },
+];
+
+const FLAVOURS = ['Cheese', 'Ham and Cheese', 'Hawaiian'];
+const CLASSES = ['Kanuka','Pohutukawa','Rimu','Harakeke','Matai','Titoki','Totara','Kauri','Rata','Manuka'];
+const MAX_CHILDREN = 6;
+let childCount = 0;
+
+// ============================================================
+// DELIVERY DATE LOGIC
+// ============================================================
+
+function getCutoffDate(fridayStr) {
+  // Cutoff is Wednesday before at 12pm NZ time
+  const friday = new Date(fridayStr + 'T00:00:00+12:00');
+  const wednesday = new Date(friday);
+  wednesday.setDate(friday.getDate() - 2);
+  wednesday.setHours(12, 0, 0, 0);
+  return wednesday;
+}
+
+function getAvailableDates() {
+  const now = new Date();
+  return DELIVERY_DATES.filter(dateStr => {
+    const cutoff = getCutoffDate(dateStr);
+    return now < cutoff;
+  });
+}
+
+function formatDateForDisplay(dateStr) {
+  const date = new Date(dateStr + 'T00:00:00+12:00');
+  const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland' };
+  return date.toLocaleDateString('en-NZ', options);
+}
+
+function formatCutoffForDisplay(dateStr) {
+  const cutoff = getCutoffDate(dateStr);
+  const options = { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Pacific/Auckland' };
+  return cutoff.toLocaleDateString('en-NZ', options);
+}
+
+function populateDateDropdown() {
+  const select = document.getElementById('deliveryDate');
+  const available = getAvailableDates();
+
+  if (available.length === 0) {
+    // No dates available — hide form, show closed message
+    document.getElementById('orderForm').style.display = 'none';
+    document.getElementById('closedBanner').style.display = 'block';
+    return;
+  }
+
+  available.forEach(dateStr => {
+    const option = document.createElement('option');
+    option.value = dateStr;
+    option.textContent = formatDateForDisplay(dateStr);
+    select.appendChild(option);
+  });
+}
+
+// ============================================================
+// CHILD ORDER LOGIC
+// ============================================================
+
+function addChild() {
+  if (childCount >= MAX_CHILDREN) return;
+  childCount++;
+  const num = childCount;
+  const div = document.createElement('div');
+  div.className = 'child-order active';
+  div.id = `child-${num}`;
+  div.dataset.childNum = num;
+  div.innerHTML = `
+    <div class="child-header">
+      <span class="child-label">Child ${num}</span>
+      ${num > 1 ? `<button type="button" class="remove-child" onclick="removeChild(${num})">Remove</button>` : ''}
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="required">Child's Name</label>
+        <input type="text" class="child-name" data-child="${num}" required placeholder="First and last name">
+      </div>
+      <div class="field">
+        <label class="required">Class</label>
+        <select class="child-class" data-child="${num}" required>
+          <option value="">Select class...</option>
+          ${CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <label style="margin-top:4px" class="required">Choose a Pizza</label>
+    <div class="products">
+      ${PRODUCTS.map(p => `
+        <label class="product-option" data-product="${p.id}" onclick="selectProduct(${num}, '${p.id}')">
+          <input type="radio" name="product-${num}" value="${p.id}" required>
+          <div class="product-info">
+            <div class="product-name">${p.name}</div>
+          </div>
+          <div class="product-price">$${p.price.toFixed(2)}</div>
+        </label>
+      `).join('')}
+    </div>
+    <div class="flavour-row field">
+      <label class="required">Flavour</label>
+      <select class="child-flavour" data-child="${num}" required>
+        <option value="">Select flavour...</option>
+        ${FLAVOURS.map(f => `<option value="${f}">${f}</option>`).join('')}
+      </select>
+    </div>
+  `;
+  document.getElementById('childrenContainer').appendChild(div);
+  updateAddButton();
+  updateSummary();
+  div.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('change', updateSummary);
+    el.addEventListener('input', updateSummary);
+  });
+}
+
+function selectProduct(childNum, productId) {
+  const container = document.getElementById(`child-${childNum}`);
+  container.querySelectorAll('.product-option').forEach(opt => {
+    opt.classList.toggle('selected', opt.dataset.product === productId);
+  });
+  updateSummary();
+}
+
+function removeChild(num) {
+  document.getElementById(`child-${num}`)?.remove();
+  childCount--;
+  const children = document.querySelectorAll('.child-order');
+  children.forEach((child, i) => {
+    const n = i + 1;
+    child.id = `child-${n}`;
+    child.dataset.childNum = n;
+    child.querySelector('.child-label').textContent = `Child ${n}`;
+    child.querySelector('.child-name').dataset.child = n;
+    child.querySelector('.child-class').dataset.child = n;
+    child.querySelector('.child-flavour').dataset.child = n;
+    child.querySelectorAll('input[type="radio"]').forEach(r => r.name = `product-${n}`);
+    const rb = child.querySelector('.remove-child');
+    if (rb) {
+      if (n === 1 && children.length === 1) rb.style.display = 'none';
+      else { rb.style.display = ''; rb.setAttribute('onclick', `removeChild(${n})`); }
+    }
+    child.querySelectorAll('.product-option').forEach(opt => {
+      opt.setAttribute('onclick', `selectProduct(${n}, '${opt.dataset.product}')`);
+    });
+  });
+  updateAddButton();
+  updateSummary();
+}
+
+function updateAddButton() {
+  const btn = document.getElementById('addChildBtn');
+  btn.disabled = childCount >= MAX_CHILDREN;
+  btn.textContent = childCount >= MAX_CHILDREN ? 'Maximum 6 children reached' : '+ Add Another Child';
+}
+
+function getOrders() {
+  const orders = [];
+  document.querySelectorAll('.child-order').forEach(child => {
+    const childName = child.querySelector('.child-name')?.value.trim() || '';
+    const childClass = child.querySelector('.child-class')?.value || '';
+    const sel = child.querySelector('input[type="radio"]:checked');
+    const product = sel ? sel.value : '';
+    const flavour = child.querySelector('.child-flavour')?.value || '';
+    orders.push({ childName, childClass, product, flavour });
+  });
+  return orders;
+}
+
+function updateSummary() {
+  const summaryItems = document.getElementById('summaryItems');
+  const summaryTotal = document.getElementById('summaryTotal');
+  const totalAmount = document.getElementById('totalAmount');
+  const submitBtn = document.getElementById('submitBtn');
+  const summaryDate = document.getElementById('summaryDate');
+  const orders = getOrders();
+  const deliveryDate = document.getElementById('deliveryDate').value;
+
+  // Show selected delivery date in summary
+  if (deliveryDate) {
+    summaryDate.textContent = '📅 Delivery: ' + formatDateForDisplay(deliveryDate);
+  } else {
+    summaryDate.textContent = '';
+  }
+
+  if (orders.length === 0) {
+    summaryItems.innerHTML = '<li class="empty-summary">No items yet — add a child above</li>';
+    summaryTotal.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Pay Now — $0.00';
+    return;
+  }
+
+  let total = 0;
+  let allValid = true;
+  let html = '';
+
+  orders.forEach(o => {
+    if (!o.childName || !o.childClass || !o.product || !o.flavour) allValid = false;
+    if (o.product) {
+      const p = PRODUCTS.find(pr => pr.id === o.product);
+      const flavStr = o.flavour ? ` (${o.flavour})` : '';
+      html += `<li><span>${o.childName || 'Child'} — ${p.name}${flavStr}</span><span>$${p.price.toFixed(2)}</span></li>`;
+      total += p.price;
+    }
+  });
+
+  summaryItems.innerHTML = html || '<li class="empty-summary">Select a pizza for each child</li>';
+  summaryTotal.style.display = total > 0 ? 'flex' : 'none';
+  totalAmount.textContent = `$${total.toFixed(2)}`;
+
+  const parentName = document.getElementById('parentName').value.trim();
+  const parentPhone = document.getElementById('parentPhone').value.trim();
+  const parentEmail = document.getElementById('parentEmail').value.trim();
+  const valid = allValid && parentName && parentPhone && parentEmail && deliveryDate && orders.length > 0;
+  submitBtn.disabled = !valid;
+  submitBtn.textContent = total > 0 ? `Pay Now — $${total.toFixed(2)}` : 'Pay Now — $0.00';
+}
+
+// Listen for changes
+document.getElementById('parentName').addEventListener('input', updateSummary);
+document.getElementById('parentPhone').addEventListener('input', updateSummary);
+document.getElementById('parentEmail').addEventListener('input', updateSummary);
+document.getElementById('deliveryDate').addEventListener('change', updateSummary);
+
+document.getElementById('orderForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const submitBtn = document.getElementById('submitBtn');
+  const errorBanner = document.getElementById('errorBanner');
+  errorBanner.classList.remove('visible');
+
+  const deliveryDate = document.getElementById('deliveryDate').value;
+  const parentName = document.getElementById('parentName').value.trim();
+  const parentPhone = document.getElementById('parentPhone').value.trim();
+  const parentEmail = document.getElementById('parentEmail').value.trim();
+  const orders = getOrders();
+  const total = orders.reduce((sum, o) => {
+    const p = PRODUCTS.find(pr => pr.id === o.product);
+    return sum + (p ? p.price : 0);
+  }, 0);
+
+  // Double-check cutoff hasn't passed since page was loaded
+  const cutoff = getCutoffDate(deliveryDate);
+  if (new Date() >= cutoff) {
+    errorBanner.textContent = 'Sorry, orders for this date have now closed. Please select a different delivery date.';
+    errorBanner.classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Refresh available dates
+    const select = document.getElementById('deliveryDate');
+    select.innerHTML = '<option value="">Select delivery date...</option>';
+    populateDateDropdown();
+    updateSummary();
+    return;
+  }
+
+  const orderData = {
+    deliveryDate,
+    deliveryDateFormatted: formatDateForDisplay(deliveryDate),
+    parentName,
+    parentPhone,
+    parentEmail,
+    total: total.toFixed(2),
+    children: orders.map(o => ({
+      name: o.childName,
+      class: o.childClass,
+      product: PRODUCTS.find(p => p.id === o.product)?.name || '',
+      productId: o.product,
+      flavour: o.flavour,
+      price: PRODUCTS.find(p => p.id === o.product)?.price || 0,
+    }))
+  };
+
+  submitBtn.classList.add('loading');
+  submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
+  submitBtn.disabled = true;
+
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(orderData)
+    });
+
+    const result = await response.json();
+
+    if (result.success && result.checkoutUrl) {
+      window.location.href = result.checkoutUrl;
+    } else {
+      throw new Error(result.error || 'Something went wrong. Please try again.');
+    }
+  } catch (err) {
+    errorBanner.textContent = err.message || 'Could not process your order. Please try again.';
+    errorBanner.classList.add('visible');
+    submitBtn.classList.remove('loading');
+    submitBtn.innerHTML = `Pay Now — $${total.toFixed(2)}`;
+    submitBtn.disabled = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+
+// Initialise
+populateDateDropdown();
+addChild();
+</script>
+
 </body>
 </html>
