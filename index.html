@@ -91,6 +91,8 @@
   .closed-banner { background: var(--orange-light); color: var(--orange-dark); padding: 24px; border-radius: var(--radius); font-size: 16px; font-weight: 600; text-align: center; margin-bottom: 16px; border: 2px solid var(--orange); line-height: 1.7; }
   .cutoff-note { font-size: 12px; color: var(--text-light); margin-top: 4px; font-weight: 400; text-transform: none; letter-spacing: 0; }
 
+  #profileHint { margin-top: 10px; padding: 10px 14px; border-radius: 8px; font-size: 15px; font-weight: 700; background: var(--teal-light); color: var(--teal-dark); border: 2px solid var(--teal); }
+
   .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
 
   @media (max-width: 480px) {
@@ -135,7 +137,7 @@
       <div class="field">
         <label for="parentEmail" class="required">Email Address</label>
         <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
-        <div id="profileHint" style="display:none; font-size:13px; color:var(--teal-dark); margin-top:6px; font-weight:600;"></div>
+        <div id="profileHint" style="display:none"></div>
       </div>
       <div class="field-row">
         <div class="field">
@@ -441,14 +443,27 @@ document.getElementById('deliveryDate').addEventListener('change', updateSummary
 const TEST_MODE = true;
 
 let profileLookupTimer = null;
+let lastLookedUpEmail = '';
+
+// Fire lookup 600ms after the parent stops typing, as long as the email looks valid.
+// Also fires on blur in case they paste an address and immediately tab away.
+function scheduleProfileLookup(email) {
+  clearTimeout(profileLookupTimer);
+  if (!email || !email.includes('@') || !email.includes('.')) return;
+  if (email === lastLookedUpEmail) return; // don't repeat the same lookup
+  profileLookupTimer = setTimeout(() => triggerProfileLookup(email), 600);
+}
+
+document.getElementById('parentEmail').addEventListener('input', function() {
+  scheduleProfileLookup(this.value.trim());
+});
 
 document.getElementById('parentEmail').addEventListener('blur', function() {
-  const email = this.value.trim();
-  if (!email || !email.includes('@')) return;
-  triggerProfileLookup(email);
+  scheduleProfileLookup(this.value.trim());
 });
 
 async function triggerProfileLookup(email) {
+  lastLookedUpEmail = email;
   const hint = document.getElementById('profileHint');
   hint.textContent = '🔍 Looking up your details...';
   hint.style.display = 'block';
