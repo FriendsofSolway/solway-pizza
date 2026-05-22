@@ -176,8 +176,17 @@ function displayOrders(orders) {
   const dates = Object.keys(grouped).sort().reverse();
 
   dates.forEach(date => {
+    // Format the date nicely
+    var displayDate = date;
+    try {
+      var d = new Date(date);
+      if (!isNaN(d.getTime())) {
+        displayDate = d.toLocaleDateString('en-NZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland' });
+      }
+    } catch(e) {}
+
     html += '<div class="order-group">';
-    html += '<div class="order-date">📅 ' + date + '</div>';
+    html += '<div class="order-date">📅 ' + displayDate + '</div>';
     html += '<div class="order-items">';
 
     grouped[date].forEach(order => {
