@@ -280,7 +280,7 @@ function addChild() {
   div.innerHTML = `
     <div class="child-header">
       <span class="child-label">🧒 Child ${num}</span>
-      ${num > 1 ? `<button type="button" class="remove-child" onclick="removeChild(${num})">❌ Remove</button>` : ''}
+      <button type="button" class="remove-child" onclick="removeChild(${num})" style="${num === 1 ? 'display:none' : ''}">❌ Remove</button>
     </div>
     <div class="field-row">
       <div class="field">
@@ -347,8 +347,8 @@ function removeChild(num) {
     child.querySelectorAll('input[type="radio"]').forEach(r => r.name = `product-${n}`);
     const rb = child.querySelector('.remove-child');
     if (rb) {
-      if (n === 1 && children.length === 1) rb.style.display = 'none';
-      else { rb.style.display = ''; rb.setAttribute('onclick', `removeChild(${n})`); }
+      rb.setAttribute('onclick', `removeChild(${n})`);
+      rb.style.display = (children.length === 1) ? 'none' : '';
     }
     child.querySelectorAll('.product-option').forEach(opt => {
       opt.setAttribute('onclick', `selectProduct(${n}, '${opt.dataset.product}')`);
