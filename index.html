@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Friends of Solway — Pizza Lunch Order</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #4CAF50;
+    --green-dark: #388E3C;
+    --green-light: #E8F5E9;
+    --orange: #FF9800;
+    --orange-dark: #EF6C00;
+    --orange-light: #FFF3E0;
+    --red: #E53935;
+    --red-light: #FFEBEE;
+    --bg: #FAFAF5;
+    --card: #FFFFFF;
+    --text: #2D2D2D;
+    --text-light: #666;
+    --border: #E0E0E0;
+    --shadow: 0 2px 12px rgba(0,0,0,0.06);
+    --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container { max-width: 640px; margin: 0 auto; }
+  .header { text-align: center; padding: 32px 20px 24px; margin-bottom: 24px; }
+  .header-emoji { font-size: 48px; margin-bottom: 12px; }
+  .header h1 { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 700; color: var(--green-dark); margin-bottom: 4px; }
+  .header p { color: var(--text-light); font-size: 15px; }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .card-title { font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; color: var(--green-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .card-title .step { background: var(--green); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  input, select { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text); transition: border-color 0.2s; background: white; -webkit-appearance: none; }
+  input:focus, select:focus { outline: none; border-color: var(--green); }
+  .field { margin-bottom: 14px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .child-order { background: var(--green-light); border-radius: 10px; padding: 18px; margin-bottom: 12px; border: 2px solid transparent; transition: border-color 0.2s; }
+  .child-order.active { border-color: var(--green); }
+  .child-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .child-label { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--green-dark); }
+  .remove-child { background: none; border: none; color: var(--red); font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: background 0.2s; }
+  .remove-child:hover { background: var(--red-light); }
+  .products { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .product-option { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: white; border-radius: 8px; cursor: pointer; border: 2px solid var(--border); transition: all 0.2s; }
+  .product-option:hover { border-color: var(--green); }
+  .product-option.selected { border-color: var(--green); background: #F1F8E9; }
+  .product-option input[type="radio"] { width: auto; accent-color: var(--green); cursor: pointer; }
+  .product-info { flex: 1; }
+  .product-name { font-weight: 700; font-size: 14px; }
+  .product-desc { font-size: 12px; color: var(--text-light); }
+  .product-price { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 16px; color: var(--green-dark); }
+  .flavour-row { margin-top: 10px; }
+  .add-child-btn { width: 100%; padding: 14px; border: 2px dashed var(--green); border-radius: 10px; background: transparent; color: var(--green-dark); font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .add-child-btn:hover { background: var(--green-light); }
+  .add-child-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .summary { background: var(--orange-light); border-radius: 10px; padding: 18px; }
+  .summary-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--orange-dark); margin-bottom: 10px; }
+  .summary-items { list-style: none; }
+  .summary-items li { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .summary-items li:last-child { border-bottom: none; }
+  .summary-total { display: flex; justify-content: space-between; padding-top: 12px; margin-top: 8px; border-top: 2px solid var(--orange); font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 700; color: var(--orange-dark); }
+  .empty-summary { color: var(--text-light); font-size: 14px; font-style: italic; }
+  .submit-btn { width: 100%; padding: 16px; background: var(--green); color: white; border: none; border-radius: 10px; font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 16px; }
+  .submit-btn:hover { background: var(--green-dark); }
+  .submit-btn:disabled { background: #CCC; cursor: not-allowed; }
+  .submit-btn.loading { background: var(--green-dark); pointer-events: none; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-banner { background: var(--red-light); color: var(--red); padding: 14px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-bottom: 16px; display: none; }
+  .error-banner.visible { display: block; }
+  .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
+  @media (max-width: 480px) {
+    .field-row { grid-template-columns: 1fr; }
+    .header h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-emoji">🍕</div>
+    <h1>Friends of Solway Pizza Lunch</h1>
+    <p>Order your child's pizza lunch — one form for the whole family</p>
+  </div>
+
+  <div class="error-banner" id="errorBanner"></div>
+
+  <form id="orderForm">
+    <!-- Step 1: Parent details -->
+    <div class="card">
+      <div class="card-title"><span class="step">1</span> Your Details</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="parentName">Parent / Caregiver Name</label>
+          <input type="text" id="parentName" required placeholder="e.g. Sarah Jones">
+        </div>
+        <div class="field">
+          <label for="parentPhone">Phone Number</label>
+          <input type="tel" id="parentPhone" required placeholder="e.g. 027 123 4567">
+        </div>
+      </div>
+      <div class="field">
+        <label for="parentEmail">Email Address</label>
+        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
+      </div>
+    </div>
+
+    <!-- Step 2: Children's orders -->
+    <div class="card">
+      <div class="card-title"><span class="step">2</span> Children's Orders</div>
+      <div id="childrenContainer"></div>
+      <button type="button" class="add-child-btn" id="addChildBtn" onclick="addChild()">+ Add Another Child</button>
+    </div>
+
+    <!-- Step 3: Summary & pay -->
+    <div class="card">
+      <div class="card-title"><span class="step">3</span> Order Summary & Payment</div>
+      <div class="summary">
+        <div class="summary-title">Your Order</div>
+        <ul class="summary-items" id="summaryItems">
+          <li class="empty-summary">No items yet — add a child above</li>
+        </ul>
+        <div class="summary-total" id="summaryTotal" style="display:none">
+          <span>Total</span>
+          <span id="totalAmount">$0.00</span>
+        </div>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn" disabled>Pay Now — $0.00</button>
+    </div>
+  </form>
+
+  <div class="footer">
+    Friends of Solway — Fundraising for Solway Primary School
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION — UPDATE THESE TWO VALUES
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNX8kPNKRdlAD4qxrY1mgoYj5x8iJ-DOQd-MpILc8yxwugDiPqxgYdr7HuR_aeOVLwcg/exec';
+// Deploy your Google Apps Script as a web app and paste the URL above.
+// See the setup guide in the accompanying Apps Script file.
+// ============================================================
+
+const PRODUCTS = [
+  { id: 'pizza-combo', name: 'Pizza Combo', desc: '2 slices + juice box', price: 7.50 },
+  { id: 'single-pizza', name: 'Single Pizza', desc: '2 slices', price: 6.50 },
+  { id: 'gf-pizza', name: 'Gluten Free Single Pizza', desc: 'Gluten free base', price: 11.50 },
+];
+
+const FLAVOURS = ['Cheese', 'Ham and Cheese', 'Hawaiian'];
+const CLASSES = ['Kanuka','Pohutukawa','Rimu','Harakeke','Matai','Titoki','Totara','Kauri','Rata','Manuka'];
+const MAX_CHILDREN = 6;
+let childCount = 0;
+
+function addChild() {
+  if (childCount >= MAX_CHILDREN) return;
+  childCount++;
+  const num = childCount;
+  const div = document.createElement('div');
+  div.className = 'child-order active';
+  div.id = `child-${num}`;
+  div.dataset.childNum = num;
+  div.innerHTML = `
+    <div class="child-header">
+      <span class="child-label">Child ${num}</span>
+      ${num > 1 ? `<button type="button" class="remove-child" onclick="removeChild(${num})">Remove</button>` : ''}
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Child's Name</label>
+        <input type="text" class="child-name" data-child="${num}" required placeholder="First and last name">
+      </div>
+      <div class="field">
+        <label>Class</label>
+        <select class="child-class" data-child="${num}" required>
+          <option value="">Select class...</option>
+          ${CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <label style="margin-top:4px">Choose a Pizza</label>
+    <div class="products">
+      ${PRODUCTS.map(p => `
+        <label class="product-option" data-product="${p.id}" onclick="selectProduct(${num}, '${p.id}')">
+          <input type="radio" name="product-${num}" value="${p.id}" required>
+          <div class="product-info">
+            <div class="product-name">${p.name}</div>
+            <div class="product-desc">${p.desc}</div>
+          </div>
+          <div class="product-price">$${p.price.toFixed(2)}</div>
+        </label>
+      `).join('')}
+    </div>
+    <div class="flavour-row field">
+      <label>Flavour</label>
+      <select class="child-flavour" data-child="${num}" required>
+        <option value="">Select flavour...</option>
+        ${FLAVOURS.map(f => `<option value="${f}">${f}</option>`).join('')}
+      </select>
+    </div>
+  `;
+  document.getElementById('childrenContainer').appendChild(div);
+  updateAddButton();
+  updateSummary();
+  div.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('change', updateSummary);
+    el.addEventListener('input', updateSummary);
+  });
+}
+
+function selectProduct(childNum, productId) {
+  const container = document.getElementById(`child-${childNum}`);
+  container.querySelectorAll('.product-option').forEach(opt => {
+    opt.classList.toggle('selected', opt.dataset.product === productId);
+  });
+  updateSummary();
+}
+
+function removeChild(num) {
+  document.getElementById(`child-${num}`)?.remove();
+  childCount--;
+  const children = document.querySelectorAll('.child-order');
+  children.forEach((child, i) => {
+    const n = i + 1;
+    child.id = `child-${n}`;
+    child.dataset.childNum = n;
+    child.querySelector('.child-label').textContent = `Child ${n}`;
+    child.querySelector('.child-name').dataset.child = n;
+    child.querySelector('.child-class').dataset.child = n;
+    child.querySelector('.child-flavour').dataset.child = n;
+    child.querySelectorAll('input[type="radio"]').forEach(r => r.name = `product-${n}`);
+    const rb = child.querySelector('.remove-child');
+    if (rb) {
+      if (n === 1 && children.length === 1) rb.style.display = 'none';
+      else { rb.style.display = ''; rb.setAttribute('onclick', `removeChild(${n})`); }
+    }
+    child.querySelectorAll('.product-option').forEach(opt => {
+      opt.setAttribute('onclick', `selectProduct(${n}, '${opt.dataset.product}')`);
+    });
+  });
+  updateAddButton();
+  updateSummary();
+}
+
+function updateAddButton() {
+  const btn = document.getElementById('addChildBtn');
+  btn.disabled = childCount >= MAX_CHILDREN;
+  btn.textContent = childCount >= MAX_CHILDREN ? 'Maximum 6 children reached' : '+ Add Another Child';
+}
+
+function getOrders() {
+  const orders = [];
+  document.querySelectorAll('.child-order').forEach(child => {
+    const childName = child.querySelector('.child-name')?.value.trim() || '';
+    const childClass = child.querySelector('.child-class')?.value || '';
+    const sel = child.querySelector('input[type="radio"]:checked');
+    const product = sel ? sel.value : '';
+    const flavour = child.querySelector('.child-flavour')?.value || '';
+    orders.push({ childName, childClass, product, flavour });
+  });
+  return orders;
+}
+
+function updateSummary() {
+  const summaryItems = document.getElementById('summaryItems');
+  const summaryTotal = document.getElementById('summaryTotal');
+  const totalAmount = document.getElementById('totalAmount');
+  const submitBtn = document.getElementById('submitBtn');
+  const orders = getOrders();
+
+  if (orders.length === 0) {
+    summaryItems.innerHTML = '<li class="empty-summary">No items yet — add a child above</li>';
+    summaryTotal.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Pay Now — $0.00';
+    return;
+  }
+
+  let total = 0;
+  let allValid = true;
+  let html = '';
+
+  orders.forEach(o => {
+    if (!o.childName || !o.childClass || !o.product || !o.flavour) allValid = false;
+    if (o.product) {
+      const p = PRODUCTS.find(pr => pr.id === o.product);
+      const flavStr = o.flavour ? ` (${o.flavour})` : '';
+      html += `<li><span>${o.childName || 'Child'} — ${p.name}${flavStr}</span><span>$${p.price.toFixed(2)}</span></li>`;
+      total += p.price;
+    }
+  });
+
+  summaryItems.innerHTML = html || '<li class="empty-summary">Select a pizza for each child</li>';
+  summaryTotal.style.display = total > 0 ? 'flex' : 'none';
+  totalAmount.textContent = `$${total.toFixed(2)}`;
+
+  const parentName = document.getElementById('parentName').value.trim();
+  const parentPhone = document.getElementById('parentPhone').value.trim();
+  const parentEmail = document.getElementById('parentEmail').value.trim();
+  const valid = allValid && parentName && parentPhone && parentEmail && orders.length > 0;
+  submitBtn.disabled = !valid;
+  submitBtn.textContent = total > 0 ? `Pay Now — $${total.toFixed(2)}` : 'Pay Now — $0.00';
+}
+
+document.getElementById('parentName').addEventListener('input', updateSummary);
+document.getElementById('parentPhone').addEventListener('input', updateSummary);
+document.getElementById('parentEmail').addEventListener('input', updateSummary);
+
+document.getElementById('orderForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const submitBtn = document.getElementById('submitBtn');
+  const errorBanner = document.getElementById('errorBanner');
+  errorBanner.classList.remove('visible');
+
+  const parentName = document.getElementById('parentName').value.trim();
+  const parentPhone = document.getElementById('parentPhone').value.trim();
+  const parentEmail = document.getElementById('parentEmail').value.trim();
+  const orders = getOrders();
+  const total = orders.reduce((sum, o) => {
+    const p = PRODUCTS.find(pr => pr.id === o.product);
+    return sum + (p ? p.price : 0);
+  }, 0);
+
+  const orderData = {
+    parentName,
+    parentPhone,
+    parentEmail,
+    total: total.toFixed(2),
+    children: orders.map(o => ({
+      name: o.childName,
+      class: o.childClass,
+      product: PRODUCTS.find(p => p.id === o.product)?.name || '',
+      productId: o.product,
+      flavour: o.flavour,
+      price: PRODUCTS.find(p => p.id === o.product)?.price || 0,
+    }))
+  };
+
+  // Show loading state
+  submitBtn.classList.add('loading');
+  submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
+  submitBtn.disabled = true;
+
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(orderData)
+    });
+
+    const result = await response.json();
+
+    if (result.success && result.checkoutUrl) {
+      // Redirect to Stripe Checkout
+      window.location.href = result.checkoutUrl;
+    } else {
+      throw new Error(result.error || 'Something went wrong. Please try again.');
+    }
+  } catch (err) {
+    errorBanner.textContent = err.message || 'Could not process your order. Please try again.';
+    errorBanner.classList.add('visible');
+    submitBtn.classList.remove('loading');
+    submitBtn.innerHTML = `Pay Now — $${total.toFixed(2)}`;
+    submitBtn.disabled = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+
+// Start with one child
+addChild();
+</script>
+
+</body>
+</html>

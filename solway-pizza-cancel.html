@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Cancelled — Friends of Solway Pizza Lunch</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #FAFAF5;
+    color: #2D2D2D;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .container {
+    max-width: 520px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    border: 1px solid #E0E0E0;
+    padding: 48px 40px;
+    text-align: center;
+  }
+  .emoji { font-size: 64px; margin-bottom: 20px; }
+  h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #EF6C00;
+    margin-bottom: 12px;
+  }
+  p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 16px;
+    line-height: 1.7;
+  }
+  .highlight {
+    background: #FFF3E0;
+    border-radius: 10px;
+    padding: 18px 24px;
+    margin: 24px 0;
+    font-size: 15px;
+    color: #2D2D2D;
+  }
+  .btn {
+    display: inline-block;
+    padding: 14px 32px;
+    background: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: #388E3C; }
+  .footer {
+    margin-top: 32px;
+    font-size: 13px;
+    color: #999;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="emoji">🍕</div>
+  <h1>Payment Not Completed</h1>
+  <p>It looks like you closed the payment page before completing your order. No payment has been taken.</p>
+  <div class="highlight">
+    Your order hasn't been confirmed yet. If you'd still like to place an order, click below to try again.
+  </div>
+  <!-- UPDATE THIS LINK to your hosted order form URL -->
+  <a href="https://your-hosted-form-url-here" class="btn">Back to Order Form</a>
+  <div class="footer">Friends of Solway — Fundraising for Solway Primary School</div>
+</div>
+</body>
+</html>
