@@ -451,7 +451,7 @@ function scheduleProfileLookup(email) {
   clearTimeout(profileLookupTimer);
   if (!email || !email.includes('@') || !email.includes('.')) return;
   if (email === lastLookedUpEmail) return; // don't repeat the same lookup
-  profileLookupTimer = setTimeout(() => triggerProfileLookup(email), 600);
+  profileLookupTimer = setTimeout(() => triggerProfileLookup(email), 300);
 }
 
 document.getElementById('parentEmail').addEventListener('input', function() {
