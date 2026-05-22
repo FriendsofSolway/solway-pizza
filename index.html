@@ -482,10 +482,10 @@ async function triggerProfileLookup(email) {
       hint.textContent = '👋 Welcome back! We\'ve filled in your details.';
       setTimeout(() => { hint.classList.remove('visible'); }, 5000);
     } else {
-      hint.textContent = '⚠️ Response: ' + JSON.stringify(result);
+      hint.classList.remove('visible');
     }
   } catch (err) {
-    hint.textContent = '⚠️ Error: ' + err.message;
+    hint.classList.remove('visible');
   }
 }
 
