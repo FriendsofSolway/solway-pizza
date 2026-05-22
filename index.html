@@ -269,27 +269,30 @@ function populateDateDropdown() {
 // CHILD ORDER LOGIC
 // ============================================================
 
+let childUid = 0;
+
 function addChild() {
   if (childCount >= MAX_CHILDREN) return;
   childCount++;
-  const num = childCount;
+  childUid++;
+  const uid = childUid;
+  const displayNum = childCount;
   const div = document.createElement('div');
   div.className = 'child-order active';
-  div.id = `child-${num}`;
-  div.dataset.childNum = num;
+  div.id = `child-${uid}`;
   div.innerHTML = `
     <div class="child-header">
-      <span class="child-label">🧒 Child ${num}</span>
-      <button type="button" class="remove-child" onclick="removeChild(${num})" style="${num === 1 ? 'display:none' : ''}">❌ Remove</button>
+      <span class="child-label">🧒 Child ${displayNum}</span>
+      <button type="button" class="remove-child" style="${displayNum === 1 ? 'display:none' : ''}">❌ Remove</button>
     </div>
     <div class="field-row">
       <div class="field">
         <label class="required">Child's Name</label>
-        <input type="text" class="child-name" data-child="${num}" required placeholder="First and last name">
+        <input type="text" class="child-name" required placeholder="First and last name">
       </div>
       <div class="field">
         <label class="required">Class</label>
-        <select class="child-class" data-child="${num}" required>
+        <select class="child-class" required>
           <option value="">Select class...</option>
           ${CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
         </select>
@@ -298,8 +301,8 @@ function addChild() {
     <label style="margin-top:4px" class="required">🍕 Choose a Pizza</label>
     <div class="products">
       ${PRODUCTS.map(p => `
-        <label class="product-option" data-product="${p.id}" onclick="selectProduct(${num}, '${p.id}')">
-          <input type="radio" name="product-${num}" value="${p.id}" required>
+        <label class="product-option" data-product="${p.id}">
+          <input type="radio" name="product-${uid}" value="${p.id}" required>
           <div class="product-info">
             <div class="product-name">${p.name}</div>
           </div>
@@ -309,52 +312,57 @@ function addChild() {
     </div>
     <div class="flavour-row field">
       <label class="required">🧀 Flavour</label>
-      <select class="child-flavour" data-child="${num}" required>
+      <select class="child-flavour" required>
         <option value="">Select flavour...</option>
         ${FLAVOURS.map(f => `<option value="${f}">${f}</option>`).join('')}
       </select>
     </div>
   `;
   document.getElementById('childrenContainer').appendChild(div);
-  updateAddButton();
-  updateSummary();
+
+  // Attach remove button via addEventListener — no inline onclick, no stale references
+  div.querySelector('.remove-child').addEventListener('click', function() {
+    div.remove();
+    childCount--;
+    refreshChildLabels();
+    updateAddButton();
+    updateSummary();
+  });
+
+  // Attach product selection via addEventListener
+  div.querySelectorAll('.product-option').forEach(opt => {
+    opt.addEventListener('click', function() {
+      div.querySelectorAll('.product-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      opt.querySelector('input[type="radio"]').checked = true;
+      updateSummary();
+    });
+  });
+
   div.querySelectorAll('input, select').forEach(el => {
     el.addEventListener('change', updateSummary);
     el.addEventListener('input', updateSummary);
   });
-}
 
-function selectProduct(childNum, productId) {
-  const container = document.getElementById(`child-${childNum}`);
-  container.querySelectorAll('.product-option').forEach(opt => {
-    opt.classList.toggle('selected', opt.dataset.product === productId);
-  });
+  updateAddButton();
   updateSummary();
 }
 
-function removeChild(num) {
-  document.getElementById(`child-${num}`)?.remove();
-  childCount--;
+function refreshChildLabels() {
   const children = document.querySelectorAll('.child-order');
   children.forEach((child, i) => {
-    const n = i + 1;
-    child.id = `child-${n}`;
-    child.dataset.childNum = n;
-    child.querySelector('.child-label').textContent = `🧒 Child ${n}`;
-    child.querySelector('.child-name').dataset.child = n;
-    child.querySelector('.child-class').dataset.child = n;
-    child.querySelector('.child-flavour').dataset.child = n;
-    child.querySelectorAll('input[type="radio"]').forEach(r => r.name = `product-${n}`);
+    child.querySelector('.child-label').textContent = `🧒 Child ${i + 1}`;
     const rb = child.querySelector('.remove-child');
-    if (rb) {
-      rb.setAttribute('onclick', `removeChild(${n})`);
-      rb.style.display = (children.length === 1) ? 'none' : '';
-    }
-    child.querySelectorAll('.product-option').forEach(opt => {
-      opt.setAttribute('onclick', `selectProduct(${n}, '${opt.dataset.product}')`);
-    });
+    if (rb) rb.style.display = children.length === 1 ? 'none' : '';
   });
-  updateAddButton();
+}
+
+function selectProduct(uid, productId) {
+  const container = document.getElementById(`child-${uid}`);
+  if (!container) return;
+  container.querySelectorAll('.product-option').forEach(opt => {
+    opt.classList.toggle('selected', opt.dataset.product === productId);
+  });
   updateSummary();
 }
 
