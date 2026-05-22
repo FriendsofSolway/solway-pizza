@@ -7,57 +7,69 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green: #4CAF50;
-    --green-dark: #388E3C;
-    --green-light: #E8F5E9;
+    --teal: #2BBCB3;
+    --teal-dark: #1A9E96;
+    --teal-light: #E0F7F6;
+    --blue: #3B7DD8;
+    --blue-dark: #2A5FA8;
+    --blue-light: #E3EEF9;
+    --green: #2EAD6D;
+    --green-light: #E5F5ED;
     --orange: #FF9800;
     --orange-dark: #EF6C00;
     --orange-light: #FFF3E0;
     --red: #E53935;
     --red-light: #FFEBEE;
-    --bg: #FAFAF5;
+    --bg: #F0FAFA;
     --card: #FFFFFF;
     --text: #2D2D2D;
-    --text-light: #666;
-    --border: #E0E0E0;
-    --shadow: 0 2px 12px rgba(0,0,0,0.06);
-    --radius: 12px;
+    --text-light: #5A6B6B;
+    --border: #C8E6E4;
+    --shadow: 0 2px 16px rgba(43,188,179,0.10);
+    --radius: 14px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; padding: 20px; }
   .container { max-width: 640px; margin: 0 auto; }
-  .header { text-align: center; padding: 32px 20px 24px; margin-bottom: 24px; }
-  .header-emoji { font-size: 48px; margin-bottom: 12px; }
-  .header h1 { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 700; color: var(--green-dark); margin-bottom: 4px; }
+
+  .header { text-align: center; padding: 24px 20px 20px; margin-bottom: 24px; }
+  .header-logo { width: 130px; height: 130px; margin: 0 auto 16px; display: block; }
+  .header h1 { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 700; color: var(--teal-dark); margin-bottom: 4px; }
   .header p { color: var(--text-light); font-size: 15px; }
+
   .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; border: 1px solid var(--border); }
-  .card-title { font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; color: var(--green-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  .card-title .step { background: var(--green); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  .card-title { font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; color: var(--teal-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .card-title .step { background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+
   label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
   .required::after { content: ' *'; color: var(--red); font-weight: 700; }
   input, select { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text); transition: border-color 0.2s; background: white; -webkit-appearance: none; }
-  input:focus, select:focus { outline: none; border-color: var(--green); }
+  input:focus, select:focus { outline: none; border-color: var(--teal); }
   .field { margin-bottom: 14px; }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .child-order { background: var(--green-light); border-radius: 10px; padding: 18px; margin-bottom: 12px; border: 2px solid transparent; transition: border-color 0.2s; }
-  .child-order.active { border-color: var(--green); }
+
+  .child-order { background: linear-gradient(135deg, var(--teal-light), var(--blue-light)); border-radius: 12px; padding: 18px; margin-bottom: 12px; border: 2px solid transparent; transition: border-color 0.2s; }
+  .child-order.active { border-color: var(--teal); }
   .child-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .child-label { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--green-dark); }
+  .child-label { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--teal-dark); }
   .remove-child { background: none; border: none; color: var(--red); font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: background 0.2s; }
   .remove-child:hover { background: var(--red-light); }
+
   .products { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
   .product-option { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: white; border-radius: 8px; cursor: pointer; border: 2px solid var(--border); transition: all 0.2s; }
-  .product-option:hover { border-color: var(--green); }
-  .product-option.selected { border-color: var(--green); background: #F1F8E9; }
-  .product-option input[type="radio"] { width: auto; accent-color: var(--green); cursor: pointer; }
+  .product-option:hover { border-color: var(--teal); }
+  .product-option.selected { border-color: var(--teal); background: var(--teal-light); }
+  .product-option input[type="radio"] { width: auto; accent-color: var(--teal); cursor: pointer; }
   .product-info { flex: 1; }
   .product-name { font-weight: 700; font-size: 14px; }
   .product-desc { display: none; }
-  .product-price { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 16px; color: var(--green-dark); }
+  .product-price { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 16px; color: var(--teal-dark); }
+
   .flavour-row { margin-top: 10px; }
-  .add-child-btn { width: 100%; padding: 14px; border: 2px dashed var(--green); border-radius: 10px; background: transparent; color: var(--green-dark); font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-  .add-child-btn:hover { background: var(--green-light); }
+  .add-child-btn { width: 100%; padding: 14px; border: 2px dashed var(--teal); border-radius: 10px; background: transparent; color: var(--teal-dark); font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .add-child-btn:hover { background: var(--teal-light); }
   .add-child-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
   .summary { background: var(--orange-light); border-radius: 10px; padding: 18px; }
   .summary-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--orange-dark); margin-bottom: 10px; }
   .summary-items { list-style: none; }
@@ -66,20 +78,28 @@
   .summary-date { font-size: 13px; color: var(--orange-dark); font-weight: 600; margin-bottom: 8px; }
   .summary-total { display: flex; justify-content: space-between; padding-top: 12px; margin-top: 8px; border-top: 2px solid var(--orange); font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 700; color: var(--orange-dark); }
   .empty-summary { color: var(--text-light); font-size: 14px; font-style: italic; }
-  .submit-btn { width: 100%; padding: 16px; background: var(--green); color: white; border: none; border-radius: 10px; font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 16px; }
-  .submit-btn:hover { background: var(--green-dark); }
-  .submit-btn:disabled { background: #CCC; cursor: not-allowed; }
-  .submit-btn.loading { background: var(--green-dark); pointer-events: none; }
+
+  .submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; border: none; border-radius: 10px; font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 16px; }
+  .submit-btn:hover { opacity: 0.9; }
+  .submit-btn:disabled { background: #CCC; cursor: not-allowed; opacity: 1; }
+  .submit-btn.loading { opacity: 0.8; pointer-events: none; }
   .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
+
   .error-banner { background: var(--red-light); color: var(--red); padding: 14px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-bottom: 16px; display: none; }
   .error-banner.visible { display: block; }
-  .closed-banner { background: var(--orange-light); color: var(--orange-dark); padding: 20px 24px; border-radius: var(--radius); font-size: 16px; font-weight: 600; text-align: center; margin-bottom: 16px; border: 2px solid var(--orange); }
+  .closed-banner { background: var(--orange-light); color: var(--orange-dark); padding: 24px; border-radius: var(--radius); font-size: 16px; font-weight: 600; text-align: center; margin-bottom: 16px; border: 2px solid var(--orange); line-height: 1.7; }
   .cutoff-note { font-size: 12px; color: var(--text-light); margin-top: 4px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+  #profileHint { display: none; margin-top: 10px; padding: 10px 14px; border-radius: 8px; font-size: 15px; font-weight: 700; background: var(--teal-light); color: var(--teal-dark); border: 2px solid var(--teal); }
+  #profileHint.visible { display: block; }
+
   .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
+
   @media (max-width: 480px) {
     .field-row { grid-template-columns: 1fr; }
     .header h1 { font-size: 24px; }
+    .header-logo { width: 90px; height: 90px; }
   }
 </style>
 </head>
@@ -88,34 +108,38 @@
 <div class="container">
 
   <div class="header">
-    <div class="header-emoji">🍕</div>
-    <h1>Friends of Solway Pizza Lunch</h1>
-    <p>Order your child's pizza lunch — one form for the whole family</p>
+    <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="header-logo">
+    <h1>🍕 Pizza Lunch Order 🍕</h1>
+    <p>Order your child's Friday pizza lunch — one form for the whole family! 🎉</p>
   </div>
 
   <div class="error-banner" id="errorBanner"></div>
 
-  <!-- Shown when no dates are available -->
   <div class="closed-banner" id="closedBanner" style="display:none">
-    🍕 Orders are currently closed. Check back when the next order window opens!
+    🍕 Orders are currently closed!<br>Check back when the next order window opens 📅
   </div>
 
   <form id="orderForm">
     <!-- Step 1: Delivery date -->
     <div class="card" id="dateCard">
-      <div class="card-title"><span class="step">1</span> Delivery Date</div>
+      <div class="card-title"><span class="step">1</span> 📅 Delivery Date</div>
       <div class="field">
         <label for="deliveryDate" class="required">Choose a Friday</label>
         <select id="deliveryDate" required>
           <option value="">Select delivery date...</option>
         </select>
-        <div class="cutoff-note">Orders close at 12pm on the Wednesday before each delivery date.</div>
+        <div class="cutoff-note">⏰ Orders close at 12pm on the Wednesday before each delivery date.</div>
       </div>
     </div>
 
     <!-- Step 2: Parent details -->
     <div class="card">
-      <div class="card-title"><span class="step">2</span> Your Details</div>
+      <div class="card-title"><span class="step">2</span> 👋 Your Details</div>
+      <div class="field">
+        <label for="parentEmail" class="required">Email Address</label>
+        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
+        <div id="profileHint"></div>
+      </div>
       <div class="field-row">
         <div class="field">
           <label for="parentName" class="required">Parent / Caregiver Name</label>
@@ -126,39 +150,36 @@
           <input type="tel" id="parentPhone" required placeholder="e.g. 027 123 4567">
         </div>
       </div>
-      <div class="field">
-        <label for="parentEmail" class="required">Email Address</label>
-        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
-      </div>
     </div>
 
     <!-- Step 3: Children's orders -->
     <div class="card">
-      <div class="card-title"><span class="step">3</span> Children's Orders</div>
+      <div class="card-title"><span class="step">3</span> 🧒 Children's Orders</div>
       <div id="childrenContainer"></div>
-      <button type="button" class="add-child-btn" id="addChildBtn" onclick="addChild()">+ Add Another Child</button>
+      <button type="button" class="add-child-btn" id="addChildBtn" onclick="addChild()">➕ Add Another Child</button>
     </div>
 
     <!-- Step 4: Summary & pay -->
     <div class="card">
-      <div class="card-title"><span class="step">4</span> Order Summary & Payment</div>
+      <div class="card-title"><span class="step">4</span> 🧾 Order Summary & Payment</div>
       <div class="summary">
         <div class="summary-title">Your Order</div>
         <div class="summary-date" id="summaryDate"></div>
         <ul class="summary-items" id="summaryItems">
-          <li class="empty-summary">No items yet — add a child above</li>
+          <li class="empty-summary">No items yet — add a child above ☝️</li>
         </ul>
         <div class="summary-total" id="summaryTotal" style="display:none">
           <span>Total</span>
           <span id="totalAmount">$0.00</span>
         </div>
       </div>
-      <button type="submit" class="submit-btn" id="submitBtn" disabled>Pay Now — $0.00</button>
+      <button type="submit" class="submit-btn" id="submitBtn" disabled>💳 Pay Now — $0.00</button>
     </div>
   </form>
 
   <div class="footer">
-    Friends of Solway — Fundraising for Solway Primary School
+    <a href="solway-pizza-my-orders.html" style="color:#1A9E96;font-weight:600;text-decoration:none;">📋 View My Orders</a><br><br>
+    🌊 Friends of Solway — Fundraising for Solway Primary School 🌿
   </div>
 </div>
 
@@ -166,13 +187,14 @@
 // ============================================================
 // CONFIGURATION
 // ============================================================
-const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNX8kPNKRdlAD4qxrY1mgoYj5x8iJ-DOQd-MpILc8yxwugDiPqxgYdr7HuR_aeOVLwcg/exec';
 
 // DELIVERY DATES — Update this list each term.
 // Add all available Fridays as 'YYYY-MM-DD'.
 // Skip public holidays and non-term days.
 // Orders close at 12pm on the Wednesday before each date.
 const DELIVERY_DATES = [
+  '2026-05-29',
   '2026-06-05',
   '2026-06-12',
   '2026-06-19',
@@ -208,7 +230,6 @@ let childCount = 0;
 // ============================================================
 
 function getCutoffDate(fridayStr) {
-  // Cutoff is Wednesday before at 12pm NZ time
   const friday = new Date(fridayStr + 'T00:00:00+12:00');
   const wednesday = new Date(friday);
   wednesday.setDate(friday.getDate() - 2);
@@ -230,18 +251,11 @@ function formatDateForDisplay(dateStr) {
   return date.toLocaleDateString('en-NZ', options);
 }
 
-function formatCutoffForDisplay(dateStr) {
-  const cutoff = getCutoffDate(dateStr);
-  const options = { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Pacific/Auckland' };
-  return cutoff.toLocaleDateString('en-NZ', options);
-}
-
 function populateDateDropdown() {
   const select = document.getElementById('deliveryDate');
   const available = getAvailableDates();
 
   if (available.length === 0) {
-    // No dates available — hide form, show closed message
     document.getElementById('orderForm').style.display = 'none';
     document.getElementById('closedBanner').style.display = 'block';
     return;
@@ -259,37 +273,40 @@ function populateDateDropdown() {
 // CHILD ORDER LOGIC
 // ============================================================
 
+let childUid = 0;
+
 function addChild() {
   if (childCount >= MAX_CHILDREN) return;
   childCount++;
-  const num = childCount;
+  childUid++;
+  const uid = childUid;
+  const displayNum = childCount;
   const div = document.createElement('div');
   div.className = 'child-order active';
-  div.id = `child-${num}`;
-  div.dataset.childNum = num;
+  div.id = `child-${uid}`;
   div.innerHTML = `
     <div class="child-header">
-      <span class="child-label">Child ${num}</span>
-      ${num > 1 ? `<button type="button" class="remove-child" onclick="removeChild(${num})">Remove</button>` : ''}
+      <span class="child-label">🧒 Child ${displayNum}</span>
+      <button type="button" class="remove-child" style="${displayNum === 1 ? 'display:none' : ''}">❌ Remove</button>
     </div>
     <div class="field-row">
       <div class="field">
         <label class="required">Child's Name</label>
-        <input type="text" class="child-name" data-child="${num}" required placeholder="First and last name">
+        <input type="text" class="child-name" required placeholder="First and last name">
       </div>
       <div class="field">
         <label class="required">Class</label>
-        <select class="child-class" data-child="${num}" required>
+        <select class="child-class" required>
           <option value="">Select class...</option>
           ${CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
         </select>
       </div>
     </div>
-    <label style="margin-top:4px" class="required">Choose a Pizza</label>
+    <label style="margin-top:4px" class="required">🍕 Choose a Pizza</label>
     <div class="products">
       ${PRODUCTS.map(p => `
-        <label class="product-option" data-product="${p.id}" onclick="selectProduct(${num}, '${p.id}')">
-          <input type="radio" name="product-${num}" value="${p.id}" required>
+        <label class="product-option" data-product="${p.id}">
+          <input type="radio" name="product-${uid}" value="${p.id}" required>
           <div class="product-info">
             <div class="product-name">${p.name}</div>
           </div>
@@ -298,60 +315,58 @@ function addChild() {
       `).join('')}
     </div>
     <div class="flavour-row field">
-      <label class="required">Flavour</label>
-      <select class="child-flavour" data-child="${num}" required>
+      <label class="required">🧀 Flavour</label>
+      <select class="child-flavour" required>
         <option value="">Select flavour...</option>
         ${FLAVOURS.map(f => `<option value="${f}">${f}</option>`).join('')}
       </select>
     </div>
   `;
   document.getElementById('childrenContainer').appendChild(div);
-  updateAddButton();
-  updateSummary();
+
+  // Attach remove button via addEventListener — no inline onclick, no stale references
+  div.querySelector('.remove-child').addEventListener('click', function() {
+    div.remove();
+    childCount--;
+    refreshChildLabels();
+    updateAddButton();
+    updateSummary();
+  });
+
+  // Attach product selection via addEventListener
+  div.querySelectorAll('.product-option').forEach(opt => {
+    opt.addEventListener('click', function() {
+      div.querySelectorAll('.product-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      opt.querySelector('input[type="radio"]').checked = true;
+      updateSummary();
+    });
+  });
+
   div.querySelectorAll('input, select').forEach(el => {
     el.addEventListener('change', updateSummary);
     el.addEventListener('input', updateSummary);
   });
-}
 
-function selectProduct(childNum, productId) {
-  const container = document.getElementById(`child-${childNum}`);
-  container.querySelectorAll('.product-option').forEach(opt => {
-    opt.classList.toggle('selected', opt.dataset.product === productId);
-  });
-  updateSummary();
-}
-
-function removeChild(num) {
-  document.getElementById(`child-${num}`)?.remove();
-  childCount--;
-  const children = document.querySelectorAll('.child-order');
-  children.forEach((child, i) => {
-    const n = i + 1;
-    child.id = `child-${n}`;
-    child.dataset.childNum = n;
-    child.querySelector('.child-label').textContent = `Child ${n}`;
-    child.querySelector('.child-name').dataset.child = n;
-    child.querySelector('.child-class').dataset.child = n;
-    child.querySelector('.child-flavour').dataset.child = n;
-    child.querySelectorAll('input[type="radio"]').forEach(r => r.name = `product-${n}`);
-    const rb = child.querySelector('.remove-child');
-    if (rb) {
-      if (n === 1 && children.length === 1) rb.style.display = 'none';
-      else { rb.style.display = ''; rb.setAttribute('onclick', `removeChild(${n})`); }
-    }
-    child.querySelectorAll('.product-option').forEach(opt => {
-      opt.setAttribute('onclick', `selectProduct(${n}, '${opt.dataset.product}')`);
-    });
-  });
   updateAddButton();
   updateSummary();
 }
 
+function refreshChildLabels() {
+  const children = document.querySelectorAll('.child-order');
+  children.forEach((child, i) => {
+    child.querySelector('.child-label').textContent = `🧒 Child ${i + 1}`;
+    const rb = child.querySelector('.remove-child');
+    if (rb) rb.style.display = children.length === 1 ? 'none' : '';
+  });
+}
+
+
+
 function updateAddButton() {
   const btn = document.getElementById('addChildBtn');
   btn.disabled = childCount >= MAX_CHILDREN;
-  btn.textContent = childCount >= MAX_CHILDREN ? 'Maximum 6 children reached' : '+ Add Another Child';
+  btn.textContent = childCount >= MAX_CHILDREN ? '✋ Maximum 6 children reached' : '➕ Add Another Child';
 }
 
 function getOrders() {
@@ -376,7 +391,6 @@ function updateSummary() {
   const orders = getOrders();
   const deliveryDate = document.getElementById('deliveryDate').value;
 
-  // Show selected delivery date in summary
   if (deliveryDate) {
     summaryDate.textContent = '📅 Delivery: ' + formatDateForDisplay(deliveryDate);
   } else {
@@ -384,10 +398,10 @@ function updateSummary() {
   }
 
   if (orders.length === 0) {
-    summaryItems.innerHTML = '<li class="empty-summary">No items yet — add a child above</li>';
+    summaryItems.innerHTML = '<li class="empty-summary">No items yet — add a child above ☝️</li>';
     summaryTotal.style.display = 'none';
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Pay Now — $0.00';
+    submitBtn.textContent = '💳 Pay Now — $0.00';
     return;
   }
 
@@ -400,12 +414,12 @@ function updateSummary() {
     if (o.product) {
       const p = PRODUCTS.find(pr => pr.id === o.product);
       const flavStr = o.flavour ? ` (${o.flavour})` : '';
-      html += `<li><span>${o.childName || 'Child'} — ${p.name}${flavStr}</span><span>$${p.price.toFixed(2)}</span></li>`;
+      html += `<li><span>🍕 ${o.childName || 'Child'} — ${p.name}${flavStr}</span><span>$${p.price.toFixed(2)}</span></li>`;
       total += p.price;
     }
   });
 
-  summaryItems.innerHTML = html || '<li class="empty-summary">Select a pizza for each child</li>';
+  summaryItems.innerHTML = html || '<li class="empty-summary">Select a pizza for each child 🍕</li>';
   summaryTotal.style.display = total > 0 ? 'flex' : 'none';
   totalAmount.textContent = `$${total.toFixed(2)}`;
 
@@ -414,14 +428,101 @@ function updateSummary() {
   const parentEmail = document.getElementById('parentEmail').value.trim();
   const valid = allValid && parentName && parentPhone && parentEmail && deliveryDate && orders.length > 0;
   submitBtn.disabled = !valid;
-  submitBtn.textContent = total > 0 ? `Pay Now — $${total.toFixed(2)}` : 'Pay Now — $0.00';
+  submitBtn.textContent = total > 0 ? `💳 Pay Now — $${total.toFixed(2)}` : '💳 Pay Now — $0.00';
 }
 
-// Listen for changes
 document.getElementById('parentName').addEventListener('input', updateSummary);
 document.getElementById('parentPhone').addEventListener('input', updateSummary);
 document.getElementById('parentEmail').addEventListener('input', updateSummary);
 document.getElementById('deliveryDate').addEventListener('change', updateSummary);
+
+// ============================================================
+// PROFILE LOOKUP — pre-fill form for returning parents
+// ============================================================
+
+// Set to true while testing with Stripe test mode
+const TEST_MODE = true;
+
+let profileLookupTimer = null;
+let lastLookedUpEmail = '';
+
+// Fire lookup 600ms after the parent stops typing, as long as the email looks valid.
+// Also fires on blur in case they paste an address and immediately tab away.
+function scheduleProfileLookup(email) {
+  clearTimeout(profileLookupTimer);
+  if (!email || !email.includes('@') || !email.includes('.')) return;
+  if (email === lastLookedUpEmail) return; // don't repeat the same lookup
+  profileLookupTimer = setTimeout(() => triggerProfileLookup(email), 300);
+}
+
+document.getElementById('parentEmail').addEventListener('input', function() {
+  scheduleProfileLookup(this.value.trim());
+});
+
+document.getElementById('parentEmail').addEventListener('blur', function() {
+  scheduleProfileLookup(this.value.trim());
+});
+
+async function triggerProfileLookup(email) {
+  lastLookedUpEmail = email;
+  const hint = document.getElementById('profileHint');
+  hint.textContent = '🔍 Looking up your details...';
+  hint.classList.add('visible');
+
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'lookup_profile', email: email, testMode: TEST_MODE })
+    });
+    const result = await response.json();
+
+    if (result.success && result.profile) {
+      applyProfile(result.profile);
+      hint.textContent = '👋 Welcome back! We\'ve filled in your details.';
+      setTimeout(() => { hint.classList.remove('visible'); }, 5000);
+    } else {
+      hint.classList.remove('visible');
+    }
+  } catch (err) {
+    hint.classList.remove('visible');
+  }
+}
+
+function applyProfile(profile) {
+  // Only fill parent fields if they're currently empty
+  const nameField  = document.getElementById('parentName');
+  const phoneField = document.getElementById('parentPhone');
+  if (!nameField.value.trim())  nameField.value  = profile.parentName  || '';
+  if (!phoneField.value.trim()) phoneField.value = profile.parentPhone || '';
+
+  // Replace children with saved ones — but only if the form is still at the
+  // default single empty child (i.e. the parent hasn't started filling it in)
+  if (profile.children && profile.children.length > 0) {
+    const existingChildren = document.querySelectorAll('.child-order');
+    const firstChildName = existingChildren[0]?.querySelector('.child-name')?.value.trim();
+    const firstChildClass = existingChildren[0]?.querySelector('.child-class')?.value;
+
+    // Only auto-populate if no child details have been entered yet
+    if (existingChildren.length === 1 && !firstChildName && !firstChildClass) {
+      // Remove the default empty child
+      document.getElementById('childrenContainer').innerHTML = '';
+      childCount = 0;
+
+      // Add a child block for each saved child
+      profile.children.forEach(child => {
+        addChild();
+        const blocks = document.querySelectorAll('.child-order');
+        const block = blocks[blocks.length - 1];
+        block.querySelector('.child-name').value = child.name || '';
+        const classSelect = block.querySelector('.child-class');
+        classSelect.value = child.childClass || '';
+      });
+    }
+  }
+
+  updateSummary();
+}
 
 document.getElementById('orderForm').addEventListener('submit', async function(e) {
   e.preventDefault();
@@ -440,13 +541,11 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
     return sum + (p ? p.price : 0);
   }, 0);
 
-  // Double-check cutoff hasn't passed since page was loaded
   const cutoff = getCutoffDate(deliveryDate);
   if (new Date() >= cutoff) {
-    errorBanner.textContent = 'Sorry, orders for this date have now closed. Please select a different delivery date.';
+    errorBanner.textContent = '⏰ Sorry, orders for this date have now closed. Please select a different delivery date.';
     errorBanner.classList.add('visible');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Refresh available dates
     const select = document.getElementById('deliveryDate');
     select.innerHTML = '<option value="">Select delivery date...</option>';
     populateDateDropdown();
@@ -490,16 +589,15 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
       throw new Error(result.error || 'Something went wrong. Please try again.');
     }
   } catch (err) {
-    errorBanner.textContent = err.message || 'Could not process your order. Please try again.';
+    errorBanner.textContent = err.message || '😕 Could not process your order. Please try again.';
     errorBanner.classList.add('visible');
     submitBtn.classList.remove('loading');
-    submitBtn.innerHTML = `Pay Now — $${total.toFixed(2)}`;
+    submitBtn.innerHTML = `💳 Pay Now — $${total.toFixed(2)}`;
     submitBtn.disabled = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 });
 
-// Initialise
 populateDateDropdown();
 addChild();
 </script>
