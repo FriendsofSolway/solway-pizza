@@ -145,6 +145,7 @@
       <div class="field">
         <label for="parentEmail" class="required">Email Address</label>
         <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
+        <div id="profileHint" style="display:none; font-size:13px; color:var(--teal-dark); margin-top:6px; font-weight:600;"></div>
       </div>
     </div>
 
@@ -431,6 +432,81 @@ document.getElementById('parentName').addEventListener('input', updateSummary);
 document.getElementById('parentPhone').addEventListener('input', updateSummary);
 document.getElementById('parentEmail').addEventListener('input', updateSummary);
 document.getElementById('deliveryDate').addEventListener('change', updateSummary);
+
+// ============================================================
+// PROFILE LOOKUP — pre-fill form for returning parents
+// ============================================================
+
+// Set to true while testing with Stripe test mode
+const TEST_MODE = true;
+
+let profileLookupTimer = null;
+
+document.getElementById('parentEmail').addEventListener('blur', function() {
+  const email = this.value.trim();
+  if (!email || !email.includes('@')) return;
+  triggerProfileLookup(email);
+});
+
+async function triggerProfileLookup(email) {
+  const hint = document.getElementById('profileHint');
+  hint.textContent = '🔍 Looking up your details...';
+  hint.style.display = 'block';
+
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'lookup_profile', email: email, testMode: TEST_MODE })
+    });
+    const result = await response.json();
+
+    if (result.success && result.profile) {
+      applyProfile(result.profile);
+      hint.textContent = '👋 Welcome back! We\'ve filled in your details.';
+      setTimeout(() => { hint.style.display = 'none'; }, 4000);
+    } else {
+      hint.style.display = 'none';
+    }
+  } catch (err) {
+    hint.style.display = 'none';
+  }
+}
+
+function applyProfile(profile) {
+  // Only fill parent fields if they're currently empty
+  const nameField  = document.getElementById('parentName');
+  const phoneField = document.getElementById('parentPhone');
+  if (!nameField.value.trim())  nameField.value  = profile.parentName  || '';
+  if (!phoneField.value.trim()) phoneField.value = profile.parentPhone || '';
+
+  // Replace children with saved ones — but only if the form is still at the
+  // default single empty child (i.e. the parent hasn't started filling it in)
+  if (profile.children && profile.children.length > 0) {
+    const existingChildren = document.querySelectorAll('.child-order');
+    const firstChildName = existingChildren[0]?.querySelector('.child-name')?.value.trim();
+    const firstChildClass = existingChildren[0]?.querySelector('.child-class')?.value;
+
+    // Only auto-populate if no child details have been entered yet
+    if (existingChildren.length === 1 && !firstChildName && !firstChildClass) {
+      // Remove the default empty child
+      document.getElementById('childrenContainer').innerHTML = '';
+      childCount = 0;
+
+      // Add a child block for each saved child
+      profile.children.forEach(child => {
+        addChild();
+        const blocks = document.querySelectorAll('.child-order');
+        const block = blocks[blocks.length - 1];
+        block.querySelector('.child-name').value = child.name || '';
+        const classSelect = block.querySelector('.child-class');
+        classSelect.value = child.childClass || '';
+      });
+    }
+  }
+
+  updateSummary();
+}
 
 document.getElementById('orderForm').addEventListener('submit', async function(e) {
   e.preventDefault();
