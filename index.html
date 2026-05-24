@@ -667,6 +667,8 @@ document.getElementById('parentEmail').addEventListener('blur', function() {
   const email = this.value.trim();
   if (!email || !email.includes('@')) return;
   triggerProfileLookup(email);
+  // Also run duplicate check in case dates are already selected
+  checkForDuplicates();
 });
 
 async function triggerProfileLookup(email) {
@@ -687,6 +689,8 @@ async function triggerProfileLookup(email) {
     } else {
       hint.classList.remove('visible');
     }
+    // Always run duplicate check after email resolves — orders may now be cached
+    checkForDuplicates();
   } catch (err) {
     hint.classList.remove('visible');
   }
