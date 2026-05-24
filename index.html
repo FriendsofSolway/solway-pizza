@@ -328,26 +328,39 @@ function getAvailableDates() {
   return DELIVERY_DATES.filter(d => now < getCutoffDate(d));
 }
 
+// IE-safe date formatters — avoid toLocaleDateString with locale args (not supported in IE)
+const MONTHS_LONG  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAYS_LONG    = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function parseDateNZ(dateStr) {
+  // Parse YYYY-MM-DD safely, treating it as NZ time (UTC+12)
+  const parts = dateStr.split('-');
+  return new Date(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]) - 12 * 60 * 60 * 1000);
+}
+
 function formatDateFull(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00+12:00');
-  return d.toLocaleDateString('en-NZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland' });
+  const d = parseDateNZ(dateStr);
+  return DAYS_LONG[d.getUTCDay()] + ', ' + d.getUTCDate() + ' ' + MONTHS_LONG[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
+  // e.g. "Friday, 29 May 2026"
 }
 
 function formatDateShort(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00+12:00');
-  return d.toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', timeZone: 'Pacific/Auckland' });
+  const d = parseDateNZ(dateStr);
+  return d.getUTCDate() + ' ' + MONTHS_SHORT[d.getUTCMonth()];
+  // e.g. "29 May"
 }
 
 function formatDayName(dateStr) {
+  const d = parseDateNZ(dateStr);
+  return 'Fri ' + d.getUTCDate() + ' ' + MONTHS_SHORT[d.getUTCMonth()];
   // e.g. "Fri 29 May"
-  const d = new Date(dateStr + 'T00:00:00+12:00');
-  const day = d.toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', timeZone: 'Pacific/Auckland' });
-  return 'Fri ' + day;
 }
 
 function formatCutoff(dateStr) {
   const c = getCutoffDate(dateStr);
-  return c.toLocaleDateString('en-NZ', { weekday: 'short', day: 'numeric', month: 'short' }) + ' 12pm';
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  return days[c.getDay()] + ' ' + c.getDate() + ' ' + MONTHS_SHORT[c.getMonth()] + ' 12pm';
 }
 
 // ============================================================
