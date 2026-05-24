@@ -665,29 +665,54 @@ function updateSummary() {
 });
 
 // ============================================================
-// PROFILE LOOKUP — pre-fill form for returning parents
+// PROFILE LOOKUP + DUPLICATE CHECK — single combined fetch
 // ============================================================
 const TEST_MODE = true; // set to false when going live
 
+let lookupTimer   = null;
+let lastLookedUp  = '';
+
+// Fire 300ms after they stop typing — so the result often arrives before they tab away
+document.getElementById('parentEmail').addEventListener('input', function() {
+  const email = this.value.trim();
+  clearTimeout(lookupTimer);
+  if (!email || !email.includes('@') || !email.includes('.')) return;
+  if (email === lastLookedUp) return;
+  lookupTimer = setTimeout(() => triggerLookup(email), 300);
+});
+
+// Also fire immediately on blur as a safety net
 document.getElementById('parentEmail').addEventListener('blur', function() {
   const email = this.value.trim();
   if (!email || !email.includes('@')) return;
-  triggerProfileLookup(email);
-  // Run duplicate check — covers case where dates were selected before email was typed
-  checkForDuplicates();
+  clearTimeout(lookupTimer);
+  if (email === lastLookedUp) {
+    // Already fetched — just re-run duplicate check in case dates changed
+    checkForDuplicates();
+    return;
+  }
+  triggerLookup(email);
 });
 
-async function triggerProfileLookup(email) {
+async function triggerLookup(email) {
+  lastLookedUp = email;
   const hint = document.getElementById('profileHint');
   hint.textContent = '🔍 Looking up your details...';
   hint.classList.add('visible');
+
   try {
+    // Single fetch returns both profile (for autofill) and orders (for duplicate check)
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'lookup_profile', email, testMode: TEST_MODE })
+      body: JSON.stringify({ action: 'lookup_all', email, testMode: TEST_MODE })
     });
     const result = await response.json();
+
+    // Pre-populate the orders cache so checkForDuplicates needs no second fetch
+    orderCache.email  = email;
+    orderCache.orders = result.success ? (result.orders || []) : [];
+
     if (result.success && result.profile) {
       applyProfile(result.profile);
       hint.textContent = '👋 Welcome back! We\'ve filled in your details.';
@@ -695,11 +720,10 @@ async function triggerProfileLookup(email) {
     } else {
       hint.classList.remove('visible');
     }
-    // Always run duplicate check after email resolves —
-    // covers case where dates were selected before email was typed
-    if (pendingDuplicateCheck || getSelectedDates().length > 0) {
-      checkForDuplicates();
-    }
+
+    // Run duplicate check now — cache is warm, no second fetch needed
+    checkForDuplicates();
+
   } catch (err) {
     hint.classList.remove('visible');
   }
@@ -740,46 +764,27 @@ function applyProfile(profile) {
 const orderCache = { email: null, orders: null };
 let pendingDuplicateCheck = false; // set when dates picked before email entered
 
-async function checkForDuplicates() {
+function checkForDuplicates() {
   const email   = document.getElementById('parentEmail').value.trim();
   const dates   = getSelectedDates();
   const warning = document.getElementById('duplicateWarning');
 
-  // If email is not filled yet, set a flag so it runs when email is entered
-  if (!email || !email.includes('@')) {
+  // Need both email and dates; if email not yet looked up, set flag for later
+  if (!email || !email.includes('@') || email !== orderCache.email) {
     pendingDuplicateCheck = true;
     warning.classList.remove('visible');
     return;
   }
-
   if (dates.length === 0) {
     warning.classList.remove('visible');
     return;
   }
 
   pendingDuplicateCheck = false;
-
-  // Fetch orders for this email if not already cached
-  if (orderCache.email !== email || orderCache.orders === null) {
-    try {
-      const response = await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ action: 'lookup_orders', email, testMode: TEST_MODE })
-      });
-      const result = await response.json();
-      orderCache.email  = email;
-      orderCache.orders = result.success ? (result.orders || []) : [];
-    } catch (err) {
-      return;
-    }
-  }
-
-  const orders = orderCache.orders;
+  const orders = orderCache.orders || [];
   if (!orders.length) { warning.classList.remove('visible'); return; }
 
-  // Match selected dates against existing paid orders.
-  // Try three formats: raw YYYY-MM-DD, full formatted string, short "30 May" substring.
+  // Match selected dates against existing paid orders
   const duplicateDates = [];
   dates.forEach(dateStr => {
     const shortDate = formatDateShort(dateStr);
@@ -805,7 +810,7 @@ async function checkForDuplicates() {
   }
 }
 
-// Clear cache whenever email changes so we re-fetch for the new address
+// Clear cache when email changes
 document.getElementById('parentEmail').addEventListener('input', () => {
   orderCache.email  = null;
   orderCache.orders = null;
