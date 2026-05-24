@@ -813,16 +813,19 @@ function checkForDuplicates() {
     const shortDate = formatDateShort(dateStr); // "29 May"
     const fullDate  = formatDateFull(dateStr);  // "Friday, 29 May 2026"
     const dbg2 = m => { const p = document.getElementById('debugPanel'); if(p){p.textContent+='[MATCH] '+m+'\n';p.style.display='block';p.scrollTop=p.scrollHeight;} };
-    const hasDupe = orders.some(order => {
-      if (order.status !== 'Paid') return false;
-      const raw = String(order.deliveryDate || '').trim();
-      // Extract YYYY-MM-DD from ISO timestamp ("2026-05-29T07:00:00.000Z" → "2026-05-29")
-      const isoDate = raw.length >= 10 ? raw.substring(0, 10) : raw;
-      dbg2('comparing '+dateStr+' vs raw='+raw+' iso='+isoDate);
-      return isoDate === dateStr        // "2026-05-29" === "2026-05-29"
-          || raw === fullDate           // exact formatted string match
-          || raw.indexOf(shortDate) > -1; // "29 May" substring
-    });
+    var hasDupe = false;
+    try {
+      hasDupe = orders.some(function(order) {
+        if (order.status !== 'Paid') return false;
+        const raw = String(order.deliveryDate || '').trim();
+        const isoDate = raw.length >= 10 ? raw.substring(0, 10) : raw;
+        dbg2('comparing '+dateStr+' vs raw='+raw+' iso='+isoDate+' match='+(isoDate===dateStr));
+        return isoDate === dateStr || raw === fullDate || raw.indexOf(shortDate) > -1;
+      });
+      dbg2('hasDupe='+hasDupe+' fullDate='+fullDate);
+    } catch(ex) {
+      dbg2('EXCEPTION in some(): '+ex.message);
+    }
     if (hasDupe) duplicateDates.push(fullDate);
   });
 
