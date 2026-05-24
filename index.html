@@ -147,6 +147,9 @@
   .error-banner.visible { display: block; }
   .closed-banner { background: var(--orange-light); color: var(--orange-dark); padding: 24px; border-radius: var(--radius); font-size: 16px; font-weight: 600; text-align: center; margin-bottom: 16px; border: 2px solid var(--orange); line-height: 1.7; }
 
+  .step-hidden { display: none; }
+  .step-reveal { animation: stepReveal 0.4s ease both; }
+  @keyframes stepReveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
 
   /* ── Cards that depend on earlier steps ── */
@@ -195,7 +198,7 @@
     </div>
 
     <!-- Step 2: Parent name/phone -->
-    <div class="card" id="card2-details">
+    <div class="card step-hidden" id="card2-details">
       <div class="card-title"><span class="step">2</span> 👋 Your Details</div>
       <div class="field-row">
         <div class="field">
@@ -210,7 +213,7 @@
     </div>
 
     <!-- Step 3: Pick dates -->
-    <div class="card" id="card3-dates">
+    <div class="card step-hidden" id="card3-dates">
       <div class="card-title"><span class="step">3</span> 📅 Choose Delivery Dates</div>
       <button type="button" class="date-accordion-trigger" id="dateAccordionTrigger" onclick="toggleDateAccordion()">
         <div class="trigger-left">
@@ -231,7 +234,7 @@
     </div>
 
     <!-- Step 4: Add children -->
-    <div class="card" id="card4-children">
+    <div class="card step-hidden" id="card4-children">
       <div class="card-title"><span class="step">4</span> 🧒 Your Children</div>
       <p style="font-size:14px;color:var(--text-light);margin-bottom:14px;">Add each child once — you'll choose their pizza for each date in the next step.</p>
       <div id="childrenContainer"></div>
@@ -239,7 +242,7 @@
     </div>
 
     <!-- Step 5: Pizza grid -->
-    <div class="card" id="card5-pizza">
+    <div class="card step-hidden" id="card5-pizza">
       <div class="card-title"><span class="step">5</span> 🍕 Choose Pizzas</div>
       <div id="pizzaGrid">
         <div class="grid-prompt">Select dates and add children above to configure pizzas 🍕</div>
@@ -247,7 +250,7 @@
     </div>
 
     <!-- Step 6: Summary & pay -->
-    <div class="card" id="card6-summary">
+    <div class="card step-hidden" id="card6-summary">
       <div class="card-title"><span class="step">6</span> 🧾 Order Summary & Payment</div>
       <div class="summary">
         <div class="summary-title">Your Order</div>
@@ -262,7 +265,7 @@
 
   </form>
 
-  <div class="footer">
+  <div class="footer step-hidden" id="formFooter">
     <a href="solway-pizza-my-orders.html" style="color:#1A9E96;font-weight:600;text-decoration:none;">📋 View My Orders</a><br><br>
     🌊 Friends of Solway — Fundraising for Solway Primary School 🌿
   </div>
@@ -708,6 +711,18 @@ document.getElementById('parentEmail').addEventListener('blur', function() {
   triggerLookup(email);
 });
 
+function revealSteps() {
+  var ids = ['card2-details','card3-dates','card4-children','card5-pizza','card6-summary','formFooter'];
+  ids.forEach(function(id, i) {
+    var el = document.getElementById(id);
+    if (!el || !el.classList.contains('step-hidden')) return;
+    setTimeout(function() {
+      el.classList.remove('step-hidden');
+      el.classList.add('step-reveal');
+    }, i * 80);
+  });
+}
+
 async function triggerLookup(email) {
   lastLookedUp = email;
   const hint = document.getElementById('profileHint');
@@ -726,15 +741,15 @@ async function triggerLookup(email) {
     if (result.success && result.profile) {
       applyProfile(result.profile);
       hint.textContent = '👋 Welcome back! We\'ve filled in your details.';
-      setTimeout(() => { hint.classList.remove('visible'); }, 5000);
+      setTimeout(function() { hint.classList.remove('visible'); }, 5000);
     } else {
       hint.classList.remove('visible');
     }
-    // If no dates selected yet, pendingDuplicateCheck stays true;
-    // onDateChange will call checkForDuplicates when they tick a date
+    revealSteps();
     checkForDuplicates();
   } catch (err) {
     hint.classList.remove('visible');
+    revealSteps(); // reveal anyway so form is not stuck if lookup fails
   }
 }
 
