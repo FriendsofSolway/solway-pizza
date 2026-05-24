@@ -1,437 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Friends of Solway — Pizza Lunch Order</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #2BBCB3;
+    --teal-dark: #1A9E96;
+    --teal-light: #E0F7F6;
+    --blue: #3B7DD8;
+    --blue-dark: #2A5FA8;
+    --blue-light: #E3EEF9;
+    --green: #2EAD6D;
+    --green-light: #E5F5ED;
+    --orange: #FF9800;
+    --orange-dark: #EF6C00;
+    --orange-light: #FFF3E0;
+    --red: #E53935;
+    --red-light: #FFEBEE;
+    --bg: #F0FAFA;
+    --card: #FFFFFF;
+    --text: #2D2D2D;
+    --text-light: #5A6B6B;
+    --border: #C8E6E4;
+    --shadow: 0 2px 16px rgba(43,188,179,0.10);
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; padding: 20px; }
+  .container { max-width: 720px; margin: 0 auto; }
+
+  .header { text-align: center; padding: 24px 20px 20px; margin-bottom: 24px; }
+  .header-logo { width: 130px; height: 130px; margin: 0 auto 16px; display: block; }
+  .header h1 { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 700; color: var(--teal-dark); margin-bottom: 4px; }
+  .header p { color: var(--text-light); font-size: 15px; }
+
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .card-title { font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; color: var(--teal-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .card-title .step { background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .required::after { content: ' *'; color: var(--red); font-weight: 700; }
+  input[type="text"], input[type="email"], input[type="tel"], select {
+    width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px;
+    font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text);
+    transition: border-color 0.2s; background: white; -webkit-appearance: none;
+  }
+  input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, select:focus { outline: none; border-color: var(--teal); }
+  .field { margin-bottom: 14px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── STEP 1: Date accordion ── */
+  .date-accordion-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 12px 16px; background: white; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); transition: all 0.2s; text-align: left; }
+  .date-accordion-trigger:hover { border-color: var(--teal); background: var(--teal-light); }
+  .date-accordion-trigger.open { border-color: var(--teal); border-bottom-left-radius: 0; border-bottom-right-radius: 0; background: var(--teal-light); }
+  .date-accordion-trigger .trigger-left { display: flex; align-items: center; gap: 10px; }
+  .date-accordion-trigger .trigger-label { display: flex; flex-direction: column; gap: 2px; }
+  .date-accordion-trigger .trigger-title { font-size: 15px; font-weight: 700; color: var(--teal-dark); }
+  .date-accordion-trigger .trigger-summary { font-size: 13px; font-weight: 600; color: var(--text-light); }
+  .date-accordion-trigger .trigger-summary.has-dates { color: var(--teal-dark); }
+  .accordion-chevron { width: 20px; height: 20px; color: var(--teal-dark); transition: transform 0.25s ease; flex-shrink: 0; }
+  .date-accordion-trigger.open .accordion-chevron { transform: rotate(180deg); }
+
+  .date-accordion-panel { border: 2px solid var(--teal); border-top: none; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; overflow: hidden; max-height: 0; transition: max-height 0.3s ease; }
+  .date-accordion-panel.open { max-height: 600px; }
+  .date-grid { display: flex; flex-direction: column; padding: 8px; gap: 6px; background: var(--teal-light); max-height: 222px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--teal) var(--teal-light); }
+  .date-grid::-webkit-scrollbar { width: 6px; }
+  .date-grid::-webkit-scrollbar-track { background: var(--teal-light); border-radius: 3px; }
+  .date-grid::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 3px; }
+  .date-option { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: white; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: all 0.2s; user-select: none; }
+  .date-option:hover { border-color: var(--teal); }
+  .date-option.selected { border-color: var(--teal); background: var(--teal-light); }
+  .date-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--teal); cursor: pointer; flex-shrink: 0; }
+  .date-option-label { flex: 1; font-weight: 600; font-size: 14px; }
+  .date-option-cutoff { font-size: 12px; color: var(--text-light); font-weight: 400; }
+  .cutoff-note { font-size: 12px; color: var(--text-light); margin-top: 10px; font-weight: 400; }
+  .no-dates-msg { color: var(--text-light); font-size: 15px; font-style: italic; text-align: center; padding: 12px 0; }
+
+  /* ── STEP 3: Children ── */
+  /* Profile hint */
+  #profileHint { display: none; margin-top: 10px; padding: 10px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--teal-light); color: var(--teal-dark); border: 2px solid var(--teal); }
+  #profileHint.visible { display: block; }
+  /* Duplicate order warning */
+  #duplicateWarning { display: none; margin-top: 12px; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--orange-light); color: var(--orange-dark); border: 2px solid var(--orange); line-height: 1.6; }
+  #duplicateWarning.visible { display: block; }
+
+  .child-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: linear-gradient(135deg, var(--teal-light), var(--blue-light)); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; }
+  .child-row .child-num { font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; color: var(--teal-dark); white-space: nowrap; }
+  .child-row input[type="text"] { flex: 0 1 140px; min-width: 80px; }
+  .child-row select { flex: 1; min-width: 0; }
+  .child-row .remove-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 18px; padding: 4px; border-radius: 6px; line-height: 1; flex-shrink: 0; transition: background 0.2s; }
+  .child-row .remove-btn:hover { background: var(--red-light); }
+
+  .add-child-btn { width: 100%; padding: 13px; border: 2px dashed var(--teal); border-radius: 10px; background: transparent; color: var(--teal-dark); font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 4px; }
+  .add-child-btn:hover { background: var(--teal-light); }
+  .add-child-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── STEP 4: Pizza grid ── */
+  .grid-prompt { color: var(--text-light); font-size: 14px; font-style: italic; text-align: center; padding: 16px 0; }
+  .pizza-grid { display: flex; flex-direction: column; gap: 20px; }
+
+  .grid-child-block { border: 2px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .grid-child-header { background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; padding: 10px 16px; font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; }
+
+  .grid-dates { display: flex; flex-direction: column; gap: 0; }
+  .grid-date-row { display: flex; align-items: stretch; border-top: 1px solid var(--border); background: white; }
+  .grid-date-row:first-child { border-top: none; }
+  .grid-date-label { width: 130px; flex-shrink: 0; padding: 12px 14px; font-size: 13px; font-weight: 700; color: var(--teal-dark); display: flex; flex-direction: column; justify-content: center; border-right: 1px solid var(--border); background: var(--teal-light); }
+  .grid-date-label .gdl-day { font-size: 14px; }
+  .grid-date-label .gdl-date { font-size: 12px; color: var(--text-light); font-weight: 600; }
+
+  .grid-cell { flex: 1; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+
+  .product-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .product-chip { display: flex; align-items: center; gap: 5px; padding: 6px 10px; border: 2px solid var(--border); border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; background: white; transition: all 0.15s; white-space: nowrap; }
+  .product-chip:hover { border-color: var(--teal); color: var(--teal-dark); }
+  .product-chip.selected { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
+  .product-chip input[type="radio"] { width: 13px; height: 13px; accent-color: var(--teal); cursor: pointer; }
+  .chip-price { font-weight: 700; color: var(--teal-dark); }
+
+  .cell-flavour select { font-size: 13px; padding: 7px 10px; }
+  .cell-flavour { display: none; }
+  .cell-flavour.visible { display: block; }
+
+  /* ── STEP 5: Summary ── */
+  .summary { background: var(--orange-light); border-radius: 10px; padding: 18px; }
+  .summary-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--orange-dark); margin-bottom: 12px; }
+  .summary-date-group { margin-bottom: 12px; }
+  .summary-date-heading { font-family: 'Fredoka', sans-serif; font-size: 14px; font-weight: 700; color: var(--orange-dark); margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+  .summary-items { list-style: none; }
+  .summary-items li { display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .summary-items li:last-child { border-bottom: none; }
+  .summary-total { display: flex; justify-content: space-between; padding-top: 12px; margin-top: 8px; border-top: 2px solid var(--orange); font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 700; color: var(--orange-dark); }
+  .empty-summary { color: var(--text-light); font-size: 14px; font-style: italic; }
+
+  .submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; border: none; border-radius: 10px; font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 16px; }
+  .submit-btn:hover { opacity: 0.9; }
+  .submit-btn:disabled { background: #CCC; cursor: not-allowed; opacity: 1; }
+  .submit-btn.loading { opacity: 0.8; pointer-events: none; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-banner { background: var(--red-light); color: var(--red); padding: 14px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-bottom: 16px; display: none; }
+  .error-banner.visible { display: block; }
+  .closed-banner { background: var(--orange-light); color: var(--orange-dark); padding: 24px; border-radius: var(--radius); font-size: 16px; font-weight: 600; text-align: center; margin-bottom: 16px; border: 2px solid var(--orange); line-height: 1.7; }
+
+  .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
+
+  /* ── Cards that depend on earlier steps ── */
+  .card.locked { opacity: 0.5; pointer-events: none; }
+  .card.locked .card-title { color: var(--text-light); }
+  .card.locked .step { background: #CCC; }
+
+  @media (max-width: 540px) {
+    .field-row { grid-template-columns: 1fr; }
+    .header h1 { font-size: 24px; }
+    .header-logo { width: 90px; height: 90px; }
+    .child-row { flex-wrap: wrap; }
+    .child-row select { flex: 1 1 100%; }
+    .grid-date-label { width: 90px; }
+    .grid-date-label .gdl-date { display: none; }
+    .product-chips { gap: 4px; }
+    .product-chip { font-size: 12px; padding: 5px 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="header-logo">
+    <h1>🍕 Pizza Lunch Order 🍕</h1>
+    <p>Order for multiple Fridays in one go — one payment at the end! 🎉</p>
+  </div>
+
+  <div class="error-banner" id="errorBanner"></div>
+  <div class="closed-banner" id="closedBanner" style="display:none">
+    🍕 Orders are currently closed!<br>Check back when the next order window opens 📅
+  </div>
+
+  <form id="orderForm">
+
+    <!-- Step 1: Pick dates -->
+    <div class="card" id="card1">
+      <div class="card-title"><span class="step">1</span> 📅 Choose Delivery Dates</div>
+      <button type="button" class="date-accordion-trigger" id="dateAccordionTrigger" onclick="toggleDateAccordion()">
+        <div class="trigger-left">
+          <div class="trigger-label">
+            <div class="trigger-title">Select Fridays</div>
+            <div class="trigger-summary" id="triggerSummary">No dates selected</div>
+          </div>
+        </div>
+        <svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+      <div class="date-accordion-panel" id="dateAccordionPanel">
+        <div class="date-grid" id="dateGrid"></div>
+      </div>
+      <div class="cutoff-note">⏰ Orders for each Friday close at 12pm on the Wednesday before.</div>
+      <div id="duplicateWarning"></div>
+    </div>
+
+    <!-- Step 2: Parent details -->
+    <div class="card" id="card2">
+      <div class="card-title"><span class="step">2</span> 👋 Your Details</div>
+      <div class="field">
+        <label for="parentEmail" class="required">Email Address</label>
+        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
+        <div id="profileHint"></div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="parentName" class="required">Parent / Caregiver Name</label>
+          <input type="text" id="parentName" required placeholder="e.g. Sarah Jones">
+        </div>
+        <div class="field">
+          <label for="parentPhone" class="required">Phone Number</label>
+          <input type="tel" id="parentPhone" required placeholder="e.g. 027 123 4567">
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Add children -->
+    <div class="card" id="card3">
+      <div class="card-title"><span class="step">3</span> 🧒 Your Children</div>
+      <p style="font-size:14px;color:var(--text-light);margin-bottom:14px;">Add each child once — you'll choose their pizza for each date in the next step.</p>
+      <div id="childrenContainer"></div>
+      <button type="button" class="add-child-btn" id="addChildBtn" onclick="addChild()">➕ Add Another Child</button>
+    </div>
+
+    <!-- Step 4: Pizza grid -->
+    <div class="card" id="card4">
+      <div class="card-title"><span class="step">4</span> 🍕 Choose Pizzas</div>
+      <div id="pizzaGrid">
+        <div class="grid-prompt">Select dates and add children above to configure pizzas 🍕</div>
+      </div>
+    </div>
+
+    <!-- Step 5: Summary & pay -->
+    <div class="card" id="card5">
+      <div class="card-title"><span class="step">5</span> 🧾 Order Summary & Payment</div>
+      <div class="summary">
+        <div class="summary-title">Your Order</div>
+        <div id="summaryContent"><p class="empty-summary">No items yet — complete the steps above ☝️</p></div>
+        <div class="summary-total" id="summaryTotal" style="display:none">
+          <span>Total</span>
+          <span id="totalAmount">$0.00</span>
+        </div>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn" disabled>💳 Pay Now — $0.00</button>
+    </div>
+
+  </form>
+
+  <div class="footer">
+    <a href="solway-pizza-my-orders.html" style="color:#1A9E96;font-weight:600;text-decoration:none;">📋 View My Orders</a><br><br>
+    🌊 Friends of Solway — Fundraising for Solway Primary School 🌿
+  </div>
+</div>
+
+<script>
 // ============================================================
-// FRIENDS OF SOLWAY — PIZZA ORDER GOOGLE APPS SCRIPT
+// CONFIGURATION — edit these each term
 // ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNX8kPNKRdlAD4qxrY1mgoYj5x8iJ-DOQd-MpILc8yxwugDiPqxgYdr7HuR_aeOVLwcg/exec';
 
-var STRIPE_SECRET_KEY = 'sk_test_51TZfmfLsRUJmDEkaYtkcdXmXJoTxpbY08yytFyryncxM3otsL5LbkXbZmBNG9FfvOslXVfGTru2PcFuZudD8rDNl00osFzdQfs';
+const DELIVERY_DATES = [
+  '2026-05-29',
+  '2026-06-05',
+  '2026-06-12',
+  '2026-06-19',
+  '2026-06-26',
+  '2026-07-03',
+  // Term 2 break
+  '2026-07-24',
+  '2026-07-31',
+  '2026-08-07',
+  '2026-08-14',
+  '2026-08-21',
+  '2026-08-28',
+  '2026-09-04',
+  '2026-09-11',
+  '2026-09-18',
+  '2026-09-25',
+];
 
-var STRIPE_PRICES = {
-  'pizza-combo':  'price_1TZmfqLsRUJmDEkaSlOQ2pAy',
-  'single-pizza': 'price_1TZmfDLsRUJmDEka3KuNuptc',
-  'gf-pizza':     'price_1TZmfbLsRUJmDEka61Ci2s48'
-};
+const PRODUCTS = [
+  { id: 'pizza-combo',  name: 'Combo',   fullName: 'Pizza Combo',                  price: 7.50 },
+  { id: 'single-pizza', name: 'Single',  fullName: 'Single Pizza',                 price: 6.50 },
+  { id: 'gf-pizza',     name: 'GF',      fullName: 'Gluten Free Single Pizza',      price: 11.50 },
+];
 
-var SUCCESS_URL = 'https://friendsofsolway.github.io/solway-pizza/solway-pizza-success.html';
-var CANCEL_URL  = 'https://friendsofsolway.github.io/solway-pizza/solway-pizza-cancel.html';
-
-// Email address for weekly order summary (sent Wednesdays at 12pm)
-var SUMMARY_EMAIL = 'shannon.bayliss@hotmail.com';
+const FLAVOURS = ['Cheese', 'Ham and Cheese', 'Hawaiian'];
+const CLASSES  = ['Kanuka','Pohutukawa','Rimu','Harakeke','Matai','Titoki','Totara','Kauri','Rata','Manuka'];
+const MAX_CHILDREN = 6;
 
 // ============================================================
-// DO NOT EDIT BELOW THIS LINE
+// STATE
 // ============================================================
+let childCount = 0;
+// selections[childId][dateStr] = { productId, flavour }
+const selections = {};
 
-// --- MAIN POST HANDLER ---
+// ============================================================
+// DATE HELPERS
+// ============================================================
+function getCutoffDate(fridayStr) {
+  const friday = new Date(fridayStr + 'T00:00:00+12:00');
+  const wednesday = new Date(friday);
+  wednesday.setDate(friday.getDate() - 2);
+  wednesday.setHours(12, 0, 0, 0);
+  return wednesday;
+}
 
-function doPost(e) {
-  try {
-    var data = JSON.parse(e.postData.contents);
+function getAvailableDates() {
+  const now = new Date();
+  return DELIVERY_DATES.filter(d => now < getCutoffDate(d));
+}
 
-    // Stripe webhook event
-    if (data.type === 'checkout.session.completed') {
-      var session = data.data.object;
-      saveCompletedOrder(session);
-      return ContentService.createTextOutput('OK');
-    }
+function formatDateFull(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00+12:00');
+  return d.toLocaleDateString('en-NZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland' });
+}
 
-    // Parent looking up their profile to pre-fill the order form
-    if (data.action === 'lookup_profile') {
-      var profile = lookupProfile(data.email, data.testMode);
-      return ContentService
-        .createTextOutput(JSON.stringify({ success: true, profile: profile }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
+function formatDateShort(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00+12:00');
+  return d.toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', timeZone: 'Pacific/Auckland' });
+}
 
-    // Parent looking up their orders
-    if (data.action === 'lookup_orders') {
-      var orders = lookupOrders(data.email, data.testMode);
-      return ContentService
-        .createTextOutput(JSON.stringify({ success: true, orders: orders }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
+function formatDayName(dateStr) {
+  // e.g. "Fri 29 May"
+  const d = new Date(dateStr + 'T00:00:00+12:00');
+  const day = d.toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', timeZone: 'Pacific/Auckland' });
+  return 'Fri ' + day;
+}
 
-    // New order from the form (single-date or multi-date)
-    var checkoutUrl = createStripeCheckout(data);
-    return ContentService
-      .createTextOutput(JSON.stringify({ success: true, checkoutUrl: checkoutUrl }))
-      .setMimeType(ContentService.MimeType.JSON);
+function formatCutoff(dateStr) {
+  const c = getCutoffDate(dateStr);
+  return c.toLocaleDateString('en-NZ', { weekday: 'short', day: 'numeric', month: 'short' }) + ' 12pm';
+}
 
-  } catch (err) {
-    Logger.log('Error: ' + err.message);
-    return ContentService
-      .createTextOutput(JSON.stringify({ success: false, error: err.message }))
-      .setMimeType(ContentService.MimeType.JSON);
+// ============================================================
+// STEP 1 — DATE ACCORDION
+// ============================================================
+function toggleDateAccordion() {
+  const trigger = document.getElementById('dateAccordionTrigger');
+  const panel   = document.getElementById('dateAccordionPanel');
+  const isOpen  = trigger.classList.contains('open');
+  trigger.classList.toggle('open', !isOpen);
+  panel.classList.toggle('open', !isOpen);
+}
+
+function updateTriggerSummary() {
+  const selected = getSelectedDates();
+  const summary  = document.getElementById('triggerSummary');
+  if (selected.length === 0) {
+    summary.textContent = 'No dates selected';
+    summary.classList.remove('has-dates');
+  } else if (selected.length === 1) {
+    summary.textContent = '✓ ' + formatDateFull(selected[0]);
+    summary.classList.add('has-dates');
+  } else {
+    // Show first date + count of others
+    summary.textContent = `✓ ${formatDateFull(selected[0])} + ${selected.length - 1} more`;
+    summary.classList.add('has-dates');
   }
 }
 
-// --- SAVE COMPLETED ORDER ---
-// Called when Stripe sends a webhook after successful payment.
-// Handles both single-date orders (legacy) and multi-date orders.
+function buildDateGrid() {
+  const available = getAvailableDates();
+  const grid = document.getElementById('dateGrid');
 
-function saveCompletedOrder(session) {
-  // Live payments go to 'Orders'; test payments go to 'Test Orders'.
-  // This keeps test data completely separate from real order data.
-  var isLive = session.livemode === true;
-  var sheetName = isLive ? 'Orders' : 'Test Orders';
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  if (!sheet) {
-    sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(sheetName);
-    sheet.appendRow(['Timestamp','Delivery Date','Parent Name','Phone','Email','Child Name','Class','Product','Flavour','Price','Order Total','Payment Status','Stripe Session ID']);
-    sheet.getRange(1, 1, 1, 13).setFontWeight('bold');
-    sheet.setFrozenRows(1);
-  }
-
-  var sessionId = session.id || '';
-
-  // Prevent duplicate rows: Stripe can retry webhooks if it doesn't get a fast
-  // response. Check whether this session ID is already in the sheet and bail out
-  // if so. This is the #1 cause of phantom duplicate rows.
-  if (sessionId) {
-    var lastRow = sheet.getLastRow();
-    if (lastRow >= 2) {
-      var sessionCol = sheet.getRange(2, 13, lastRow - 1, 1).getValues();
-      for (var s = 0; s < sessionCol.length; s++) {
-        if (String(sessionCol[s][0]).trim() === sessionId) {
-          Logger.log('Duplicate webhook ignored for session: ' + sessionId);
-          return;
-        }
-      }
-    }
-  }
-
-  var timestamp   = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland' });
-  var parentName  = session.metadata.parent_name  || '';
-  var parentPhone = session.metadata.parent_phone || '';
-  var parentEmail = session.customer_email        || '';
-
-
-  // Multi-date orders store all children in order_json with a deliveryDate per row
-  var orderJson = session.metadata.order_json || '';
-
-  try {
-    var children = JSON.parse(orderJson);
-
-    // Calculate grand total across all rows
-    var total = 0;
-    children.forEach(function(child) { total += Number(child.price || child['$']) || 0; });
-
-    children.forEach(function(child) {
-      // Support both abbreviated keys (n/c/p/f/$/d) and legacy full keys
-      var childName     = child.name     || child.n || '';
-      var childClass    = child['class'] || child.c || '';
-      var childProduct  = child.product  || child.p || '';
-      var childFlavour  = child.flavour  || child.f || '';
-      var childPrice    = child.price    || child['$'] || 0;
-      var childDate     = child.deliveryDate || child.d || session.metadata.delivery_date || '';
-
-      sheet.appendRow([
-        timestamp,
-        childDate,
-        parentName,
-        parentPhone,
-        parentEmail,
-        childName,
-        childClass,
-        childProduct,
-        childFlavour,
-        childPrice,
-        total.toFixed(2),
-        'Paid',
-        sessionId
-      ]);
-    });
-  } catch (parseErr) {
-    // Fallback for orders that couldn't be parsed
-    sheet.appendRow([
-      timestamp,
-      session.metadata.delivery_date || '',
-      parentName,
-      parentPhone,
-      parentEmail,
-      '',
-      '',
-      session.metadata.order_details || '',
-      '',
-      (session.amount_total / 100).toFixed(2),
-      (session.amount_total / 100).toFixed(2),
-      'Paid',
-      sessionId
-    ]);
-  }
-
-  autoSortSheet(sheetName);
-}
-
-// --- AUTO-SORT ---
-
-function autoSortSheet(sheetName) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName || 'Orders');
-  if (!sheet) return;
-  var lastRow = sheet.getLastRow();
-  if (lastRow < 2) return;
-  var range = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn());
-  // Sort by Delivery Date (col 2), then Class (col 7), then Child Name (col 6)
-  range.sort([
-    { column: 2, ascending: true },
-    { column: 7, ascending: true },
-    { column: 6, ascending: true }
-  ]);
-}
-
-// --- LOOKUP ORDERS ---
-
-function lookupOrders(email, testMode) {
-  var sheetName = testMode ? 'Test Orders' : 'Orders';
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  if (!sheet) return [];
-  var lastRow = sheet.getLastRow();
-  if (lastRow < 2) return [];
-  var data = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues();
-  var results = [];
-  for (var i = 0; i < data.length; i++) {
-    if (String(data[i][4]).toLowerCase().trim() === email.toLowerCase().trim()) {
-      results.push({
-        timestamp:    data[i][0],
-        deliveryDate: data[i][1],
-        parentName:   data[i][2],
-        childName:    data[i][5],
-        childClass:   data[i][6],
-        product:      data[i][7],
-        flavour:      data[i][8],
-        price:        data[i][9],
-        status:       data[i][11]
-      });
-    }
-  }
-  return results;
-}
-
-// --- LOOKUP PROFILE (pre-fill order form for returning parents) ---
-// Returns parent name, phone, and a deduplicated list of children with their
-// most recently used class — so returning parents don't have to retype anything.
-
-function lookupProfile(email, testMode) {
-  var sheetName = testMode ? 'Test Orders' : 'Orders';
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  if (!sheet) return null;
-
-  var lastRow = sheet.getLastRow();
-  if (lastRow < 2) return null;
-
-  var data = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues();
-
-  var parentName  = '';
-  var parentPhone = '';
-  var childrenMap = {}; // keyed by lowercase child name to deduplicate
-
-  for (var i = 0; i < data.length; i++) {
-    var rowEmail = String(data[i][4]).toLowerCase().trim();
-    if (rowEmail !== email.toLowerCase().trim()) continue;
-
-    // Most recent row wins for parent details (sheet is sorted by date asc,
-    // so later rows overwrite earlier ones — giving us the latest values)
-    parentName  = data[i][2] || parentName;
-    parentPhone = data[i][3] || parentPhone;
-
-    var childName  = String(data[i][5]).trim();
-    var childClass = String(data[i][6]).trim();
-    if (childName) {
-      childrenMap[childName.toLowerCase()] = { name: childName, cls: childClass };
-    }
-  }
-
-  if (!parentName && !parentPhone) return null;
-
-  var children = Object.values(childrenMap);
-  return { parentName: parentName, parentPhone: parentPhone, children: children };
-}
-
-// --- CREATE STRIPE CHECKOUT ---
-// Supports multi-date orders: each child × date becomes a Stripe line item.
-// The order_json metadata field stores all rows so saveCompletedOrder can
-// write one sheet row per child per date.
-//
-// Stripe metadata is limited to 500 chars per value, so for large orders
-// we store a compact version and fall back gracefully if it overflows.
-
-function createStripeCheckout(data) {
-
-  // Build line items — one per child entry (which already has one date each
-  // for multi-date orders, or one entry per child for single-date orders)
-  var children = data.children || [];
-
-  if (children.length === 0) {
-    throw new Error('No items in order.');
-  }
-
-  // Aggregate quantities by productId (Stripe prefers quantity > 1 over duplicates,
-  // but since each item may have different delivery dates we keep them separate
-  // by using individual line items — Stripe allows up to 20 line items per session).
-  var lineItems = children.map(function(child) {
-    var priceId = STRIPE_PRICES[child.productId];
-    if (!priceId) {
-      throw new Error('Stripe Price ID not configured for product: ' + child.product + '. Please update STRIPE_PRICES in the script.');
-    }
-    return { price: priceId, quantity: 1 };
-  });
-
-  if (lineItems.length > 20) {
-    throw new Error('Maximum 20 items per order. Please place two separate orders for larger families.');
-  }
-
-  // Use abbreviated keys to keep JSON well within Stripe's 500-char metadata limit.
-  // n=name, c=class, p=product (full name), f=flavour, $=price, d=deliveryDate
-  // With 6 children × 3 dates = 18 rows, abbreviated keys keep this safely under 500 chars
-  // for typical NZ names. Full keys would risk silent truncation and corrupt the webhook parse.
-  var orderRows = children.map(function(child) {
-    return {
-      n: child.name,
-      c: child['class'],
-      p: child.product,
-      f: child.flavour,
-      $: child.price,
-      d: child.deliveryDateFormatted || child.deliveryDate || ''
-    };
-  });
-
-  var orderJson = JSON.stringify(orderRows);
-
-  // Hard error rather than silent truncation: truncated JSON causes a parse failure
-  // in the webhook handler which falls back to a bare row with no child detail.
-  if (orderJson.length > 500) {
-    throw new Error('Order summary is too long for ' + children.length + ' items (' + orderJson.length + ' chars). Please split into two separate orders.');
-  }
-
-  // Build a human-readable summary for order_details metadata (500 char limit, truncate ok here
-  // since it's only informational in Stripe — the sheet data comes from order_json)
-  var orderDetails = children.map(function(child) {
-    var date = child.deliveryDateFormatted || child.deliveryDate || '';
-    return child.name + ' (' + child['class'] + ') ' + date + ': ' + child.product + ' - ' + child.flavour;
-  }).join(' | ');
-  var metaDetails = orderDetails.length <= 500 ? orderDetails : orderDetails.substring(0, 497) + '...';
-  var deliveryDates = [];
-  children.forEach(function(child) {
-    var d = child.deliveryDateFormatted || child.deliveryDate || '';
-    if (d && deliveryDates.indexOf(d) === -1) deliveryDates.push(d);
-  });
-  var deliveryDateMeta = deliveryDates.join(', ').substring(0, 500);
-
-  var formData = {
-    'mode':                    'payment',
-    'success_url':             SUCCESS_URL,
-    'cancel_url':              CANCEL_URL,
-    'customer_email':          data.parentEmail,
-    'metadata[parent_name]':   data.parentName,
-    'metadata[parent_phone]':  data.parentPhone,
-    'metadata[delivery_date]': deliveryDateMeta,
-    'metadata[order_details]': metaDetails,
-    'metadata[order_json]':    orderJson
-  };
-
-  lineItems.forEach(function(item, i) {
-    formData['line_items[' + i + '][price]']    = item.price;
-    formData['line_items[' + i + '][quantity]'] = item.quantity;
-  });
-
-  var payload = Object.keys(formData).map(function(key) {
-    return encodeURIComponent(key) + '=' + encodeURIComponent(formData[key]);
-  }).join('&');
-
-  var response = UrlFetchApp.fetch('https://api.stripe.com/v1/checkout/sessions', {
-    method: 'post',
-    headers: { 'Authorization': 'Basic ' + Utilities.base64Encode(STRIPE_SECRET_KEY + ':') },
-    payload: payload,
-    muteHttpExceptions: true
-  });
-
-  var result = JSON.parse(response.getContentText());
-  if (result.error) throw new Error('Stripe error: ' + result.error.message);
-  return result.url;
-}
-
-// --- WEEKLY EMAIL SUMMARY ---
-// Set up a time-driven trigger: Wednesday, 12pm–1pm, function: sendWeeklySummary
-
-function sendWeeklySummary() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
-  if (!sheet) return;
-
-  var lastRow = sheet.getLastRow();
-  if (lastRow < 2) {
-    MailApp.sendEmail(SUMMARY_EMAIL, '🍕 Pizza Order Summary — No orders this week', 'No orders have been placed for this week\'s delivery.');
+  if (available.length === 0) {
+    document.getElementById('orderForm').style.display = 'none';
+    document.getElementById('closedBanner').style.display = 'block';
     return;
   }
 
-  var data = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues();
-
-  // Find the upcoming Friday (from Wednesday, that's 2 days away)
-  var today = new Date();
-  var daysUntilFriday = (5 - today.getDay() + 7) % 7;
-  if (daysUntilFriday === 0) daysUntilFriday = 7;
-  var nextFriday = new Date(today);
-  nextFriday.setDate(today.getDate() + daysUntilFriday);
-  var fridayStr = nextFriday.toLocaleDateString('en-NZ', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland'
+  grid.innerHTML = '';
+  available.forEach(dateStr => {
+    const label = document.createElement('label');
+    label.className = 'date-option';
+    label.innerHTML = `
+      <input type="checkbox" value="${dateStr}">
+      <div class="date-option-label">
+        <div>${formatDateFull(dateStr)}</div>
+        <div class="date-option-cutoff">⏰ Orders close ${formatCutoff(dateStr)}</div>
+      </div>
+    `;
+    const cb = label.querySelector('input');
+    cb.addEventListener('change', () => {
+      label.classList.toggle('selected', cb.checked);
+      onDateChange();
+    });
+    grid.appendChild(label);
   });
 
-  var dayMonth = nextFriday.getDate() + ' ' + nextFriday.toLocaleDateString('en-NZ', { month: 'long', timeZone: 'Pacific/Auckland' });
+  // Open the accordion by default so the first interaction is obvious
+  toggleDateAccordion();
+}
 
-  var fridayOrders = [];
-  for (var i = 0; i < data.length; i++) {
-    var od = String(data[i][1]).trim();
-    if (od === fridayStr || od.indexOf(dayMonth) > -1) {
-      fridayOrders.push({
-        parentName: data[i][2],
-        childName:  data[i][5],
-        childClass: data[i][6],
-        product:    data[i][7],
-        flavour:    data[i][8],
-        price:      data[i][9],
-        status:     data[i][11]
+function getSelectedDates() {
+  return Array.from(document.querySelectorAll('#dateGrid input[type="checkbox"]:checked')).map(cb => cb.value);
+}
+
+function onDateChange() {
+  updateTriggerSummary();
+  rebuildPizzaGrid();
+  updateSummary();
+  checkForDuplicates();
+}
+
+// ============================================================
+// STEP 3 — CHILDREN
+// ============================================================
+function addChild() {
+  if (childCount >= MAX_CHILDREN) return;
+  childCount++;
+  const id = childCount;
+  selections[id] = {};
+
+  const row = document.createElement('div');
+  row.className = 'child-row';
+  row.id = `child-${id}`;
+  row.innerHTML = `
+    <span class="child-num">🧒 Child ${id}</span>
+    <input type="text" placeholder="Full name" class="child-name" data-id="${id}" required>
+    <select class="child-class" data-id="${id}" required>
+      <option value="">Class...</option>
+      ${CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
+    </select>
+    ${id > 1 ? `<button type="button" class="remove-btn" onclick="removeChild(${id})" title="Remove">✕</button>` : ''}
+  `;
+  row.querySelector('.child-name').addEventListener('input', () => { rebuildPizzaGrid(); updateSummary(); });
+  row.querySelector('.child-class').addEventListener('change', updateSummary);
+  document.getElementById('childrenContainer').appendChild(row);
+
+  updateAddButton();
+  rebuildPizzaGrid();
+  updateSummary();
+}
+
+function removeChild(id) {
+  document.getElementById(`child-${id}`)?.remove();
+  delete selections[id];
+  childCount--;
+
+  // Re-number remaining children visually
+  document.querySelectorAll('.child-row').forEach((row, i) => {
+    row.querySelector('.child-num').textContent = `🧒 Child ${i + 1}`;
+  });
+
+  updateAddButton();
+  rebuildPizzaGrid();
+  updateSummary();
+}
+
+function updateAddButton() {
+  const btn = document.getElementById('addChildBtn');
+  btn.disabled = childCount >= MAX_CHILDREN;
+  btn.textContent = childCount >= MAX_CHILDREN ? '✋ Maximum 6 children reached' : '➕ Add Another Child';
+}
+
+function getChildren() {
+  return Array.from(document.querySelectorAll('.child-row')).map(row => ({
+    id: parseInt(row.id.replace('child-', '')),
+    name: row.querySelector('.child-name').value.trim(),
+    cls: row.querySelector('.child-class').value,
+  }));
+}
+
+// ============================================================
+// STEP 4 — PIZZA GRID
+// ============================================================
+function rebuildPizzaGrid() {
+  const dates = getSelectedDates();
+  const children = getChildren();
+  const container = document.getElementById('pizzaGrid');
+
+  if (dates.length === 0 || children.length === 0) {
+    container.innerHTML = '<div class="grid-prompt">Select dates and add children above to configure pizzas 🍕</div>';
+    return;
+  }
+
+  // Preserve existing selections before rebuilding
+  // (selections object is the source of truth)
+
+  container.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'pizza-grid';
+
+  children.forEach(child => {
+    if (!selections[child.id]) selections[child.id] = {};
+
+    const block = document.createElement('div');
+    block.className = 'grid-child-block';
+
+    const childName = child.name || `Child ${child.id}`;
+    block.innerHTML = `<div class="grid-child-header">🧒 ${childName}</div><div class="grid-dates" id="dates-${child.id}"></div>`;
+
+    const datesDiv = block.querySelector(`#dates-${child.id}`);
+    dates.forEach(dateStr => {
+      if (!selections[child.id][dateStr]) selections[child.id][dateStr] = { productId: '', flavour: '' };
+      const sel = selections[child.id][dateStr];
+
+      const row = document.createElement('div');
+      row.className = 'grid-date-row';
+      row.innerHTML = `
+        <div class="grid-date-label">
+          <div class="gdl-day">Fri ${formatDateShort(dateStr)}</div>
+        </div>
+        <div class="grid-cell">
+          <div class="product-chips">
+            ${PRODUCTS.map(p => `
+              <label class="product-chip${sel.productId === p.id ? ' selected' : ''}" data-child="${child.id}" data-date="${dateStr}" data-product="${p.id}">
+                <input type="radio" name="prod-${child.id}-${dateStr}" value="${p.id}" ${sel.productId === p.id ? 'checked' : ''}>
+                ${p.name} <span class="chip-price">$${p.price.toFixed(2)}</span>
+              </label>
+            `).join('')}
+          </div>
+          <div class="cell-flavour${sel.productId ? ' visible' : ''}" id="flavour-${child.id}-${dateStr}">
+            <select onchange="onFlavourChange(${child.id}, '${dateStr}', this.value)">
+              <option value="">Select flavour...</option>
+              ${FLAVOURS.map(f => `<option value="${f}"${sel.flavour === f ? ' selected' : ''}>${f}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      `;
+
+      // Wire up product chip clicks
+      row.querySelectorAll('.product-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const productId = chip.dataset.product;
+          const cid = parseInt(chip.dataset.child);
+          const ds = chip.dataset.date;
+          onProductSelect(cid, ds, productId, row);
+        });
       });
+
+      datesDiv.appendChild(row);
+    });
+
+    grid.appendChild(block);
+  });
+
+  container.appendChild(grid);
+}
+
+function onProductSelect(childId, dateStr, productId, row) {
+  if (!selections[childId]) selections[childId] = {};
+  if (!selections[childId][dateStr]) selections[childId][dateStr] = { productId: '', flavour: '' };
+  selections[childId][dateStr].productId = productId;
+
+  // Update chip visuals
+  row.querySelectorAll('.product-chip').forEach(chip => {
+    chip.classList.toggle('selected', chip.dataset.product === productId);
+  });
+  row.querySelector(`input[value="${productId}"]`).checked = true;
+
+  // Show flavour
+  const flavourDiv = row.querySelector('.cell-flavour');
+  flavourDiv.classList.add('visible');
+
+  updateSummary();
+}
+
+function onFlavourChange(childId, dateStr, flavour) {
+  if (!selections[childId]) selections[childId] = {};
+  if (!selections[childId][dateStr]) selections[childId][dateStr] = { productId: '', flavour: '' };
+  selections[childId][dateStr].flavour = flavour;
+  updateSummary();
+}
+
+// ============================================================
+// STEP 5 — SUMMARY
+// ============================================================
+function updateSummary() {
+  const dates = getSelectedDates();
+  const children = getChildren();
+  const summaryContent = document.getElementById('summaryContent');
+  const summaryTotal = document.getElementById('summaryTotal');
+  const totalAmount = document.getElementById('totalAmount');
+  const submitBtn = document.getElementById('submitBtn');
+
+  if (dates.length === 0 || children.length === 0) {
+    summaryContent.innerHTML = '<p class="empty-summary">No items yet — complete the steps above ☝️</p>';
+    summaryTotal.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = '💳 Pay Now — $0.00';
+    return;
+  }
+
+  let total = 0;
+  let missingCount = 0;
+  let hasAnyItem = false;
+  let html = '';
+
+  const parentName  = document.getElementById('parentName').value.trim();
+  const parentPhone = document.getElementById('parentPhone').value.trim();
+  const parentEmail = document.getElementById('parentEmail').value.trim();
+  const parentValid = !!(parentName && parentPhone && parentEmail);
+
+  // Every child must have a name and class
+  const childrenValid = children.every(c => c.name && c.cls);
+
+  dates.forEach(dateStr => {
+    let dateHtml = '';
+    children.forEach(child => {
+      const sel = (selections[child.id] || {})[dateStr] || {};
+      if (!sel.productId || !sel.flavour) {
+        missingCount++;
+        return; // don't add to summary yet
+      }
+      const product = PRODUCTS.find(p => p.id === sel.productId);
+      if (!product) return;
+      const childName = child.name || `Child ${child.id}`;
+      dateHtml += `<li><span>🍕 ${childName} — ${product.fullName} (${sel.flavour})</span><span>$${product.price.toFixed(2)}</span></li>`;
+      total += product.price;
+      hasAnyItem = true;
+    });
+
+    if (dateHtml) {
+      html += `<div class="summary-date-group">
+        <div class="summary-date-heading">📅 ${formatDateFull(dateStr)}</div>
+        <ul class="summary-items">${dateHtml}</ul>
+      </div>`;
+    }
+  });
+
+  if (!hasAnyItem) {
+    summaryContent.innerHTML = '<p class="empty-summary">Choose pizzas for each child and date above 🍕</p>';
+    summaryTotal.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = '💳 Pay Now — $0.00';
+    return;
+  }
+
+  // Show what's been filled in so far, even if incomplete
+  if (missingCount > 0) {
+    html += `<p style="font-size:13px;color:var(--orange-dark);margin-top:8px;">⚠️ ${missingCount} pizza choice${missingCount > 1 ? 's' : ''} still needed above.</p>`;
+  }
+
+  summaryContent.innerHTML = html;
+  summaryTotal.style.display = total > 0 ? 'flex' : 'none';
+  totalAmount.textContent = `$${total.toFixed(2)}`;
+
+  const allComplete = missingCount === 0 && childrenValid && parentValid;
+  submitBtn.disabled = !allComplete;
+  submitBtn.textContent = total > 0 ? `💳 Pay Now — $${total.toFixed(2)}` : '💳 Pay Now — $0.00';
+}
+
+// Wire up parent field changes
+['parentName','parentPhone','parentEmail'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateSummary);
+});
+
+// ============================================================
+// PROFILE LOOKUP — pre-fill form for returning parents
+// ============================================================
+const TEST_MODE = true; // set to false when going live
+
+document.getElementById('parentEmail').addEventListener('blur', function() {
+  const email = this.value.trim();
+  if (!email || !email.includes('@')) return;
+  triggerProfileLookup(email);
+  // Also run duplicate check in case dates are already selected
+  checkForDuplicates();
+});
+
+async function triggerProfileLookup(email) {
+  const hint = document.getElementById('profileHint');
+  hint.textContent = '🔍 Looking up your details...';
+  hint.classList.add('visible');
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'lookup_profile', email, testMode: TEST_MODE })
+    });
+    const result = await response.json();
+    if (result.success && result.profile) {
+      applyProfile(result.profile);
+      hint.textContent = '👋 Welcome back! We\'ve filled in your details.';
+      setTimeout(() => { hint.classList.remove('visible'); }, 5000);
+    } else {
+      hint.classList.remove('visible');
+    }
+    // Always run duplicate check after email resolves — orders may now be cached
+    checkForDuplicates();
+  } catch (err) {
+    hint.classList.remove('visible');
+  }
+}
+
+function applyProfile(profile) {
+  const nameField  = document.getElementById('parentName');
+  const phoneField = document.getElementById('parentPhone');
+  if (!nameField.value.trim())  nameField.value  = profile.parentName  || '';
+  if (!phoneField.value.trim()) phoneField.value = profile.parentPhone || '';
+  updateSummary();
+
+  // Pre-fill children only if the form still has the single default empty child
+  const existingChildren = getChildren();
+  const isDefaultState = existingChildren.length === 1 && !existingChildren[0].name && !existingChildren[0].cls;
+  if (!isDefaultState || !profile.children || profile.children.length === 0) return;
+
+  // Remove existing empty child and add saved children
+  document.getElementById('childrenContainer').innerHTML = '';
+  childCount = 0;
+  profile.children.forEach(c => {
+    addChild();
+    const rows = document.querySelectorAll('.child-row');
+    const row = rows[rows.length - 1];
+    row.querySelector('.child-name').value = c.name || '';
+    row.querySelector('.child-class').value = c.cls  || '';
+  });
+  rebuildPizzaGrid();
+  updateSummary();
+}
+
+// ============================================================
+// ============================================================
+// DUPLICATE ORDER DETECTION
+// ============================================================
+
+// Proper cache object (not an array) so email key persists reliably
+const orderCache = { email: null, orders: null };
+
+async function checkForDuplicates() {
+  const email   = document.getElementById('parentEmail').value.trim();
+  const dates   = getSelectedDates();
+  const warning = document.getElementById('duplicateWarning');
+
+  if (!email || !email.includes('@') || dates.length === 0) {
+    warning.classList.remove('visible');
+    return;
+  }
+
+  // Fetch orders for this email if not already cached
+  if (orderCache.email !== email || orderCache.orders === null) {
+    try {
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'lookup_orders', email, testMode: TEST_MODE })
+      });
+      const result = await response.json();
+      orderCache.email  = email;
+      orderCache.orders = result.success ? (result.orders || []) : [];
+      // DEBUG — remove once working
+      warning.innerHTML = '<strong>DEBUG:</strong> fetch returned ' + orderCache.orders.length + ' order(s). Raw: <pre style="font-size:11px;white-space:pre-wrap">' + JSON.stringify(result).substring(0, 500) + '</pre>';
+      warning.classList.add('visible');
+    } catch (err) {
+      warning.innerHTML = '<strong>DEBUG fetch error:</strong> ' + err.message;
+      warning.classList.add('visible');
+      return;
     }
   }
 
-  var totalOrders = fridayOrders.length;
-  var totalRevenue = 0;
-  var byProduct = {}, byFlavour = {}, byClass = {};
+  const orders = orderCache.orders;
+  if (!orders.length) { warning.classList.remove('visible'); return; }
 
-  fridayOrders.forEach(function(order) {
-    totalRevenue += Number(order.price) || 0;
-    byProduct[order.product] = (byProduct[order.product] || 0) + 1;
-    byFlavour[order.flavour] = (byFlavour[order.flavour] || 0) + 1;
-    byClass[order.childClass] = (byClass[order.childClass] || 0) + 1;
-  });
-
-  var subject = '🍕 Pizza Order Summary — ' + fridayStr;
-  var body = 'PIZZA ORDER SUMMARY\n';
-  body += 'Delivery: ' + fridayStr + '\n';
-  body += '================================\n\n';
-  body += 'TOTALS\n';
-  body += '  Orders: ' + totalOrders + '\n';
-  body += '  Revenue: $' + totalRevenue.toFixed(2) + '\n\n';
-  body += 'BY PRODUCT\n';
-  for (var prod in byProduct) body += '  ' + prod + ': ' + byProduct[prod] + '\n';
-  body += '\nBY FLAVOUR\n';
-  for (var flav in byFlavour) body += '  ' + flav + ': ' + byFlavour[flav] + '\n';
-  body += '\nBY CLASS\n';
-  var classNames = Object.keys(byClass).sort();
-  classNames.forEach(function(c) { body += '  ' + c + ': ' + byClass[c] + '\n'; });
-  body += '\n================================\n';
-  body += 'ORDER DETAILS BY CLASS\n';
-  body += '================================\n\n';
-  classNames.forEach(function(className) {
-    body += className.toUpperCase() + '\n--------\n';
-    fridayOrders.forEach(function(order) {
-      if (order.childClass === className) {
-        body += '  ' + order.childName + ' — ' + order.product + ' (' + order.flavour + ')\n';
-      }
+  // Match selected dates against existing paid orders.
+  // The sheet stores deliveryDate as a formatted string e.g. "Friday, 30 May 2026".
+  // We match using formatDateShort ("30 May") as a substring - robust to locale
+  // differences - and also try raw YYYY-MM-DD in case it was stored that way.
+  const duplicateDates = [];
+  dates.forEach(dateStr => {
+    const shortDate = formatDateShort(dateStr);
+    const fullDate  = formatDateFull(dateStr);
+    // DEBUG
+    console.log('Checking date:', dateStr, 'short:', shortDate, 'full:', fullDate);
+    orders.forEach(o => console.log('  order deliveryDate:', JSON.stringify(o.deliveryDate), 'status:', o.status));
+    const hasDupe = orders.some(order => {
+      if (order.status !== 'Paid') return false;
+      const od = String(order.deliveryDate || '').trim();
+      return od === dateStr || od === fullDate || od.indexOf(shortDate) > -1;
     });
-    body += '\n';
+    if (hasDupe) duplicateDates.push(fullDate);
   });
 
-  if (totalOrders === 0) {
-    body = 'No orders have been placed for delivery on ' + fridayStr + '.';
+  if (duplicateDates.length > 0) {
+    const dateList = duplicateDates.map(d => '&nbsp;&nbsp;' + d).join('<br>');
+    warning.innerHTML =
+      '<strong>Heads up!</strong> It looks like you\'ve already placed a paid order for:<br>' +
+      dateList +
+      '<br><span style="font-weight:400">If you\'re adding extra children or correcting a mistake, '
+      + 'that\'s fine \u2014 just continue. Otherwise, you may be ordering twice.</span>';
+    warning.classList.add('visible');
+  } else {
+    warning.classList.remove('visible');
+  }
+}
+
+// Clear cache whenever email changes so we re-fetch for the new address
+document.getElementById('parentEmail').addEventListener('input', () => {
+  orderCache.email  = null;
+  orderCache.orders = null;
+  document.getElementById('duplicateWarning').classList.remove('visible');
+});
+
+// ============================================================
+// SUBMIT
+// ============================================================
+document.getElementById('orderForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const submitBtn = document.getElementById('submitBtn');
+  const errorBanner = document.getElementById('errorBanner');
+  errorBanner.classList.remove('visible');
+
+  const dates = getSelectedDates();
+  const children = getChildren();
+  const parentName  = document.getElementById('parentName').value.trim();
+  const parentPhone = document.getElementById('parentPhone').value.trim();
+  const parentEmail = document.getElementById('parentEmail').value.trim();
+
+  // Check all cutoffs are still valid
+  for (const dateStr of dates) {
+    if (new Date() >= getCutoffDate(dateStr)) {
+      errorBanner.textContent = `⏰ Orders for ${formatDateFull(dateStr)} have now closed. Please unselect that date and try again.`;
+      errorBanner.classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
   }
 
-  MailApp.sendEmail(SUMMARY_EMAIL, subject, body);
-}
+  // Build line items: one entry per child × date
+  const lineItems = [];
+  let total = 0;
+
+  dates.forEach(dateStr => {
+    children.forEach(child => {
+      const sel = (selections[child.id] || {})[dateStr] || {};
+      const product = PRODUCTS.find(p => p.id === sel.productId);
+      if (!product || !sel.flavour) return;
+      lineItems.push({
+        name: child.name,
+        'class': child.cls,
+        product: product.fullName,
+        productId: product.id,
+        flavour: sel.flavour,
+        price: product.price,
+        deliveryDate: dateStr,
+        deliveryDateFormatted: formatDateFull(dateStr),
+      });
+      total += product.price;
+    });
+  });
+
+  // Group line items by date for the Apps Script
+  // We send each date as a separate "order" within the same payload
+  const ordersByDate = {};
+  lineItems.forEach(item => {
+    if (!ordersByDate[item.deliveryDate]) ordersByDate[item.deliveryDate] = [];
+    ordersByDate[item.deliveryDate].push(item);
+  });
+
+  const orderData = {
+    multiDate: true,
+    parentName,
+    parentPhone,
+    parentEmail,
+    total: total.toFixed(2),
+    // For Stripe: all items flattened (productId + quantity used for line items)
+    children: lineItems,
+    // For Google Sheet: grouped by date
+    ordersByDate,
+  };
+
+  submitBtn.classList.add('loading');
+  submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
+  submitBtn.disabled = true;
+
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(orderData)
+    });
+    const result = await response.json();
+    if (result.success && result.checkoutUrl) {
+      window.location.href = result.checkoutUrl;
+    } else {
+      throw new Error(result.error || 'Something went wrong. Please try again.');
+    }
+  } catch (err) {
+    errorBanner.textContent = err.message || '😕 Could not process your order. Please try again.';
+    errorBanner.classList.add('visible');
+    submitBtn.classList.remove('loading');
+    submitBtn.innerHTML = `💳 Pay Now — $${total.toFixed(2)}`;
+    submitBtn.disabled = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+
+// ============================================================
+// INIT
+// ============================================================
+buildDateGrid();
+addChild(); // start with one child
+</script>
+</body>
+</html>
