@@ -702,6 +702,7 @@ async function triggerLookup(email) {
   hint.textContent = '🔍 Looking up your details...';
   hint.classList.add('visible');
   dbg('firing for: '+email+' testMode='+TEST_MODE);
+  pendingDuplicateCheck = true; // will be resolved when fetch completes
   try {
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
@@ -722,6 +723,8 @@ async function triggerLookup(email) {
     } else {
       hint.classList.remove('visible');
     }
+    // If no dates selected yet, pendingDuplicateCheck stays true;
+    // onDateChange will call checkForDuplicates when they tick a date
     checkForDuplicates();
   } catch (err) {
     dbg('ERROR: '+err.message);
@@ -786,15 +789,23 @@ function checkForDuplicates() {
   const orders = orderCache.orders || [];
   if (!orders.length) { warning.classList.remove('visible'); return; }
 
-  // Match selected dates against existing paid orders
+  // Match selected dates against existing paid orders.
+  // Google Sheets returns dates as ISO timestamps e.g. "2026-05-29T07:00:00.000Z"
+  // so we extract just the YYYY-MM-DD prefix and compare against the raw date string.
   const duplicateDates = [];
   dates.forEach(dateStr => {
-    const shortDate = formatDateShort(dateStr);
-    const fullDate  = formatDateFull(dateStr);
+    const shortDate = formatDateShort(dateStr); // "29 May"
+    const fullDate  = formatDateFull(dateStr);  // "Friday, 29 May 2026"
+    const dbg2 = m => { const p = document.getElementById('debugPanel'); if(p){p.textContent+='[MATCH] '+m+'\n';p.style.display='block';p.scrollTop=p.scrollHeight;} };
     const hasDupe = orders.some(order => {
       if (order.status !== 'Paid') return false;
-      const od = String(order.deliveryDate || '').trim();
-      return od === dateStr || od === fullDate || od.indexOf(shortDate) > -1;
+      const raw = String(order.deliveryDate || '').trim();
+      // Extract YYYY-MM-DD from ISO timestamp ("2026-05-29T07:00:00.000Z" → "2026-05-29")
+      const isoDate = raw.length >= 10 ? raw.substring(0, 10) : raw;
+      dbg2('comparing '+dateStr+' vs raw='+raw+' iso='+isoDate);
+      return isoDate === dateStr        // "2026-05-29" === "2026-05-29"
+          || raw === fullDate           // exact formatted string match
+          || raw.indexOf(shortDate) > -1; // "29 May" substring
     });
     if (hasDupe) duplicateDates.push(fullDate);
   });
