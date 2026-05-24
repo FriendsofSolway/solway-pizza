@@ -418,6 +418,9 @@ function onDateChange() {
   updateTriggerSummary();
   rebuildPizzaGrid();
   updateSummary();
+  const dbgDates = getSelectedDates();
+  const p = document.getElementById('debugPanel');
+  if(p){p.textContent+='[DATECHANGE] selected dates: '+JSON.stringify(dbgDates)+'\n';p.style.display='block';}
   checkForDuplicates();
 }
 
@@ -810,6 +813,9 @@ function checkForDuplicates() {
     if (hasDupe) duplicateDates.push(fullDate);
   });
 
+  const dbg3 = m => { const p = document.getElementById('debugPanel'); if(p){p.textContent+='[WARN] '+m+'\n';p.style.display='block';p.scrollTop=p.scrollHeight;} };
+  dbg3('duplicateDates='+JSON.stringify(duplicateDates)+' warningEl='+(!!warning)+' warningVisible='+(warning?warning.classList.contains('visible'):'N/A'));
+
   if (duplicateDates.length > 0) {
     const dateList = duplicateDates.map(d => '&nbsp;&nbsp;' + d).join('<br>');
     warning.innerHTML =
@@ -818,8 +824,10 @@ function checkForDuplicates() {
       '<br><span style="font-weight:400">If you\'re adding extra children or correcting a mistake, ' +
       'that\'s fine \u2014 just continue. Otherwise, you may be ordering twice.</span>';
     warning.classList.add('visible');
+    dbg3('WARNING SHOWN');
   } else {
     warning.classList.remove('visible');
+    dbg3('no duplicates found');
   }
 }
 
