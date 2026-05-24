@@ -177,17 +177,41 @@
   </div>
 
   <div class="error-banner" id="errorBanner"></div>
-  <div id="debugPanel" style="display:none;background:#1a1a2e;color:#00ff88;font-family:monospace;font-size:12px;padding:14px;border-radius:10px;margin-bottom:12px;white-space:pre-wrap;line-height:1.6;max-height:300px;overflow-y:auto;"></div>
-  <button type="button" onclick="document.getElementById('debugPanel').style.display='none'" style="display:none;margin-bottom:12px;padding:6px 14px;background:#888;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;" id="debugClose">Hide Debug</button>
+
   <div class="closed-banner" id="closedBanner" style="display:none">
     🍕 Orders are currently closed!<br>Check back when the next order window opens 📅
   </div>
 
   <form id="orderForm">
 
-    <!-- Step 1: Pick dates -->
+    <!-- Step 1: Email -->
     <div class="card" id="card1">
-      <div class="card-title"><span class="step">1</span> 📅 Choose Delivery Dates</div>
+      <div class="card-title"><span class="step">1</span> 📧 Your Email</div>
+      <div class="field">
+        <label for="parentEmail" class="required">Email Address</label>
+        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
+        <div id="profileHint"></div>
+      </div>
+    </div>
+
+    <!-- Step 2: Parent name/phone -->
+    <div class="card" id="card2-details">
+      <div class="card-title"><span class="step">2</span> 👋 Your Details</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="parentName" class="required">Parent / Caregiver Name</label>
+          <input type="text" id="parentName" required placeholder="e.g. Sarah Jones">
+        </div>
+        <div class="field">
+          <label for="parentPhone" class="required">Phone Number</label>
+          <input type="tel" id="parentPhone" required placeholder="e.g. 027 123 4567">
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Pick dates -->
+    <div class="card" id="card3-dates">
+      <div class="card-title"><span class="step">3</span> 📅 Choose Delivery Dates</div>
       <button type="button" class="date-accordion-trigger" id="dateAccordionTrigger" onclick="toggleDateAccordion()">
         <div class="trigger-left">
           <div class="trigger-label">
@@ -206,45 +230,25 @@
       <div id="duplicateWarning"></div>
     </div>
 
-    <!-- Step 2: Parent details -->
-    <div class="card" id="card2">
-      <div class="card-title"><span class="step">2</span> 👋 Your Details</div>
-      <div class="field">
-        <label for="parentEmail" class="required">Email Address</label>
-        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
-        <div id="profileHint"></div>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label for="parentName" class="required">Parent / Caregiver Name</label>
-          <input type="text" id="parentName" required placeholder="e.g. Sarah Jones">
-        </div>
-        <div class="field">
-          <label for="parentPhone" class="required">Phone Number</label>
-          <input type="tel" id="parentPhone" required placeholder="e.g. 027 123 4567">
-        </div>
-      </div>
-    </div>
-
-    <!-- Step 3: Add children -->
-    <div class="card" id="card3">
-      <div class="card-title"><span class="step">3</span> 🧒 Your Children</div>
+    <!-- Step 4: Add children -->
+    <div class="card" id="card4-children">
+      <div class="card-title"><span class="step">4</span> 🧒 Your Children</div>
       <p style="font-size:14px;color:var(--text-light);margin-bottom:14px;">Add each child once — you'll choose their pizza for each date in the next step.</p>
       <div id="childrenContainer"></div>
       <button type="button" class="add-child-btn" id="addChildBtn" onclick="addChild()">➕ Add Another Child</button>
     </div>
 
-    <!-- Step 4: Pizza grid -->
-    <div class="card" id="card4">
-      <div class="card-title"><span class="step">4</span> 🍕 Choose Pizzas</div>
+    <!-- Step 5: Pizza grid -->
+    <div class="card" id="card5-pizza">
+      <div class="card-title"><span class="step">5</span> 🍕 Choose Pizzas</div>
       <div id="pizzaGrid">
         <div class="grid-prompt">Select dates and add children above to configure pizzas 🍕</div>
       </div>
     </div>
 
-    <!-- Step 5: Summary & pay -->
-    <div class="card" id="card5">
-      <div class="card-title"><span class="step">5</span> 🧾 Order Summary & Payment</div>
+    <!-- Step 6: Summary & pay -->
+    <div class="card" id="card6-summary">
+      <div class="card-title"><span class="step">6</span> 🧾 Order Summary & Payment</div>
       <div class="summary">
         <div class="summary-title">Your Order</div>
         <div id="summaryContent"><p class="empty-summary">No items yet — complete the steps above ☝️</p></div>
@@ -669,7 +673,7 @@ document.getElementById('parentEmail').addEventListener('blur', function() {
   const email = this.value.trim();
   if (!email || !email.includes('@')) return;
   triggerProfileLookup(email);
-  // Also run duplicate check in case dates are already selected
+  // Run duplicate check — covers case where dates were selected before email was typed
   checkForDuplicates();
 });
 
@@ -691,8 +695,11 @@ async function triggerProfileLookup(email) {
     } else {
       hint.classList.remove('visible');
     }
-    // Always run duplicate check after email resolves — orders may now be cached
-    checkForDuplicates();
+    // Always run duplicate check after email resolves —
+    // covers case where dates were selected before email was typed
+    if (pendingDuplicateCheck || getSelectedDates().length > 0) {
+      checkForDuplicates();
+    }
   } catch (err) {
     hint.classList.remove('visible');
   }
@@ -731,33 +738,26 @@ function applyProfile(profile) {
 
 // Proper cache object (not an array) so email key persists reliably
 const orderCache = { email: null, orders: null };
+let pendingDuplicateCheck = false; // set when dates picked before email entered
 
 async function checkForDuplicates() {
   const email   = document.getElementById('parentEmail').value.trim();
   const dates   = getSelectedDates();
   const warning = document.getElementById('duplicateWarning');
 
-  // DEBUG panel helper
-  const dbg = (msg) => {
-    const panel = document.getElementById('debugPanel');
-    const closeBtn = document.getElementById('debugClose');
-    if (panel) {
-      panel.textContent += '[DUP] ' + msg + '\n';
-      panel.style.display = 'block';
-      panel.scrollTop = panel.scrollHeight;
-    }
-    if (closeBtn) closeBtn.style.display = 'inline-block';
-  };
-  dbg('checkForDuplicates called');
-  dbg('email=' + JSON.stringify(email));
-  dbg('dates selected=' + dates.length + ' ' + JSON.stringify(dates));
-  dbg('cache.email=' + JSON.stringify(orderCache.email));
-  dbg('cache.orders=' + (orderCache.orders === null ? 'null' : orderCache.orders.length + ' items'));
-
-  if (!email || !email.includes('@') || dates.length === 0) {
-    dbg('EXIT EARLY: email invalid or no dates');
+  // If email is not filled yet, set a flag so it runs when email is entered
+  if (!email || !email.includes('@')) {
+    pendingDuplicateCheck = true;
+    warning.classList.remove('visible');
     return;
   }
+
+  if (dates.length === 0) {
+    warning.classList.remove('visible');
+    return;
+  }
+
+  pendingDuplicateCheck = false;
 
   // Fetch orders for this email if not already cached
   if (orderCache.email !== email || orderCache.orders === null) {
@@ -770,12 +770,7 @@ async function checkForDuplicates() {
       const result = await response.json();
       orderCache.email  = email;
       orderCache.orders = result.success ? (result.orders || []) : [];
-      dbg('fetch complete: success=' + result.success + ' orders=' + orderCache.orders.length);
-      if (orderCache.orders.length > 0) {
-        orderCache.orders.forEach((o, i) => dbg('  order[' + i + '] date=' + JSON.stringify(o.deliveryDate) + ' status=' + JSON.stringify(o.status)));
-      }
     } catch (err) {
-      dbg('FETCH ERROR: ' + err.message);
       return;
     }
   }
@@ -784,16 +779,11 @@ async function checkForDuplicates() {
   if (!orders.length) { warning.classList.remove('visible'); return; }
 
   // Match selected dates against existing paid orders.
-  // The sheet stores deliveryDate as a formatted string e.g. "Friday, 30 May 2026".
-  // We match using formatDateShort ("30 May") as a substring - robust to locale
-  // differences - and also try raw YYYY-MM-DD in case it was stored that way.
+  // Try three formats: raw YYYY-MM-DD, full formatted string, short "30 May" substring.
   const duplicateDates = [];
-  dbg('checking ' + dates.length + ' date(s) against ' + orders.length + ' order(s)');
   dates.forEach(dateStr => {
     const shortDate = formatDateShort(dateStr);
     const fullDate  = formatDateFull(dateStr);
-    dbg('date: ' + dateStr + ' short=' + shortDate);
-    orders.forEach(o => dbg('  vs order: ' + JSON.stringify(o.deliveryDate) + ' status=' + o.status));
     const hasDupe = orders.some(order => {
       if (order.status !== 'Paid') return false;
       const od = String(order.deliveryDate || '').trim();
@@ -807,8 +797,8 @@ async function checkForDuplicates() {
     warning.innerHTML =
       '<strong>Heads up!</strong> It looks like you\'ve already placed a paid order for:<br>' +
       dateList +
-      '<br><span style="font-weight:400">If you\'re adding extra children or correcting a mistake, '
-      + 'that\'s fine \u2014 just continue. Otherwise, you may be ordering twice.</span>';
+      '<br><span style="font-weight:400">If you\'re adding extra children or correcting a mistake, ' +
+      'that\'s fine \u2014 just continue. Otherwise, you may be ordering twice.</span>';
     warning.classList.add('visible');
   } else {
     warning.classList.remove('visible');
