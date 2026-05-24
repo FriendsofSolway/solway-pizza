@@ -775,22 +775,22 @@ function checkForDuplicates() {
   const dates   = getSelectedDates();
   const warning = document.getElementById('duplicateWarning');
   const dbg = m => { const p = document.getElementById('debugPanel'); if(p){p.textContent+='[DUPCHK] '+m+'\n';p.style.display='block';p.scrollTop=p.scrollHeight;} };
-  dbg('called: email='+JSON.stringify(email)+' cacheEmail='+JSON.stringify(orderCache.email)+' dates='+dates.length+' orders='+(orderCache.orders||[]).length);
+  dbg('called: email='+JSON.stringify(email)+' cacheEmail='+JSON.stringify(orderCache.email)+' dates='+dates.length+' orders='+(orderCache.orders||[]).length+' warningEl='+(!!warning));
   if (!email || !email.includes('@') || email !== orderCache.email) {
     dbg('EXIT: email not yet looked up (pending=true)');
     pendingDuplicateCheck = true;
-    warning.classList.remove('visible');
+    if (warning) warning.classList.remove('visible');
     return;
   }
   if (dates.length === 0) {
     dbg('EXIT: no dates selected');
-    warning.classList.remove('visible');
+    if (warning) warning.classList.remove('visible');
     return;
   }
 
   pendingDuplicateCheck = false;
   const orders = orderCache.orders || [];
-  if (!orders.length) { warning.classList.remove('visible'); return; }
+  if (!orders.length) { if (warning) warning.classList.remove('visible'); return; }
 
   // Match selected dates against existing paid orders.
   // Google Sheets returns dates as ISO timestamps e.g. "2026-05-29T07:00:00.000Z"
@@ -817,6 +817,7 @@ function checkForDuplicates() {
   dbg3('duplicateDates='+JSON.stringify(duplicateDates)+' warningEl='+(!!warning)+' warningVisible='+(warning?warning.classList.contains('visible'):'N/A'));
 
   if (duplicateDates.length > 0) {
+    if (!warning) { dbg3('ERROR: warning element not found in DOM!'); return; }
     const dateList = duplicateDates.map(d => '&nbsp;&nbsp;' + d).join('<br>');
     warning.innerHTML =
       '<strong>Heads up!</strong> It looks like you\'ve already placed a paid order for:<br>' +
@@ -826,7 +827,7 @@ function checkForDuplicates() {
     warning.classList.add('visible');
     dbg3('WARNING SHOWN');
   } else {
-    warning.classList.remove('visible');
+    if (warning) warning.classList.remove('visible');
     dbg3('no duplicates found');
   }
 }
