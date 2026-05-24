@@ -80,10 +80,17 @@
   .no-dates-msg { color: var(--text-light); font-size: 15px; font-style: italic; text-align: center; padding: 12px 0; }
 
   /* ── STEP 3: Children ── */
+  /* Profile hint */
+  #profileHint { display: none; margin-top: 10px; padding: 10px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--teal-light); color: var(--teal-dark); border: 2px solid var(--teal); }
+  #profileHint.visible { display: block; }
+  /* Duplicate order warning */
+  #duplicateWarning { display: none; margin-top: 12px; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--orange-light); color: var(--orange-dark); border: 2px solid var(--orange); line-height: 1.6; }
+  #duplicateWarning.visible { display: block; }
+
   .child-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: linear-gradient(135deg, var(--teal-light), var(--blue-light)); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; }
   .child-row .child-num { font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; color: var(--teal-dark); white-space: nowrap; }
-  .child-row input[type="text"] { flex: 1; min-width: 0; }
-  .child-row select { flex: 0 0 160px; }
+  .child-row input[type="text"] { flex: 0 1 140px; min-width: 80px; }
+  .child-row select { flex: 1; min-width: 0; }
   .child-row .remove-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 18px; padding: 4px; border-radius: 6px; line-height: 1; flex-shrink: 0; transition: background 0.2s; }
   .child-row .remove-btn:hover { background: var(--red-light); }
 
@@ -182,7 +189,7 @@
       <button type="button" class="date-accordion-trigger" id="dateAccordionTrigger" onclick="toggleDateAccordion()">
         <div class="trigger-left">
           <div class="trigger-label">
-            <div class="trigger-title">Select the Fridays you would like to place an order for</div>
+            <div class="trigger-title">Select Fridays</div>
             <div class="trigger-summary" id="triggerSummary">No dates selected</div>
           </div>
         </div>
@@ -194,11 +201,17 @@
         <div class="date-grid" id="dateGrid"></div>
       </div>
       <div class="cutoff-note">⏰ Orders for each Friday close at 12pm on the Wednesday before.</div>
+      <div id="duplicateWarning"></div>
     </div>
 
     <!-- Step 2: Parent details -->
     <div class="card" id="card2">
       <div class="card-title"><span class="step">2</span> 👋 Your Details</div>
+      <div class="field">
+        <label for="parentEmail" class="required">Email Address</label>
+        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
+        <div id="profileHint"></div>
+      </div>
       <div class="field-row">
         <div class="field">
           <label for="parentName" class="required">Parent / Caregiver Name</label>
@@ -208,10 +221,6 @@
           <label for="parentPhone" class="required">Phone Number</label>
           <input type="tel" id="parentPhone" required placeholder="e.g. 027 123 4567">
         </div>
-      </div>
-      <div class="field">
-        <label for="parentEmail" class="required">Email Address</label>
-        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
       </div>
     </div>
 
@@ -402,6 +411,7 @@ function onDateChange() {
   updateTriggerSummary();
   rebuildPizzaGrid();
   updateSummary();
+  checkForDuplicates();
 }
 
 // ============================================================
@@ -647,6 +657,122 @@ function updateSummary() {
 ['parentName','parentPhone','parentEmail'].forEach(id => {
   document.getElementById(id).addEventListener('input', updateSummary);
 });
+
+// ============================================================
+// PROFILE LOOKUP — pre-fill form for returning parents
+// ============================================================
+const TEST_MODE = true; // set to false when going live
+
+document.getElementById('parentEmail').addEventListener('blur', function() {
+  const email = this.value.trim();
+  if (!email || !email.includes('@')) return;
+  triggerProfileLookup(email);
+});
+
+async function triggerProfileLookup(email) {
+  const hint = document.getElementById('profileHint');
+  hint.textContent = '🔍 Looking up your details...';
+  hint.classList.add('visible');
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'lookup_profile', email, testMode: TEST_MODE })
+    });
+    const result = await response.json();
+    if (result.success && result.profile) {
+      applyProfile(result.profile);
+      hint.textContent = '👋 Welcome back! We\'ve filled in your details.';
+      setTimeout(() => { hint.classList.remove('visible'); }, 5000);
+    } else {
+      hint.classList.remove('visible');
+    }
+  } catch (err) {
+    hint.classList.remove('visible');
+  }
+}
+
+function applyProfile(profile) {
+  const nameField  = document.getElementById('parentName');
+  const phoneField = document.getElementById('parentPhone');
+  if (!nameField.value.trim())  nameField.value  = profile.parentName  || '';
+  if (!phoneField.value.trim()) phoneField.value = profile.parentPhone || '';
+  updateSummary();
+
+  // Pre-fill children only if the form still has the single default empty child
+  const existingChildren = getChildren();
+  const isDefaultState = existingChildren.length === 1 && !existingChildren[0].name && !existingChildren[0].cls;
+  if (!isDefaultState || !profile.children || profile.children.length === 0) return;
+
+  // Remove existing empty child and add saved children
+  document.getElementById('childrenContainer').innerHTML = '';
+  childCount = 0;
+  profile.children.forEach(c => {
+    addChild();
+    const rows = document.querySelectorAll('.child-row');
+    const row = rows[rows.length - 1];
+    row.querySelector('.child-name').value = c.name || '';
+    row.querySelector('.child-class').value = c.cls  || '';
+  });
+  rebuildPizzaGrid();
+  updateSummary();
+}
+
+// ============================================================
+// DUPLICATE ORDER DETECTION
+// Checks after date selection whether this email has already
+// ordered for any of the selected dates for any of the same children.
+// ============================================================
+let knownOrders = []; // populated by profile lookup if available
+
+async function checkForDuplicates() {
+  const email = document.getElementById('parentEmail').value.trim();
+  const dates  = getSelectedDates();
+  const warning = document.getElementById('duplicateWarning');
+
+  if (!email || !email.includes('@') || dates.length === 0) {
+    warning.classList.remove('visible');
+    return;
+  }
+
+  // Fetch existing orders for this email if we don't have them yet
+  if (knownOrders.length === 0 || knownOrders._email !== email) {
+    try {
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'lookup_orders', email, testMode: TEST_MODE })
+      });
+      const result = await response.json();
+      if (result.success) {
+        knownOrders = result.orders || [];
+        knownOrders._email = email;
+      }
+    } catch (err) {
+      return; // silently skip if lookup fails
+    }
+  }
+
+  // Find any selected date that already has a paid order for this email
+  const duplicateDates = [];
+  dates.forEach(dateStr => {
+    const formatted = formatDateFull(dateStr);
+    const hasDupe = knownOrders.some(order => {
+      const od = String(order.deliveryDate).trim();
+      return (od === formatted || od.indexOf(formatDateShort(dateStr)) > -1) && order.status === 'Paid';
+    });
+    if (hasDupe) duplicateDates.push(formatted);
+  });
+
+  if (duplicateDates.length > 0) {
+    warning.innerHTML = `⚠️ <strong>Heads up!</strong> It looks like you\'ve already placed a paid order for:<br>` +
+      duplicateDates.map(d => `&nbsp;&nbsp;📅 ${d}`).join('<br>') +
+      '<br>If you\'re adding extra children or correcting a mistake, that\'s fine — just continue. Otherwise, you may be ordering twice.';
+    warning.classList.add('visible');
+  } else {
+    warning.classList.remove('visible');
+  }
+}
 
 // ============================================================
 // SUBMIT
