@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Friends of Solway — Pizza Lunch Order</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Friends of Solway — Fundraising for Solway Primary School</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
     --teal: #2BBCB3;
     --teal-dark: #1A9E96;
     --teal-light: #E0F7F6;
+    --teal-mid: #B2ECEA;
     --blue: #3B7DD8;
     --blue-dark: #2A5FA8;
     --blue-light: #E3EEF9;
@@ -18,973 +19,852 @@
     --orange: #FF9800;
     --orange-dark: #EF6C00;
     --orange-light: #FFF3E0;
+    --yellow: #FFD600;
     --red: #E53935;
-    --red-light: #FFEBEE;
     --bg: #F0FAFA;
     --card: #FFFFFF;
-    --text: #2D2D2D;
-    --text-light: #5A6B6B;
+    --text: #1E3232;
+    --text-mid: #3A5252;
+    --text-light: #5A7070;
     --border: #C8E6E4;
-    --shadow: 0 2px 16px rgba(43,188,179,0.10);
-    --radius: 14px;
+    --shadow-sm: 0 2px 12px rgba(43,188,179,0.10);
+    --shadow: 0 4px 24px rgba(43,188,179,0.14);
+    --shadow-lg: 0 8px 40px rgba(43,188,179,0.18);
+    --radius: 16px;
+    --radius-lg: 24px;
   }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; padding: 20px; }
-  .container { max-width: 720px; margin: 0 auto; }
 
-  .header { text-align: center; padding: 24px 20px 20px; margin-bottom: 24px; }
-  .header-logo { width: 130px; height: 130px; margin: 0 auto 16px; display: block; }
-  .header h1 { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 700; color: var(--teal-dark); margin-bottom: 4px; }
-  .header p { color: var(--text-light); font-size: 15px; }
-
-  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; border: 1px solid var(--border); }
-  .card-title { font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; color: var(--teal-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  .card-title .step { background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
-
-  label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
-  .required::after { content: ' *'; color: var(--red); font-weight: 700; }
-  input[type="text"], input[type="email"], input[type="tel"], select {
-    width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px;
-    font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text);
-    transition: border-color 0.2s; background: white; -webkit-appearance: none;
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
   }
-  input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, select:focus { outline: none; border-color: var(--teal); }
-  .field { margin-bottom: 14px; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-  /* ── STEP 1: Date accordion ── */
-  .date-accordion-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 12px 16px; background: white; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); transition: all 0.2s; text-align: left; }
-  .date-accordion-trigger:hover { border-color: var(--teal); background: var(--teal-light); }
-  .date-accordion-trigger.open { border-color: var(--teal); border-bottom-left-radius: 0; border-bottom-right-radius: 0; background: var(--teal-light); }
-  .date-accordion-trigger .trigger-left { display: flex; align-items: center; gap: 10px; }
-  .date-accordion-trigger .trigger-label { display: flex; flex-direction: column; gap: 2px; }
-  .date-accordion-trigger .trigger-title { font-size: 15px; font-weight: 700; color: var(--teal-dark); }
-  .date-accordion-trigger .trigger-summary { font-size: 13px; font-weight: 600; color: var(--text-light); }
-  .date-accordion-trigger .trigger-summary.has-dates { color: var(--teal-dark); }
-  .accordion-chevron { width: 20px; height: 20px; color: var(--teal-dark); transition: transform 0.25s ease; flex-shrink: 0; }
-  .date-accordion-trigger.open .accordion-chevron { transform: rotate(180deg); }
+  /* ── NAV ── */
+  nav {
+    background: white;
+    border-bottom: 2px solid var(--border);
+    padding: 0 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    gap: 16px;
+  }
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .nav-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--teal-mid);
+  }
+  .nav-brand-text {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--teal-dark);
+    line-height: 1.2;
+  }
+  .nav-brand-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-light);
+    font-family: 'Nunito', sans-serif;
+    display: block;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-mid);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.15s;
+  }
+  .nav-links a:hover { background: var(--teal-light); color: var(--teal-dark); }
+  .nav-links a.active { background: var(--teal-light); color: var(--teal-dark); }
+  .nav-cta {
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    color: white !important;
+    padding: 8px 16px !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+  }
+  .nav-cta:hover { opacity: 0.9; background: linear-gradient(135deg, var(--teal), var(--blue)) !important; color: white !important; }
+  .nav-hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+  .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text-mid); margin: 5px 0; border-radius: 2px; transition: 0.2s; }
 
-  .date-accordion-panel { border: 2px solid var(--teal); border-top: none; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; overflow: hidden; max-height: 0; transition: max-height 0.3s ease; }
-  .date-accordion-panel.open { max-height: 600px; }
-  .date-grid { display: flex; flex-direction: column; padding: 8px; gap: 6px; background: var(--teal-light); max-height: 222px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--teal) var(--teal-light); }
-  .date-grid::-webkit-scrollbar { width: 6px; }
-  .date-grid::-webkit-scrollbar-track { background: var(--teal-light); border-radius: 3px; }
-  .date-grid::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 3px; }
-  .date-option { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: white; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: all 0.2s; user-select: none; }
-  .date-option:hover { border-color: var(--teal); }
-  .date-option.selected { border-color: var(--teal); background: var(--teal-light); }
-  .date-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--teal); cursor: pointer; flex-shrink: 0; }
-  .date-option-label { flex: 1; font-weight: 600; font-size: 14px; }
-  .date-option-cutoff { font-size: 12px; color: var(--text-light); font-weight: 400; }
-  .cutoff-note { font-size: 12px; color: var(--text-light); margin-top: 10px; font-weight: 400; }
-  .no-dates-msg { color: var(--text-light); font-size: 15px; font-style: italic; text-align: center; padding: 12px 0; }
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(160deg, #E8FAF9 0%, #EAF2FF 50%, #FFF8E1 100%);
+    padding: 64px 24px 72px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(43,188,179,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(59,125,216,0.10) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero-inner { max-width: 680px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-logo-wrap {
+    width: 200px; height: 200px;
+    margin: 0 auto 28px;
+    position: relative;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-logo-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    background: linear-gradient(135deg, var(--teal), var(--blue), var(--teal)) border-box;
+    -webkit-mask: linear-gradient(white 0 0) padding-box, linear-gradient(white 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    opacity: 0.6;
+  }
+  .hero-logo-ring2 {
+    position: absolute;
+    inset: -16px;
+    border-radius: 50%;
+    border: 2px solid var(--teal-mid);
+    opacity: 0.4;
+  }
+  .hero-logo {
+    width: 200px; height: 200px;
+    display: block;
+    border-radius: 50%;
+    box-shadow: 0 12px 48px rgba(43,188,179,0.28), 0 4px 16px rgba(43,188,179,0.15);
+    border: 5px solid white;
+    object-fit: cover;
+    position: relative;
+    z-index: 1;
+  }
+  .hero h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: clamp(30px, 6vw, 46px);
+    font-weight: 700;
+    color: var(--teal-dark);
+    line-height: 1.15;
+    margin-bottom: 14px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 em { color: var(--blue-dark); font-style: normal; }
+  .hero-subtitle {
+    font-size: 17px;
+    color: var(--text-mid);
+    max-width: 480px;
+    margin: 0 auto 32px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-btns {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    color: white;
+    text-decoration: none;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(43,188,179,0.35);
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(43,188,179,0.45); }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: white;
+    color: var(--teal-dark);
+    text-decoration: none;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--teal); background: var(--teal-light); transform: translateY(-2px); }
 
-  /* ── STEP 3: Children ── */
-  /* Profile hint */
-  #profileHint { display: none; margin-top: 10px; padding: 10px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--teal-light); color: var(--teal-dark); border: 2px solid var(--teal); }
-  #profileHint.visible { display: block; }
-  /* Duplicate order warning */
-  #duplicateWarning { display: none; margin-top: 12px; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--orange-light); color: var(--orange-dark); border: 2px solid var(--orange); line-height: 1.6; }
-  #duplicateWarning.visible { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-  .child-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: linear-gradient(135deg, var(--teal-light), var(--blue-light)); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; }
-  .child-row .child-num { font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; color: var(--teal-dark); white-space: nowrap; }
-  .child-row input[type="text"] { flex: 0 1 140px; min-width: 80px; }
-  .child-row select { flex: 1; min-width: 0; }
-  .child-row .remove-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 18px; padding: 4px; border-radius: 6px; line-height: 1; flex-shrink: 0; transition: background 0.2s; }
-  .child-row .remove-btn:hover { background: var(--red-light); }
+  /* ── GOAL SECTION ── */
+  .section { padding: 56px 24px; }
+  .section-inner { max-width: 1080px; margin: 0 auto; }
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .section-subtitle { font-size: 15px; color: var(--text-light); margin-bottom: 32px; max-width: 520px; }
 
-  .add-child-btn { width: 100%; padding: 13px; border: 2px dashed var(--teal); border-radius: 10px; background: transparent; color: var(--teal-dark); font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 4px; }
-  .add-child-btn:hover { background: var(--teal-light); }
-  .add-child-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .goal-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 36px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .goal-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .goal-desc { font-size: 14px; color: var(--text-light); max-width: 360px; }
+  .goal-badge {
+    background: var(--green-light);
+    color: var(--green);
+    font-family: 'Fredoka', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
 
-  /* ── STEP 4: Pizza grid ── */
-  .grid-prompt { color: var(--text-light); font-size: 14px; font-style: italic; text-align: center; padding: 16px 0; }
-  .pizza-grid { display: flex; flex-direction: column; gap: 20px; }
+  .progress-track {
+    background: var(--teal-light);
+    border-radius: 100px;
+    height: 24px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .progress-bar {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, var(--teal), var(--blue));
+    position: relative;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 32px;
+  }
+  .progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 4px; right: 6px; bottom: 4px;
+    width: 40px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+    border-radius: 100px;
+  }
+  .progress-shine {
+    position: absolute;
+    top: 4px; left: 8px;
+    height: 6px;
+    width: 30%;
+    background: rgba(255,255,255,0.4);
+    border-radius: 100px;
+  }
 
-  .grid-child-block { border: 2px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .grid-child-header { background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; padding: 10px 16px; font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; }
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 24px;
+  }
+  .progress-pct {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal-dark);
+  }
 
-  .grid-dates { display: flex; flex-direction: column; gap: 0; }
-  .grid-date-row { display: flex; align-items: stretch; border-top: 1px solid var(--border); background: white; }
-  .grid-date-row:first-child { border-top: none; }
-  .grid-date-label { width: 130px; flex-shrink: 0; padding: 12px 14px; font-size: 13px; font-weight: 700; color: var(--teal-dark); display: flex; flex-direction: column; justify-content: center; border-right: 1px solid var(--border); background: var(--teal-light); }
-  .grid-date-label .gdl-day { font-size: 14px; }
-  .grid-date-label .gdl-date { font-size: 12px; color: var(--text-light); font-weight: 600; }
+  .goal-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding-top: 24px;
+    border-top: 2px solid var(--border);
+  }
+  .stat { text-align: center; }
+  .stat-value {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--teal-dark);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label { font-size: 12px; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
 
-  .grid-cell { flex: 1; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .goal-note {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: var(--orange-light);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--orange-dark);
+    font-weight: 600;
+    text-align: center;
+  }
 
-  .product-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .product-chip { display: flex; align-items: center; gap: 5px; padding: 6px 10px; border: 2px solid var(--border); border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; background: white; transition: all 0.15s; white-space: nowrap; }
-  .product-chip:hover { border-color: var(--teal); color: var(--teal-dark); }
-  .product-chip.selected { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
-  .product-chip input[type="radio"] { width: 13px; height: 13px; accent-color: var(--teal); cursor: pointer; }
-  .chip-price { font-weight: 700; color: var(--teal-dark); }
+  /* ── WHAT WE'RE RAISING FOR ── */
+  .raising-section { background: white; }
+  .raising-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 32px;
+  }
+  .raising-card {
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .raising-card:hover { border-color: var(--teal); transform: translateY(-3px); box-shadow: var(--shadow); }
+  .raising-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    display: block;
+    line-height: 1;
+  }
+  .raising-card-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .raising-card-desc { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+  .raising-card-amount {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 12px;
+    background: var(--teal-light);
+    color: var(--teal-dark);
+    border-radius: 20px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+  }
 
-  .cell-flavour select { font-size: 13px; padding: 7px 10px; }
-  .cell-flavour { display: none; }
-  .cell-flavour.visible { display: block; }
+  /* ── FUNDRAISERS ── */
+  .fundraisers-section { background: linear-gradient(180deg, var(--bg) 0%, #EAF9F8 100%); }
+  .fundraisers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 8px;
+  }
+  .fundraiser-card {
+    background: white;
+    border-radius: var(--radius);
+    border: 2px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .fundraiser-card:hover { border-color: var(--teal); transform: translateY(-3px); box-shadow: var(--shadow); }
+  .fundraiser-banner {
+    height: 8px;
+    background: linear-gradient(90deg, var(--teal), var(--blue));
+  }
+  .fundraiser-banner.orange { background: linear-gradient(90deg, var(--orange), #FF5722); }
+  .fundraiser-banner.green { background: linear-gradient(90deg, var(--green), #1B7A4A); }
+  .fundraiser-body { padding: 22px; flex: 1; display: flex; flex-direction: column; }
+  .fundraiser-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .tag-open { background: var(--green-light); color: var(--green); }
+  .tag-upcoming { background: var(--orange-light); color: var(--orange-dark); }
+  .tag-closed { background: #F0F0F0; color: #999; }
+  .fundraiser-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .fundraiser-desc { font-size: 14px; color: var(--text-light); line-height: 1.5; margin-bottom: 16px; flex: 1; }
+  .fundraiser-meta {
+    display: flex;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--text-light);
+    font-weight: 600;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .fundraiser-meta span { display: flex; align-items: center; gap: 4px; }
+  .fundraiser-link {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .fundraiser-link:hover { opacity: 0.9; }
+  .fundraiser-link.disabled {
+    background: #EEE;
+    color: #AAA;
+    pointer-events: none;
+  }
 
-  /* ── STEP 5: Summary ── */
-  .summary { background: var(--orange-light); border-radius: 10px; padding: 18px; }
-  .summary-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--orange-dark); margin-bottom: 12px; }
-  .summary-date-group { margin-bottom: 12px; }
-  .summary-date-heading { font-family: 'Fredoka', sans-serif; font-size: 14px; font-weight: 700; color: var(--orange-dark); margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.08); }
-  .summary-items { list-style: none; }
-  .summary-items li { display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; border-bottom: 1px solid rgba(0,0,0,0.05); }
-  .summary-items li:last-child { border-bottom: none; }
-  .summary-total { display: flex; justify-content: space-between; padding-top: 12px; margin-top: 8px; border-top: 2px solid var(--orange); font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 700; color: var(--orange-dark); }
-  .empty-summary { color: var(--text-light); font-size: 14px; font-style: italic; }
+  /* ── HOW IT WORKS ── */
+  .how-section { background: white; }
+  .how-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin-top: 36px;
+    counter-reset: steps;
+  }
+  .how-step { text-align: center; position: relative; }
+  .how-step::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: calc(50% + 28px);
+    right: calc(-50% + 28px);
+    height: 2px;
+    background: var(--border);
+  }
+  .how-step:last-child::before { display: none; }
+  .how-num {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin: 0 auto 14px;
+    box-shadow: 0 4px 16px rgba(43,188,179,0.3);
+    position: relative;
+    z-index: 1;
+  }
+  .how-step-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .how-step-desc { font-size: 13px; color: var(--text-light); line-height: 1.5; }
 
-  .submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; border: none; border-radius: 10px; font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 16px; }
-  .submit-btn:hover { opacity: 0.9; }
-  .submit-btn:disabled { background: #CCC; cursor: not-allowed; opacity: 1; }
-  .submit-btn.loading { opacity: 0.8; pointer-events: none; }
-  .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* ── ABOUT STRIP ── */
+  .about-strip {
+    background: linear-gradient(135deg, var(--teal-dark), var(--blue-dark));
+    padding: 56px 24px;
+    color: white;
+    text-align: center;
+  }
+  .about-strip h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .about-strip p {
+    font-size: 16px;
+    opacity: 0.88;
+    max-width: 560px;
+    margin: 0 auto 28px;
+    line-height: 1.65;
+  }
+  .about-strip .btn-white {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    background: white;
+    color: var(--teal-dark);
+    text-decoration: none;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+  .about-strip .btn-white:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.15); }
 
-  .error-banner { background: var(--red-light); color: var(--red); padding: 14px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-bottom: 16px; display: none; }
-  .error-banner.visible { display: block; }
-  .closed-banner { background: var(--orange-light); color: var(--orange-dark); padding: 24px; border-radius: var(--radius); font-size: 16px; font-weight: 600; text-align: center; margin-bottom: 16px; border: 2px solid var(--orange); line-height: 1.7; }
+  /* ── FOOTER ── */
+  footer {
+    background: var(--text);
+    color: rgba(255,255,255,0.75);
+    padding: 40px 24px 28px;
+    text-align: center;
+  }
+  .footer-logo {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    display: block;
+    border: 2px solid rgba(255,255,255,0.2);
+    object-fit: cover;
+  }
+  .footer-name {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 6px;
+  }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .footer-links a {
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: color 0.15s;
+  }
+  .footer-links a:hover { color: var(--teal); }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 16px; }
 
-  .step-hidden { display: none; }
-  .step-reveal { animation: stepReveal 0.4s ease both; }
-  @keyframes stepReveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .nav-hamburger { display: block; }
+    .nav-links.open {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 64px; left: 0; right: 0;
+      background: white;
+      padding: 12px 16px 16px;
+      border-bottom: 2px solid var(--border);
+      box-shadow: var(--shadow);
+      gap: 2px;
+    }
+    .nav-links.open a { padding: 10px 12px; }
+    .goal-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-value { font-size: 22px; }
+    .how-step::before { display: none; }
+    .hero { padding: 48px 20px 56px; }
+    .section { padding: 40px 20px; }
+  }
 
-  /* ── Cards that depend on earlier steps ── */
-  .card.locked { opacity: 0.5; pointer-events: none; }
-  .card.locked .card-title { color: var(--text-light); }
-  .card.locked .step { background: #CCC; }
-
-  @media (max-width: 540px) {
-    .field-row { grid-template-columns: 1fr; }
-    .header h1 { font-size: 24px; }
-    .header-logo { width: 90px; height: 90px; }
-    .child-row { flex-wrap: wrap; }
-    .child-row select { flex: 1 1 100%; }
-    .grid-date-label { width: 90px; }
-    .grid-date-label .gdl-date { display: none; }
-    .product-chips { gap: 4px; }
-    .product-chip { font-size: 12px; padding: 5px 8px; }
+  @media (max-width: 380px) {
+    .goal-stats { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
-<div class="container">
 
-  <div class="header">
-    <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="header-logo">
-    <h1>🍕 Pizza Lunch Order 🍕</h1>
-    <p>Order for multiple Fridays in one go — one payment at the end! 🎉</p>
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="nav-logo">
+      <span class="nav-brand-text">
+        Friends of Solway
+        <span class="nav-brand-sub">Solway Primary School</span>
+      </span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="fundraisers.html">Fundraisers</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="solway-pizza-order.html" class="nav-cta">🍕 Order Pizza</a></li>
+    </ul>
+    <button class="nav-hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
+</nav>
 
-  <div class="error-banner" id="errorBanner"></div>
-
-  <div class="closed-banner" id="closedBanner" style="display:none">
-    🍕 Orders are currently closed!<br>Check back when the next order window opens 📅
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-logo-wrap">
+      <div class="hero-logo-ring2"></div>
+      <div class="hero-logo-ring"></div>
+      <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="hero-logo">
+    </div>
+    <h1>Raising funds for<br><em>Solway Primary School</em></h1>
+    <p class="hero-subtitle">Friends of Solway is a parent-led committee working together to make school life richer for every child at Solway. 🌿</p>
+    <div class="hero-btns">
+      <a href="fundraisers.html" class="btn-primary">🎉 See All Fundraisers</a>
+      <a href="about.html" class="btn-secondary">💚 About Us</a>
+    </div>
   </div>
+</section>
 
-  <form id="orderForm">
+<!-- FUNDRAISING GOAL -->
+<section class="section">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">2026 Goal</div>
+    <h2 class="section-title">Our Fundraising Progress</h2>
+    <p class="section-subtitle" style="margin:0 auto 32px">Every pizza ordered, every sausage sold gets us closer. Here's where we're at!</p>
 
-    <!-- Step 1: Email -->
-    <div class="card" id="card1">
-      <div class="card-title"><span class="step">1</span> 📧 Your Email</div>
-      <div class="field">
-        <label for="parentEmail" class="required">Email Address</label>
-        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
-        <div id="profileHint"></div>
+    <div class="goal-card">
+      <div class="goal-header">
+        <div>
+          <div class="goal-title">🎨 Concrete Art for Solway School</div>
+          <div class="goal-desc">Bringing beautiful, lasting artwork to our school grounds — a creative space every child can enjoy and be proud of.</div>
+        </div>
+        <div class="goal-badge">✅ In progress</div>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-bar" id="progressBar" style="width: 0%">
+          <div class="progress-shine"></div>
+        </div>
+      </div>
+      <div class="progress-labels">
+        <span>$0</span>
+        <span class="progress-pct" id="progressPct">0%</span>
+        <span>$15,000</span>
+      </div>
+
+      <div class="goal-stats">
+        <div class="stat">
+          <div class="stat-value" id="statRaised">$0</div>
+          <div class="stat-label">Raised so far</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="statRemaining">$15,000</div>
+          <div class="stat-label">Still to go</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="statPct">0%</div>
+          <div class="stat-label">Of goal reached</div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE'RE RAISING FOR -->
+<section class="section raising-section">
+  <div class="section-inner">
+    <div class="section-label">Where it goes</div>
+    <h2 class="section-title">What We're Raising For</h2>
+    <p class="section-subtitle">Every dollar raised goes directly back into improving the school for our tamariki.</p>
+
+    <div class="raising-grid">
+      <div class="raising-card">
+        <span class="raising-icon">🎨</span>
+        <div class="raising-card-title">Concrete Art</div>
+        <div class="raising-card-desc">Beautiful, lasting artwork installed in our school grounds — a creative landmark every child can be proud of.</div>
+        <div class="raising-card-amount">$15,000 goal — current</div>
+      </div>
+      <div class="raising-card">
+        <span class="raising-icon">⛵</span>
+        <div class="raising-card-title">Shade Sails</div>
+        <div class="raising-card-desc">Covered outdoor spaces so tamariki can play and learn comfortably in all weather.</div>
+        <div class="raising-card-amount">Future goal</div>
+      </div>
+      <div class="raising-card">
+        <span class="raising-icon">🛝</span>
+        <div class="raising-card-title">Playground Equipment</div>
+        <div class="raising-card-desc">Fun, safe play equipment that keeps kids active, imaginative, and engaged at break time.</div>
+        <div class="raising-card-amount">Future goal</div>
+      </div>
+      <div class="raising-card">
+        <span class="raising-icon">🪑</span>
+        <div class="raising-card-title">Seating Areas</div>
+        <div class="raising-card-desc">Comfortable outdoor seating for students, whānau, and community to gather and connect.</div>
+        <div class="raising-card-amount">Future goal</div>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- Step 2: Parent name/phone -->
-    <div class="card step-hidden" id="card2-details">
-      <div class="card-title"><span class="step">2</span> 👋 Your Details</div>
-      <div class="field-row">
-        <div class="field">
-          <label for="parentName" class="required">Parent / Caregiver Name</label>
-          <input type="text" id="parentName" required placeholder="e.g. Sarah Jones">
-        </div>
-        <div class="field">
-          <label for="parentPhone" class="required">Phone Number</label>
-          <input type="tel" id="parentPhone" required placeholder="e.g. 027 123 4567">
-        </div>
-      </div>
-    </div>
+<!-- ACTIVE FUNDRAISERS -->
+<section class="section fundraisers-section">
+  <div class="section-inner">
+    <div class="section-label">Get involved</div>
+    <h2 class="section-title">Current Fundraisers</h2>
+    <p class="section-subtitle" style="margin-bottom:28px">Easy ways to support the school — every little bit helps!</p>
 
-    <!-- Step 3: Pick dates -->
-    <div class="card step-hidden" id="card3-dates">
-      <div class="card-title"><span class="step">3</span> 📅 Choose Delivery Dates</div>
-      <button type="button" class="date-accordion-trigger" id="dateAccordionTrigger" onclick="toggleDateAccordion()">
-        <div class="trigger-left">
-          <div class="trigger-label">
-            <div class="trigger-title">Select Fridays</div>
-            <div class="trigger-summary" id="triggerSummary">No dates selected</div>
+    <div class="fundraisers-grid">
+
+      <!-- Pizza Lunch -->
+      <div class="fundraiser-card">
+        <div class="fundraiser-banner"></div>
+        <div class="fundraiser-body">
+          <span class="fundraiser-tag tag-open">🟢 Open now</span>
+          <div class="fundraiser-title">🍕 Friday Pizza Lunch</div>
+          <div class="fundraiser-desc">Order pizza for your child delivered to school every Friday. Choose from Pizza Combo, Single Pizza, or Gluten Free. Ham and cheese, Hawaiian, or plain cheese.</div>
+          <div class="fundraiser-meta">
+            <span>📅 Every Friday</span>
+            <span>💳 Pay online</span>
+            <span>🎓 All classes</span>
           </div>
-        </div>
-        <svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
-        </svg>
-      </button>
-      <div class="date-accordion-panel" id="dateAccordionPanel">
-        <div class="date-grid" id="dateGrid"></div>
-      </div>
-      <div class="cutoff-note">⏰ Orders for each Friday close at 12pm on the Wednesday before.</div>
-      <div id="duplicateWarning"></div>
-    </div>
-
-    <!-- Step 4: Add children -->
-    <div class="card step-hidden" id="card4-children">
-      <div class="card-title"><span class="step">4</span> 🧒 Your Children</div>
-      <p style="font-size:14px;color:var(--text-light);margin-bottom:14px;">Add each child once — you'll choose their pizza for each date in the next step.</p>
-      <div id="childrenContainer"></div>
-      <button type="button" class="add-child-btn" id="addChildBtn" onclick="addChild()">➕ Add Another Child</button>
-    </div>
-
-    <!-- Step 5: Pizza grid -->
-    <div class="card step-hidden" id="card5-pizza">
-      <div class="card-title"><span class="step">5</span> 🍕 Choose Pizzas</div>
-      <div id="pizzaGrid">
-        <div class="grid-prompt">Select dates and add children above to configure pizzas 🍕</div>
-      </div>
-    </div>
-
-    <!-- Step 6: Summary & pay -->
-    <div class="card step-hidden" id="card6-summary">
-      <div class="card-title"><span class="step">6</span> 🧾 Order Summary & Payment</div>
-      <div class="summary">
-        <div class="summary-title">Your Order</div>
-        <div id="summaryContent"><p class="empty-summary">No items yet — complete the steps above ☝️</p></div>
-        <div class="summary-fee" id="summaryFee" style="display:none;justify-content:space-between;padding:6px 0;font-size:14px;color:var(--text-light);border-top:1px solid rgba(0,0,0,0.08);margin-top:6px;">
-          <span>💳 Payment processing fee</span>
-          <span id="feeAmount">$0.00</span>
-        </div>
-        <div class="summary-total" id="summaryTotal" style="display:none">
-          <span>Total (inc. fee)</span>
-          <span id="totalAmount">$0.00</span>
+          <a href="solway-pizza-order.html" class="fundraiser-link">Order Now →</a>
         </div>
       </div>
-      <button type="submit" class="submit-btn" id="submitBtn" disabled>💳 Pay Now — $0.00</button>
+
+      <!-- Plant Sale -->
+      <div class="fundraiser-card">
+        <div class="fundraiser-banner green"></div>
+        <div class="fundraiser-body">
+          <span class="fundraiser-tag tag-upcoming">🟡 Coming soon</span>
+          <div class="fundraiser-title">🌱 Plant Sale</div>
+          <div class="fundraiser-desc">Grab something beautiful for your garden while supporting the school! A range of plants available — dates and details coming soon. Cash and card accepted on the day.</div>
+          <div class="fundraiser-meta">
+            <span>📅 Date TBC</span>
+            <span>💵 Cash & card</span>
+          </div>
+          <a href="#" class="fundraiser-link disabled">Details TBC</a>
+        </div>
+      </div>
+
     </div>
-
-  </form>
-
-  <div class="footer step-hidden" id="formFooter">
-    <a href="solway-pizza-my-orders.html" style="color:#1A9E96;font-weight:600;text-decoration:none;">📋 View My Orders</a><br><br>
-    🌊 Friends of Solway — Fundraising for Solway Primary School 🌿
   </div>
+</section>
+
+<!-- ABOUT STRIP -->
+<div class="about-strip">
+  <h2>👋 Who are Friends of Solway?</h2>
+  <p>We're a group of parents and caregivers who volunteer our time to raise funds that go directly back into Solway Primary School.</p>
+  <a href="about.html" class="btn-white">Learn more about us →</a>
 </div>
 
+<!-- FOOTER -->
+<footer>
+  <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="footer-logo">
+  <div class="footer-name">Friends of Solway</div>
+  <div style="font-size:13px;margin-bottom:4px">Fundraising committee for Solway Primary School, Masterton</div>
+  <ul class="footer-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="fundraisers.html">Fundraisers</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="solway-pizza-order.html">Order Pizza</a></li>
+    <li><a href="solway-pizza-my-orders.html">My Orders</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 Friends of Solway. All fundraising goes to Solway Primary School. 🌿</div>
+</footer>
+
 <script>
-// ============================================================
-// CONFIGURATION — edit these each term
-// ============================================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNX8kPNKRdlAD4qxrY1mgoYj5x8iJ-DOQd-MpILc8yxwugDiPqxgYdr7HuR_aeOVLwcg/exec';
-
-const DELIVERY_DATES = [
-  '2026-05-29',
-  '2026-06-05',
-  '2026-06-12',
-  '2026-06-19',
-  '2026-06-26',
-  '2026-07-03',
-  // Term 2 break
-  '2026-07-24',
-  '2026-07-31',
-  '2026-08-07',
-  '2026-08-14',
-  '2026-08-21',
-  '2026-08-28',
-  '2026-09-04',
-  '2026-09-11',
-  '2026-09-18',
-  '2026-09-25',
-];
-
-const PRODUCTS = [
-  { id: 'pizza-combo',  name: 'Combo',   fullName: 'Pizza Combo',                  price: 7.50 },
-  { id: 'single-pizza', name: 'Single',  fullName: 'Single Pizza',                 price: 6.50 },
-  { id: 'gf-pizza',     name: 'GF',      fullName: 'Gluten Free Single Pizza',      price: 11.50 },
-];
-
-// Processing fee passed on to parents — must match Apps Script values
-const STRIPE_FEE_PERCENT  = 0.0265; // 2.65% Stripe NZ domestic rate
-const STRIPE_FEE_FIXED    = 0.30;   // 30c flat fee per transaction
-
-const FLAVOURS = ['Cheese', 'Ham and Cheese', 'Hawaiian'];
-const CLASSES  = ['Kanuka','Pohutukawa','Rimu','Harakeke','Matai','Titoki','Totara','Kauri','Rata','Manuka'];
-const MAX_CHILDREN = 6;
-
-// ============================================================
-// STATE
-// ============================================================
-let childCount = 0;
-// selections[childId][dateStr] = { productId, flavour }
-const selections = {};
-
-// ============================================================
-// DATE HELPERS
-// ============================================================
-function getCutoffDate(fridayStr) {
-  const friday = new Date(fridayStr + 'T00:00:00+12:00');
-  const wednesday = new Date(friday);
-  wednesday.setDate(friday.getDate() - 2);
-  wednesday.setHours(12, 0, 0, 0);
-  return wednesday;
+// ── NAV TOGGLE ──
+function toggleNav() {
+  document.getElementById('navLinks').classList.toggle('open');
 }
 
-function getAvailableDates() {
-  const now = new Date();
-  return DELIVERY_DATES.filter(d => now < getCutoffDate(d));
+// ── PROGRESS BAR ──
+// These values will eventually be fetched from your Apps Script.
+// For now, update RAISED and GOAL to match your actual numbers.
+const GOAL = 15000;
+const RAISED = 0; // ← Update this, or fetch from Apps Script
+
+function animateProgress() {
+  const pct = Math.min(Math.round((RAISED / GOAL) * 100), 100);
+  const remaining = Math.max(GOAL - RAISED, 0);
+
+  // Animate bar after a short delay
+  setTimeout(() => {
+    document.getElementById('progressBar').style.width = pct + '%';
+  }, 300);
+
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('statRaised').textContent = '$' + RAISED.toLocaleString('en-NZ');
+  document.getElementById('statRemaining').textContent = '$' + remaining.toLocaleString('en-NZ');
+  document.getElementById('statPct').textContent = pct + '%';
+
+  // Update the note once it's connected to live data
+  // document.getElementById('goalNote').style.display = 'none';
 }
 
-// IE-safe date formatters — avoid toLocaleDateString with locale args (not supported in IE)
-const MONTHS_LONG  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const DAYS_LONG    = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
-function parseDateNZ(dateStr) {
-  // Parse YYYY-MM-DD as a UTC date — we only need year/month/day for display,
-  // so we don't apply any timezone offset (avoids day-shift bugs).
-  const parts = dateStr.split('-');
-  return new Date(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]));
-}
-
-function formatDateFull(dateStr) {
-  const d = parseDateNZ(dateStr);
-  return DAYS_LONG[d.getUTCDay()] + ', ' + d.getUTCDate() + ' ' + MONTHS_LONG[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
-  // e.g. "Friday, 29 May 2026"
-}
-
-function formatDateShort(dateStr) {
-  const d = parseDateNZ(dateStr);
-  return d.getUTCDate() + ' ' + MONTHS_SHORT[d.getUTCMonth()];
-  // e.g. "29 May"
-}
-
-function formatDayName(dateStr) {
-  const d = parseDateNZ(dateStr);
-  return 'Fri ' + d.getUTCDate() + ' ' + MONTHS_SHORT[d.getUTCMonth()];
-  // e.g. "Fri 29 May"
-}
-
-function formatCutoff(dateStr) {
-  const c = getCutoffDate(dateStr);
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  return days[c.getDay()] + ' ' + c.getDate() + ' ' + MONTHS_SHORT[c.getMonth()] + ' 12pm';
-}
-
-// ============================================================
-// STEP 1 — DATE ACCORDION
-// ============================================================
-function toggleDateAccordion() {
-  const trigger = document.getElementById('dateAccordionTrigger');
-  const panel   = document.getElementById('dateAccordionPanel');
-  const isOpen  = trigger.classList.contains('open');
-  trigger.classList.toggle('open', !isOpen);
-  panel.classList.toggle('open', !isOpen);
-}
-
-function updateTriggerSummary() {
-  const selected = getSelectedDates();
-  const summary  = document.getElementById('triggerSummary');
-  if (selected.length === 0) {
-    summary.textContent = 'No dates selected';
-    summary.classList.remove('has-dates');
-  } else if (selected.length === 1) {
-    summary.textContent = '✓ ' + formatDateFull(selected[0]);
-    summary.classList.add('has-dates');
-  } else {
-    // Show first date + count of others
-    summary.textContent = `✓ ${formatDateFull(selected[0])} + ${selected.length - 1} more`;
-    summary.classList.add('has-dates');
-  }
-}
-
-function buildDateGrid() {
-  const available = getAvailableDates();
-  const grid = document.getElementById('dateGrid');
-
-  if (available.length === 0) {
-    document.getElementById('orderForm').style.display = 'none';
-    document.getElementById('closedBanner').style.display = 'block';
-    return;
-  }
-
-  grid.innerHTML = '';
-  available.forEach(dateStr => {
-    const label = document.createElement('label');
-    label.className = 'date-option';
-    label.innerHTML = `
-      <input type="checkbox" value="${dateStr}">
-      <div class="date-option-label">
-        <div>${formatDateFull(dateStr)}</div>
-        <div class="date-option-cutoff">⏰ Orders close ${formatCutoff(dateStr)}</div>
-      </div>
-    `;
-    const cb = label.querySelector('input');
-    cb.addEventListener('change', () => {
-      label.classList.toggle('selected', cb.checked);
-      onDateChange();
-    });
-    grid.appendChild(label);
-  });
-
-  // Open the accordion by default so the first interaction is obvious
-  toggleDateAccordion();
-}
-
-function getSelectedDates() {
-  return Array.from(document.querySelectorAll('#dateGrid input[type="checkbox"]:checked')).map(cb => cb.value);
-}
-
-function onDateChange() {
-  updateTriggerSummary();
-  rebuildPizzaGrid();
-  updateSummary();
-  checkForDuplicates();
-}
-
-// ============================================================
-// STEP 3 — CHILDREN
-// ============================================================
-function addChild() {
-  if (childCount >= MAX_CHILDREN) return;
-  childCount++;
-  const id = childCount;
-  selections[id] = {};
-
-  const row = document.createElement('div');
-  row.className = 'child-row';
-  row.id = `child-${id}`;
-  row.innerHTML = `
-    <span class="child-num">🧒 Child ${id}</span>
-    <input type="text" placeholder="Full name" class="child-name" data-id="${id}" required>
-    <select class="child-class" data-id="${id}" required>
-      <option value="">Class...</option>
-      ${CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
-    </select>
-    ${id > 1 ? `<button type="button" class="remove-btn" onclick="removeChild(${id})" title="Remove">✕</button>` : ''}
-  `;
-  row.querySelector('.child-name').addEventListener('input', () => { rebuildPizzaGrid(); updateSummary(); });
-  row.querySelector('.child-class').addEventListener('change', updateSummary);
-  document.getElementById('childrenContainer').appendChild(row);
-
-  updateAddButton();
-  rebuildPizzaGrid();
-  updateSummary();
-}
-
-function removeChild(id) {
-  document.getElementById(`child-${id}`)?.remove();
-  delete selections[id];
-  childCount--;
-
-  // Re-number remaining children visually
-  document.querySelectorAll('.child-row').forEach((row, i) => {
-    row.querySelector('.child-num').textContent = `🧒 Child ${i + 1}`;
-  });
-
-  updateAddButton();
-  rebuildPizzaGrid();
-  updateSummary();
-}
-
-function updateAddButton() {
-  const btn = document.getElementById('addChildBtn');
-  btn.disabled = childCount >= MAX_CHILDREN;
-  btn.textContent = childCount >= MAX_CHILDREN ? '✋ Maximum 6 children reached' : '➕ Add Another Child';
-}
-
-function getChildren() {
-  return Array.from(document.querySelectorAll('.child-row')).map(row => ({
-    id: parseInt(row.id.replace('child-', '')),
-    name: row.querySelector('.child-name').value.trim(),
-    cls: row.querySelector('.child-class').value,
-  }));
-}
-
-// ============================================================
-// STEP 4 — PIZZA GRID
-// ============================================================
-function rebuildPizzaGrid() {
-  const dates = getSelectedDates();
-  const children = getChildren();
-  const container = document.getElementById('pizzaGrid');
-
-  if (dates.length === 0 || children.length === 0) {
-    container.innerHTML = '<div class="grid-prompt">Select dates and add children above to configure pizzas 🍕</div>';
-    return;
-  }
-
-  // Preserve existing selections before rebuilding
-  // (selections object is the source of truth)
-
-  container.innerHTML = '';
-  const grid = document.createElement('div');
-  grid.className = 'pizza-grid';
-
-  children.forEach(child => {
-    if (!selections[child.id]) selections[child.id] = {};
-
-    const block = document.createElement('div');
-    block.className = 'grid-child-block';
-
-    const childName = child.name || `Child ${child.id}`;
-    block.innerHTML = `<div class="grid-child-header">🧒 ${childName}</div><div class="grid-dates" id="dates-${child.id}"></div>`;
-
-    const datesDiv = block.querySelector(`#dates-${child.id}`);
-    dates.forEach(dateStr => {
-      if (!selections[child.id][dateStr]) selections[child.id][dateStr] = { productId: '', flavour: '' };
-      const sel = selections[child.id][dateStr];
-
-      const row = document.createElement('div');
-      row.className = 'grid-date-row';
-      row.innerHTML = `
-        <div class="grid-date-label">
-          <div class="gdl-day">Fri ${formatDateShort(dateStr)}</div>
-        </div>
-        <div class="grid-cell">
-          <div class="product-chips">
-            ${PRODUCTS.map(p => `
-              <label class="product-chip${sel.productId === p.id ? ' selected' : ''}" data-child="${child.id}" data-date="${dateStr}" data-product="${p.id}">
-                <input type="radio" name="prod-${child.id}-${dateStr}" value="${p.id}" ${sel.productId === p.id ? 'checked' : ''}>
-                ${p.name} <span class="chip-price">$${p.price.toFixed(2)}</span>
-              </label>
-            `).join('')}
-          </div>
-          <div class="cell-flavour${sel.productId ? ' visible' : ''}" id="flavour-${child.id}-${dateStr}">
-            <select onchange="onFlavourChange(${child.id}, '${dateStr}', this.value)">
-              <option value="">Select flavour...</option>
-              ${FLAVOURS.map(f => `<option value="${f}"${sel.flavour === f ? ' selected' : ''}>${f}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-      `;
-
-      // Wire up product chip clicks
-      row.querySelectorAll('.product-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-          const productId = chip.dataset.product;
-          const cid = parseInt(chip.dataset.child);
-          const ds = chip.dataset.date;
-          onProductSelect(cid, ds, productId, row);
-        });
-      });
-
-      datesDiv.appendChild(row);
-    });
-
-    grid.appendChild(block);
-  });
-
-  container.appendChild(grid);
-}
-
-function onProductSelect(childId, dateStr, productId, row) {
-  if (!selections[childId]) selections[childId] = {};
-  if (!selections[childId][dateStr]) selections[childId][dateStr] = { productId: '', flavour: '' };
-  selections[childId][dateStr].productId = productId;
-
-  // Update chip visuals
-  row.querySelectorAll('.product-chip').forEach(chip => {
-    chip.classList.toggle('selected', chip.dataset.product === productId);
-  });
-  row.querySelector(`input[value="${productId}"]`).checked = true;
-
-  // Show flavour
-  const flavourDiv = row.querySelector('.cell-flavour');
-  flavourDiv.classList.add('visible');
-
-  updateSummary();
-}
-
-function onFlavourChange(childId, dateStr, flavour) {
-  if (!selections[childId]) selections[childId] = {};
-  if (!selections[childId][dateStr]) selections[childId][dateStr] = { productId: '', flavour: '' };
-  selections[childId][dateStr].flavour = flavour;
-  updateSummary();
-}
-
-// ============================================================
-// STEP 5 — SUMMARY
-// ============================================================
-function updateSummary() {
-  const dates = getSelectedDates();
-  const children = getChildren();
-  const summaryContent = document.getElementById('summaryContent');
-  const summaryTotal = document.getElementById('summaryTotal');
-  const totalAmount = document.getElementById('totalAmount');
-  const submitBtn = document.getElementById('submitBtn');
-
-  if (dates.length === 0 || children.length === 0) {
-    summaryContent.innerHTML = '<p class="empty-summary">No items yet — complete the steps above ☝️</p>';
-    summaryTotal.style.display = 'none';
-    submitBtn.disabled = true;
-    submitBtn.textContent = '💳 Pay Now — $0.00';
-    return;
-  }
-
-  let total = 0;
-  let missingCount = 0;
-  let hasAnyItem = false;
-  let html = '';
-
-  const parentName  = document.getElementById('parentName').value.trim();
-  const parentPhone = document.getElementById('parentPhone').value.trim();
-  const parentEmail = document.getElementById('parentEmail').value.trim();
-  const parentValid = !!(parentName && parentPhone && parentEmail);
-
-  // Every child must have a name and class
-  const childrenValid = children.every(c => c.name && c.cls);
-
-  dates.forEach(dateStr => {
-    let dateHtml = '';
-    children.forEach(child => {
-      const sel = (selections[child.id] || {})[dateStr] || {};
-      if (!sel.productId || !sel.flavour) {
-        missingCount++;
-        return; // don't add to summary yet
-      }
-      const product = PRODUCTS.find(p => p.id === sel.productId);
-      if (!product) return;
-      const childName = child.name || `Child ${child.id}`;
-      dateHtml += `<li><span>🍕 ${childName} — ${product.fullName} (${sel.flavour})</span><span>$${product.price.toFixed(2)}</span></li>`;
-      total += product.price;
-      hasAnyItem = true;
-    });
-
-    if (dateHtml) {
-      html += `<div class="summary-date-group">
-        <div class="summary-date-heading">📅 ${formatDateFull(dateStr)}</div>
-        <ul class="summary-items">${dateHtml}</ul>
-      </div>`;
-    }
-  });
-
-  if (!hasAnyItem) {
-    summaryContent.innerHTML = '<p class="empty-summary">Choose pizzas for each child and date above 🍕</p>';
-    summaryTotal.style.display = 'none';
-    submitBtn.disabled = true;
-    submitBtn.textContent = '💳 Pay Now — $0.00';
-    return;
-  }
-
-  // Show what's been filled in so far, even if incomplete
-  if (missingCount > 0) {
-    html += `<p style="font-size:13px;color:var(--orange-dark);margin-top:8px;">⚠️ ${missingCount} pizza choice${missingCount > 1 ? 's' : ''} still needed above.</p>`;
-  }
-
-  summaryContent.innerHTML = html;
-
-  // Calculate processing fee using the same grossed-up formula as the Apps Script
-  const summaryFee  = document.getElementById('summaryFee');
-  const feeAmountEl = document.getElementById('feeAmount');
-  let grandTotal = total;
-  if (total > 0) {
-    const fee = Math.round(((total + STRIPE_FEE_FIXED) / (1 - STRIPE_FEE_PERCENT) - total) * 100) / 100;
-    grandTotal = Math.round((total + fee) * 100) / 100;
-    feeAmountEl.textContent = `$${fee.toFixed(2)}`;
-    summaryFee.style.display = 'flex';
-  } else {
-    summaryFee.style.display = 'none';
-  }
-
-  summaryTotal.style.display = total > 0 ? 'flex' : 'none';
-  totalAmount.textContent = `$${grandTotal.toFixed(2)}`;
-
-  const allComplete = missingCount === 0 && childrenValid && parentValid;
-  submitBtn.disabled = !allComplete;
-  submitBtn.textContent = total > 0 ? `💳 Pay Now — $${grandTotal.toFixed(2)}` : '💳 Pay Now — $0.00';
-}
-
-// Wire up parent field changes
-['parentName','parentPhone','parentEmail'].forEach(id => {
-  document.getElementById(id).addEventListener('input', updateSummary);
-});
-
-// ============================================================
-// PROFILE LOOKUP + DUPLICATE CHECK — single combined fetch
-// ============================================================
-const TEST_MODE = true; // set to false when going live
-
-let lookupTimer   = null;
-let lastLookedUp  = '';
-
-// Fire 300ms after they stop typing — so the result often arrives before they tab away
-document.getElementById('parentEmail').addEventListener('input', function() {
-  const email = this.value.trim();
-  clearTimeout(lookupTimer);
-  if (!email || !email.includes('@') || !email.includes('.')) return;
-  if (email === lastLookedUp) return;
-  lookupTimer = setTimeout(() => triggerLookup(email), 300);
-});
-
-// Also fire immediately on blur as a safety net
-document.getElementById('parentEmail').addEventListener('blur', function() {
-  const email = this.value.trim();
-  if (!email || !email.includes('@')) return;
-  clearTimeout(lookupTimer);
-  if (email === lastLookedUp) {
-    // Already fetched — just re-run duplicate check in case dates changed
-    checkForDuplicates();
-    return;
-  }
-  triggerLookup(email);
-});
-
-function revealSteps() {
-  var ids = ['card2-details','card3-dates','card4-children','card5-pizza','card6-summary','formFooter'];
-  ids.forEach(function(id, i) {
-    var el = document.getElementById(id);
-    if (!el || !el.classList.contains('step-hidden')) return;
-    setTimeout(function() {
-      el.classList.remove('step-hidden');
-      el.classList.add('step-reveal');
-    }, i * 80);
-  });
-}
-
-async function triggerLookup(email) {
-  lastLookedUp = email;
-  const hint = document.getElementById('profileHint');
-  hint.textContent = '🔍 Looking up your details...';
-  hint.classList.add('visible');
-  pendingDuplicateCheck = true;
-  try {
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'lookup_all', email, testMode: TEST_MODE })
-    });
-    const result = await response.json();
-    orderCache.email  = email;
-    orderCache.orders = result.success ? (result.orders || []) : [];
-    if (result.success && result.profile) {
-      applyProfile(result.profile);
-      hint.textContent = '👋 Welcome back! We\'ve filled in your details.';
-      setTimeout(function() { hint.classList.remove('visible'); }, 5000);
-    } else {
-      hint.classList.remove('visible');
-    }
-    revealSteps();
-    checkForDuplicates();
-  } catch (err) {
-    hint.classList.remove('visible');
-    revealSteps(); // reveal anyway so form is not stuck if lookup fails
-  }
-}
-
-function applyProfile(profile) {
-  const nameField  = document.getElementById('parentName');
-  const phoneField = document.getElementById('parentPhone');
-  if (!nameField.value.trim())  nameField.value  = profile.parentName  || '';
-  if (!phoneField.value.trim()) phoneField.value = profile.parentPhone || '';
-  updateSummary();
-
-  // Pre-fill children only if the form still has the single default empty child
-  const existingChildren = getChildren();
-  const isDefaultState = existingChildren.length === 1 && !existingChildren[0].name && !existingChildren[0].cls;
-  if (!isDefaultState || !profile.children || profile.children.length === 0) return;
-
-  // Remove existing empty child and add saved children
-  document.getElementById('childrenContainer').innerHTML = '';
-  childCount = 0;
-  profile.children.forEach(c => {
-    addChild();
-    const rows = document.querySelectorAll('.child-row');
-    const row = rows[rows.length - 1];
-    row.querySelector('.child-name').value = c.name || '';
-    row.querySelector('.child-class').value = c.cls  || '';
-  });
-  rebuildPizzaGrid();
-  updateSummary();
-}
-
-// ============================================================
-// ============================================================
-// DUPLICATE ORDER DETECTION
-// ============================================================
-
-// Proper cache object (not an array) so email key persists reliably
-const orderCache = { email: null, orders: null };
-let pendingDuplicateCheck = false; // set when dates picked before email entered
-
-function checkForDuplicates() {
-  const email   = document.getElementById('parentEmail').value.trim();
-  const dates   = getSelectedDates();
-  const warning = document.getElementById('duplicateWarning');
-  if (!email || !email.includes('@') || email !== orderCache.email) {
-    pendingDuplicateCheck = true;
-    if (warning) warning.classList.remove('visible');
-    return;
-  }
-  if (dates.length === 0) {
-    if (warning) warning.classList.remove('visible');
-    return;
-  }
-
-  pendingDuplicateCheck = false;
-  const orders = orderCache.orders || [];
-  if (!orders.length) { if (warning) warning.classList.remove('visible'); return; }
-
-  // Match selected dates against existing paid orders.
-  // Google Sheets returns dates as ISO timestamps e.g. "2026-05-29T07:00:00.000Z"
-  // so we extract just the YYYY-MM-DD prefix and compare against the raw date string.
-  const duplicateDates = [];
-  dates.forEach(dateStr => {
-    const shortDate = formatDateShort(dateStr); // "29 May"
-    const fullDate  = formatDateFull(dateStr);  // "Friday, 29 May 2026"
-    const hasDupe = orders.some(function(order) {
-        if (order.status !== 'Paid') return false;
-        const raw = String(order.deliveryDate || '').trim();
-        const isoDate = raw.length >= 10 ? raw.substring(0, 10) : raw;
-          return isoDate === dateStr || raw === fullDate || raw.indexOf(shortDate) > -1;
-      });
-    if (hasDupe) duplicateDates.push(fullDate);
-  });
-
-
-  if (duplicateDates.length > 0) {
-    if (!warning) return;
-
-    // Build detail lines grouped by duplicate date
-    let detailHtml = '';
-    duplicateDates.forEach(function(fullDate) {
-      // Find all paid orders for this date
-      const matchingOrders = orders.filter(function(order) {
-        if (order.status !== 'Paid') return false;
-        const raw = String(order.deliveryDate || '').trim();
-        const isoDate = raw.length >= 10 ? raw.substring(0, 10) : raw;
-        // Find which dateStr matches this fullDate
-        return dates.some(function(ds) { return formatDateFull(ds) === fullDate && (isoDate === ds || raw === fullDate); });
-      });
-      detailHtml += '<div style="margin:10px 0 4px;font-weight:700;">\uD83D\uDCC5 ' + fullDate + '</div>';
-      if (matchingOrders.length > 0) {
-        matchingOrders.forEach(function(o) {
-          detailHtml += '<div style="padding-left:8px;margin-bottom:2px;font-weight:400;">\uD83E\uDDD2 ' + (o.childName||'Unknown') + ' \u2014 ' + (o.product||'') + ' (' + (o.flavour||'') + ')</div>';
-        });
-      }
-    });
-
-    warning.innerHTML =
-      '<strong>\u26A0\uFE0F Heads up!</strong> It looks like you\'ve already placed a paid order for:' +
-      detailHtml +
-      '<div style="margin-top:10px;font-weight:400;">If you\'re adding extra children or correcting a mistake, ' +
-      'that\'s fine \u2014 just continue. Otherwise, you may be ordering twice.</div>';
-    warning.classList.add('visible');
-  } else {
-    if (warning) warning.classList.remove('visible');
-  }
-}
-
-// Clear cache when email changes
-document.getElementById('parentEmail').addEventListener('input', () => {
-  orderCache.email  = null;
-  orderCache.orders = null;
-  document.getElementById('duplicateWarning').classList.remove('visible');
-});
-
-// ============================================================
-// SUBMIT
-// ============================================================
-document.getElementById('orderForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  const submitBtn = document.getElementById('submitBtn');
-  const errorBanner = document.getElementById('errorBanner');
-  errorBanner.classList.remove('visible');
-
-  const dates = getSelectedDates();
-  const children = getChildren();
-  const parentName  = document.getElementById('parentName').value.trim();
-  const parentPhone = document.getElementById('parentPhone').value.trim();
-  const parentEmail = document.getElementById('parentEmail').value.trim();
-
-  // Check all cutoffs are still valid
-  for (const dateStr of dates) {
-    if (new Date() >= getCutoffDate(dateStr)) {
-      errorBanner.textContent = `⏰ Orders for ${formatDateFull(dateStr)} have now closed. Please unselect that date and try again.`;
-      errorBanner.classList.add('visible');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-  }
-
-  // Build line items: one entry per child × date
-  const lineItems = [];
-  let total = 0;
-
-  dates.forEach(dateStr => {
-    children.forEach(child => {
-      const sel = (selections[child.id] || {})[dateStr] || {};
-      const product = PRODUCTS.find(p => p.id === sel.productId);
-      if (!product || !sel.flavour) return;
-      lineItems.push({
-        name: child.name,
-        'class': child.cls,
-        product: product.fullName,
-        productId: product.id,
-        flavour: sel.flavour,
-        price: product.price,
-        deliveryDate: dateStr,
-        deliveryDateFormatted: formatDateFull(dateStr),
-      });
-      total += product.price;
-    });
-  });
-
-  // Group line items by date for the Apps Script
-  // We send each date as a separate "order" within the same payload
-  const ordersByDate = {};
-  lineItems.forEach(item => {
-    if (!ordersByDate[item.deliveryDate]) ordersByDate[item.deliveryDate] = [];
-    ordersByDate[item.deliveryDate].push(item);
-  });
-
-  const orderData = {
-    multiDate: true,
-    parentName,
-    parentPhone,
-    parentEmail,
-    total: total.toFixed(2),
-    // For Stripe: all items flattened (productId + quantity used for line items)
-    children: lineItems,
-    // For Google Sheet: grouped by date
-    ordersByDate,
-  };
-
-  submitBtn.classList.add('loading');
-  submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
-  submitBtn.disabled = true;
-
-  try {
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(orderData)
-    });
-    const result = await response.json();
-    if (result.success && result.checkoutUrl) {
-      window.location.href = result.checkoutUrl;
-    } else {
-      throw new Error(result.error || 'Something went wrong. Please try again.');
-    }
-  } catch (err) {
-    errorBanner.textContent = err.message || '😕 Could not process your order. Please try again.';
-    errorBanner.classList.add('visible');
-    submitBtn.classList.remove('loading');
-    submitBtn.innerHTML = `💳 Pay Now — $${total.toFixed(2)}`;
-    submitBtn.disabled = false;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-});
-
-// ============================================================
-// INIT
-// ============================================================
-buildDateGrid();
-addChild(); // start with one child
+animateProgress();
 </script>
+
 </body>
 </html>

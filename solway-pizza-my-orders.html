@@ -63,7 +63,6 @@
   .order-item-details { flex: 1; }
   .order-item-child { font-weight: 700; font-size: 14px; }
   .order-item-desc { font-size: 13px; color: var(--text-light); }
-  .order-item-timestamp { font-size: 11px; color: var(--text-light); margin-top: 2px; }
   .order-item-price { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 15px; color: var(--teal-dark); white-space: nowrap; }
   .order-item-status { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
   .status-paid { background: var(--green-light); color: var(--green); }
@@ -106,16 +105,12 @@
   <a href="index.html" class="back-link">🍕 Back to Order Form</a>
 
   <div class="footer">
-    🌊 Friends of Solway — Fundraising for Solway Primary School 🌿
+    🌊 Friends of Solway — Fundraising for Solway Primary School, Masterton 🌿
   </div>
 </div>
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNX8kPNKRdlAD4qxrY1mgoYj5x8iJ-DOQd-MpILc8yxwugDiPqxgYdr7HuR_aeOVLwcg/exec';
-
-// Set to true while testing with Stripe test mode — looks up from Test Orders tab.
-// Set to false (or remove) when you go live.
-const TEST_MODE = true;
 
 document.getElementById('lookupEmail').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') {
@@ -140,7 +135,7 @@ async function lookupOrders() {
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'lookup_orders', email: email, testMode: TEST_MODE })
+      body: JSON.stringify({ action: 'lookup_orders', email: email })
     });
 
     const result = await response.json();
@@ -159,23 +154,6 @@ async function lookupOrders() {
   btn.disabled = false;
 }
 
-function formatDeliveryDate(raw) {
-  if (!raw) return 'Unknown date';
-  // If it already contains letters it's already formatted (e.g. 'Friday, 29 May 2026')
-  if (/[a-zA-Z]{3,}/.test(raw)) return raw;
-  // Otherwise try to parse and format
-  const d = new Date(raw);
-  if (isNaN(d)) return raw;
-  return d.toLocaleDateString('en-NZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland' });
-}
-
-function formatOrderTimestamp(raw) {
-  if (!raw) return '';
-  const d = new Date(raw);
-  if (isNaN(d)) return String(raw);
-  return d.toLocaleString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Pacific/Auckland' });
-}
-
 function displayOrders(orders) {
   const results = document.getElementById('results');
 
@@ -187,36 +165,29 @@ function displayOrders(orders) {
   // Group orders by delivery date
   const grouped = {};
   orders.forEach(order => {
-    const key = order.deliveryDate || 'Unknown date';
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(order);
+    const date = order.deliveryDate || 'Unknown date';
+    if (!grouped[date]) grouped[date] = [];
+    grouped[date].push(order);
   });
 
   let html = '';
 
-  // Sort by delivery date, most recent first
-  const dates = Object.keys(grouped).sort((a, b) => {
-    const da = new Date(a), db = new Date(b);
-    if (!isNaN(da) && !isNaN(db)) return db - da;
-    return b.localeCompare(a);
-  });
+  // Sort dates (most recent first)
+  const dates = Object.keys(grouped).sort().reverse();
 
-  dates.forEach(dateKey => {
-    const displayDate = formatDeliveryDate(dateKey);
+  dates.forEach(date => {
     html += '<div class="order-group">';
-    html += '<div class="order-date">📅 ' + displayDate + '</div>';
+    html += '<div class="order-date">📅 ' + date + '</div>';
     html += '<div class="order-items">';
 
-    grouped[dateKey].forEach(order => {
+    grouped[date].forEach(order => {
       const statusClass = order.status === 'Paid' ? 'status-paid' : order.status === 'Refunded' ? 'status-refunded' : 'status-pending';
       const statusEmoji = order.status === 'Paid' ? '✅' : order.status === 'Refunded' ? '↩️' : '⏳';
-      const orderedAt = order.timestamp ? '<div class="order-item-timestamp">🕐 Ordered: ' + formatOrderTimestamp(order.timestamp) + '</div>' : '';
 
       html += '<div class="order-item">';
       html += '  <div class="order-item-details">';
       html += '    <div class="order-item-child">🧒 ' + (order.childName || 'Unknown') + ' <span style="font-weight:400;color:#5A6B6B;">(' + (order.childClass || '') + ')</span></div>';
       html += '    <div class="order-item-desc">🍕 ' + (order.product || '') + ' — ' + (order.flavour || '') + '</div>';
-      html += orderedAt;
       html += '  </div>';
       html += '  <div class="order-item-price">$' + (Number(order.price) || 0).toFixed(2) + '</div>';
       html += '  <div class="order-item-status ' + statusClass + '">' + statusEmoji + ' ' + (order.status || 'Unknown') + '</div>';
