@@ -719,15 +719,16 @@ function applyProfile(profile) {
 }
 
 // ============================================================
-// DUPLICATE ORDER DETECTION
-// Checks after date selection whether this email has already
-// ordered for any of the selected dates for any of the same children.
 // ============================================================
-let knownOrders = []; // populated by profile lookup if available
+// DUPLICATE ORDER DETECTION
+// ============================================================
+
+// Proper cache object (not an array) so email key persists reliably
+const orderCache = { email: null, orders: null };
 
 async function checkForDuplicates() {
-  const email = document.getElementById('parentEmail').value.trim();
-  const dates  = getSelectedDates();
+  const email   = document.getElementById('parentEmail').value.trim();
+  const dates   = getSelectedDates();
   const warning = document.getElementById('duplicateWarning');
 
   if (!email || !email.includes('@') || dates.length === 0) {
@@ -735,8 +736,8 @@ async function checkForDuplicates() {
     return;
   }
 
-  // Fetch existing orders for this email if we don't have them yet
-  if (knownOrders.length === 0 || knownOrders._email !== email) {
+  // Fetch orders for this email if not already cached
+  if (orderCache.email !== email || orderCache.orders === null) {
     try {
       const response = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -744,35 +745,51 @@ async function checkForDuplicates() {
         body: JSON.stringify({ action: 'lookup_orders', email, testMode: TEST_MODE })
       });
       const result = await response.json();
-      if (result.success) {
-        knownOrders = result.orders || [];
-        knownOrders._email = email;
-      }
+      orderCache.email  = email;
+      orderCache.orders = result.success ? (result.orders || []) : [];
     } catch (err) {
-      return; // silently skip if lookup fails
+      return; // silently skip - do not block the form
     }
   }
 
-  // Find any selected date that already has a paid order for this email
+  const orders = orderCache.orders;
+  if (!orders.length) { warning.classList.remove('visible'); return; }
+
+  // Match selected dates against existing paid orders.
+  // The sheet stores deliveryDate as a formatted string e.g. "Friday, 30 May 2026".
+  // We match using formatDateShort ("30 May") as a substring - robust to locale
+  // differences - and also try raw YYYY-MM-DD in case it was stored that way.
   const duplicateDates = [];
   dates.forEach(dateStr => {
-    const formatted = formatDateFull(dateStr);
-    const hasDupe = knownOrders.some(order => {
-      const od = String(order.deliveryDate).trim();
-      return (od === formatted || od.indexOf(formatDateShort(dateStr)) > -1) && order.status === 'Paid';
+    const shortDate = formatDateShort(dateStr);
+    const fullDate  = formatDateFull(dateStr);
+    const hasDupe = orders.some(order => {
+      if (order.status !== 'Paid') return false;
+      const od = String(order.deliveryDate || '').trim();
+      return od === dateStr || od === fullDate || od.indexOf(shortDate) > -1;
     });
-    if (hasDupe) duplicateDates.push(formatted);
+    if (hasDupe) duplicateDates.push(fullDate);
   });
 
   if (duplicateDates.length > 0) {
-    warning.innerHTML = `⚠️ <strong>Heads up!</strong> It looks like you\'ve already placed a paid order for:<br>` +
-      duplicateDates.map(d => `&nbsp;&nbsp;📅 ${d}`).join('<br>') +
-      '<br>If you\'re adding extra children or correcting a mistake, that\'s fine — just continue. Otherwise, you may be ordering twice.';
+    const dateList = duplicateDates.map(d => '&nbsp;&nbsp;' + d).join('<br>');
+    warning.innerHTML =
+      '<strong>Heads up!</strong> It looks like you\'ve already placed a paid order for:<br>' +
+      dateList +
+      '<br><span style="font-weight:400">If you\'re adding extra children or correcting a mistake, '
+      + 'that\'s fine \u2014 just continue. Otherwise, you may be ordering twice.</span>';
     warning.classList.add('visible');
   } else {
     warning.classList.remove('visible');
   }
 }
+
+// Clear cache whenever email changes so we re-fetch for the new address
+document.getElementById('parentEmail').addEventListener('input', () => {
+  orderCache.email  = null;
+  orderCache.orders = null;
+  document.getElementById('duplicateWarning').classList.remove('visible');
+});
 
 // ============================================================
 // SUBMIT
