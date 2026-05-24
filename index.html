@@ -177,7 +177,6 @@
   </div>
 
   <div class="error-banner" id="errorBanner"></div>
-  <div id="debugPanel" style="display:none;background:#1a1a2e;color:#00ff88;font-family:monospace;font-size:12px;padding:14px;border-radius:10px;margin-bottom:12px;white-space:pre-wrap;line-height:1.6;max-height:300px;overflow-y:auto;"></div>
 
   <div class="closed-banner" id="closedBanner" style="display:none">
     🍕 Orders are currently closed!<br>Check back when the next order window opens 📅
@@ -432,9 +431,6 @@ function onDateChange() {
   updateTriggerSummary();
   rebuildPizzaGrid();
   updateSummary();
-  const dbgDates = getSelectedDates();
-  const p = document.getElementById('debugPanel');
-  if(p){p.textContent+='[DATECHANGE] selected dates: '+JSON.stringify(dbgDates)+'\n';p.style.display='block';}
   checkForDuplicates();
 }
 
@@ -715,11 +711,9 @@ document.getElementById('parentEmail').addEventListener('blur', function() {
 async function triggerLookup(email) {
   lastLookedUp = email;
   const hint = document.getElementById('profileHint');
-  const dbg = m => { const p = document.getElementById('debugPanel'); if(p){p.textContent+='[LOOKUP] '+m+'\n';p.style.display='block';p.scrollTop=p.scrollHeight;} };
   hint.textContent = '🔍 Looking up your details...';
   hint.classList.add('visible');
-  dbg('firing for: '+email+' testMode='+TEST_MODE);
-  pendingDuplicateCheck = true; // will be resolved when fetch completes
+  pendingDuplicateCheck = true;
   try {
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
@@ -727,10 +721,6 @@ async function triggerLookup(email) {
       body: JSON.stringify({ action: 'lookup_all', email, testMode: TEST_MODE })
     });
     const result = await response.json();
-    dbg('response: success='+result.success+' orders='+(result.orders||[]).length+' profile='+(!!result.profile));
-    if (result.orders && result.orders.length) {
-      result.orders.forEach((o,i) => dbg('  order['+i+']: date='+JSON.stringify(o.deliveryDate)+' status='+o.status));
-    }
     orderCache.email  = email;
     orderCache.orders = result.success ? (result.orders || []) : [];
     if (result.success && result.profile) {
@@ -744,7 +734,6 @@ async function triggerLookup(email) {
     // onDateChange will call checkForDuplicates when they tick a date
     checkForDuplicates();
   } catch (err) {
-    dbg('ERROR: '+err.message);
     hint.classList.remove('visible');
   }
 }
@@ -788,16 +777,12 @@ function checkForDuplicates() {
   const email   = document.getElementById('parentEmail').value.trim();
   const dates   = getSelectedDates();
   const warning = document.getElementById('duplicateWarning');
-  const dbg = m => { const p = document.getElementById('debugPanel'); if(p){p.textContent+='[DUPCHK] '+m+'\n';p.style.display='block';p.scrollTop=p.scrollHeight;} };
-  dbg('called: email='+JSON.stringify(email)+' cacheEmail='+JSON.stringify(orderCache.email)+' dates='+dates.length+' orders='+(orderCache.orders||[]).length+' warningEl='+(!!warning));
   if (!email || !email.includes('@') || email !== orderCache.email) {
-    dbg('EXIT: email not yet looked up (pending=true)');
     pendingDuplicateCheck = true;
     if (warning) warning.classList.remove('visible');
     return;
   }
   if (dates.length === 0) {
-    dbg('EXIT: no dates selected');
     if (warning) warning.classList.remove('visible');
     return;
   }
@@ -813,28 +798,18 @@ function checkForDuplicates() {
   dates.forEach(dateStr => {
     const shortDate = formatDateShort(dateStr); // "29 May"
     const fullDate  = formatDateFull(dateStr);  // "Friday, 29 May 2026"
-    const dbg2 = m => { const p = document.getElementById('debugPanel'); if(p){p.textContent+='[MATCH] '+m+'\n';p.style.display='block';p.scrollTop=p.scrollHeight;} };
-    var hasDupe = false;
-    try {
-      hasDupe = orders.some(function(order) {
+    const hasDupe = orders.some(function(order) {
         if (order.status !== 'Paid') return false;
         const raw = String(order.deliveryDate || '').trim();
         const isoDate = raw.length >= 10 ? raw.substring(0, 10) : raw;
-        dbg2('comparing '+dateStr+' vs raw='+raw+' iso='+isoDate+' match='+(isoDate===dateStr));
-        return isoDate === dateStr || raw === fullDate || raw.indexOf(shortDate) > -1;
+          return isoDate === dateStr || raw === fullDate || raw.indexOf(shortDate) > -1;
       });
-      dbg2('hasDupe='+hasDupe+' fullDate='+fullDate);
-    } catch(ex) {
-      dbg2('EXCEPTION in some(): '+ex.message);
-    }
     if (hasDupe) duplicateDates.push(fullDate);
   });
 
-  const dbg3 = m => { const p = document.getElementById('debugPanel'); if(p){p.textContent+='[WARN] '+m+'\n';p.style.display='block';p.scrollTop=p.scrollHeight;} };
-  dbg3('duplicateDates='+JSON.stringify(duplicateDates)+' warningEl='+(!!warning)+' warningVisible='+(warning?warning.classList.contains('visible'):'N/A'));
 
   if (duplicateDates.length > 0) {
-    if (!warning) { dbg3('ERROR: warning element not found in DOM!'); return; }
+    if (!warning) return;
 
     // Build detail lines grouped by duplicate date
     let detailHtml = '';
@@ -847,24 +822,22 @@ function checkForDuplicates() {
         // Find which dateStr matches this fullDate
         return dates.some(function(ds) { return formatDateFull(ds) === fullDate && (isoDate === ds || raw === fullDate); });
       });
-      detailHtml += '<div style="margin:6px 0 2px;font-weight:700;">\uD83D\uDCC5 ' + fullDate + '</div>';
+      detailHtml += '<div style="margin:10px 0 4px;font-weight:700;">\uD83D\uDCC5 ' + fullDate + '</div>';
       if (matchingOrders.length > 0) {
         matchingOrders.forEach(function(o) {
-          detailHtml += '<div style="padding-left:12px;font-weight:400;">\uD83D\uDC66 ' + (o.childName||'Unknown') + ' \u2014 ' + (o.product||'') + ' (' + (o.flavour||'') + ')</div>';
+          detailHtml += '<div style="padding-left:8px;margin-bottom:2px;font-weight:400;">\uD83E\uDDD2 ' + (o.childName||'Unknown') + ' \u2014 ' + (o.product||'') + ' (' + (o.flavour||'') + ')</div>';
         });
       }
     });
 
     warning.innerHTML =
-      '<strong>\u26A0\uFE0F Heads up!</strong> It looks like you\'ve already placed a paid order for:<br>' +
+      '<strong>\u26A0\uFE0F Heads up!</strong> It looks like you\'ve already placed a paid order for:' +
       detailHtml +
-      '<br><span style="font-weight:400">If you\'re adding extra children or correcting a mistake, ' +
-      'that\'s fine \u2014 just continue. Otherwise, you may be ordering twice.</span>';
+      '<div style="margin-top:10px;font-weight:400;">If you\'re adding extra children or correcting a mistake, ' +
+      'that\'s fine \u2014 just continue. Otherwise, you may be ordering twice.</div>';
     warning.classList.add('visible');
-    dbg3('WARNING SHOWN');
   } else {
     if (warning) warning.classList.remove('visible');
-    dbg3('no duplicates found');
   }
 }
 
