@@ -735,8 +735,22 @@ async function checkForDuplicates() {
   const dates   = getSelectedDates();
   const warning = document.getElementById('duplicateWarning');
 
+  // DEBUG — log everything to console AND show on page if warning element exists
+  const dbg = (msg) => {
+    console.log('[DUP CHECK] ' + msg);
+    if (warning) {
+      warning.innerHTML = '<strong>DEBUG:</strong> ' + msg;
+      warning.style.display = 'block';
+      warning.style.background = '#fff3cd';
+      warning.style.border = '2px solid orange';
+      warning.style.padding = '10px';
+    }
+  };
+  dbg('called — email=' + JSON.stringify(email) + ' dates=' + dates.length + ' warningEl=' + !!warning);
+
   if (!email || !email.includes('@') || dates.length === 0) {
-    warning.classList.remove('visible');
+    dbg('EXITING EARLY — email empty/invalid or no dates selected');
+    if (warning) warning.style.display = 'none';
     return;
   }
 
