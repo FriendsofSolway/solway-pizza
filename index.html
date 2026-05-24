@@ -30,7 +30,7 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; padding: 20px; }
-  .container { max-width: 640px; margin: 0 auto; }
+  .container { max-width: 720px; margin: 0 auto; }
 
   .header { text-align: center; padding: 24px 20px 20px; margin-bottom: 24px; }
   .header-logo { width: 130px; height: 130px; margin: 0 auto 16px; display: block; }
@@ -43,39 +43,89 @@
 
   label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
   .required::after { content: ' *'; color: var(--red); font-weight: 700; }
-  input, select { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text); transition: border-color 0.2s; background: white; -webkit-appearance: none; }
-  input:focus, select:focus { outline: none; border-color: var(--teal); }
+  input[type="text"], input[type="email"], input[type="tel"], select {
+    width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px;
+    font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text);
+    transition: border-color 0.2s; background: white; -webkit-appearance: none;
+  }
+  input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, select:focus { outline: none; border-color: var(--teal); }
   .field { margin-bottom: 14px; }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-  .child-order { background: linear-gradient(135deg, var(--teal-light), var(--blue-light)); border-radius: 12px; padding: 18px; margin-bottom: 12px; border: 2px solid transparent; transition: border-color 0.2s; }
-  .child-order.active { border-color: var(--teal); }
-  .child-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .child-label { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--teal-dark); }
-  .remove-child { background: none; border: none; color: var(--red); font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: background 0.2s; }
-  .remove-child:hover { background: var(--red-light); }
+  /* ── STEP 1: Date accordion ── */
+  .date-accordion-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 12px 16px; background: white; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); transition: all 0.2s; text-align: left; }
+  .date-accordion-trigger:hover { border-color: var(--teal); background: var(--teal-light); }
+  .date-accordion-trigger.open { border-color: var(--teal); border-bottom-left-radius: 0; border-bottom-right-radius: 0; background: var(--teal-light); }
+  .date-accordion-trigger .trigger-left { display: flex; align-items: center; gap: 10px; }
+  .date-accordion-trigger .trigger-label { display: flex; flex-direction: column; gap: 2px; }
+  .date-accordion-trigger .trigger-title { font-size: 15px; font-weight: 700; color: var(--teal-dark); }
+  .date-accordion-trigger .trigger-summary { font-size: 13px; font-weight: 600; color: var(--text-light); }
+  .date-accordion-trigger .trigger-summary.has-dates { color: var(--teal-dark); }
+  .accordion-chevron { width: 20px; height: 20px; color: var(--teal-dark); transition: transform 0.25s ease; flex-shrink: 0; }
+  .date-accordion-trigger.open .accordion-chevron { transform: rotate(180deg); }
 
-  .products { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-  .product-option { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: white; border-radius: 8px; cursor: pointer; border: 2px solid var(--border); transition: all 0.2s; }
-  .product-option:hover { border-color: var(--teal); }
-  .product-option.selected { border-color: var(--teal); background: var(--teal-light); }
-  .product-option input[type="radio"] { width: auto; accent-color: var(--teal); cursor: pointer; }
-  .product-info { flex: 1; }
-  .product-name { font-weight: 700; font-size: 14px; }
-  .product-desc { display: none; }
-  .product-price { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 16px; color: var(--teal-dark); }
+  .date-accordion-panel { border: 2px solid var(--teal); border-top: none; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; overflow: hidden; max-height: 0; transition: max-height 0.3s ease; }
+  .date-accordion-panel.open { max-height: 600px; }
+  .date-grid { display: flex; flex-direction: column; padding: 8px; gap: 6px; background: var(--teal-light); max-height: 222px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--teal) var(--teal-light); }
+  .date-grid::-webkit-scrollbar { width: 6px; }
+  .date-grid::-webkit-scrollbar-track { background: var(--teal-light); border-radius: 3px; }
+  .date-grid::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 3px; }
+  .date-option { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: white; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: all 0.2s; user-select: none; }
+  .date-option:hover { border-color: var(--teal); }
+  .date-option.selected { border-color: var(--teal); background: var(--teal-light); }
+  .date-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--teal); cursor: pointer; flex-shrink: 0; }
+  .date-option-label { flex: 1; font-weight: 600; font-size: 14px; }
+  .date-option-cutoff { font-size: 12px; color: var(--text-light); font-weight: 400; }
+  .cutoff-note { font-size: 12px; color: var(--text-light); margin-top: 10px; font-weight: 400; }
+  .no-dates-msg { color: var(--text-light); font-size: 15px; font-style: italic; text-align: center; padding: 12px 0; }
 
-  .flavour-row { margin-top: 10px; }
-  .add-child-btn { width: 100%; padding: 14px; border: 2px dashed var(--teal); border-radius: 10px; background: transparent; color: var(--teal-dark); font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  /* ── STEP 3: Children ── */
+  .child-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: linear-gradient(135deg, var(--teal-light), var(--blue-light)); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; }
+  .child-row .child-num { font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; color: var(--teal-dark); white-space: nowrap; }
+  .child-row input[type="text"] { flex: 1; min-width: 0; }
+  .child-row select { flex: 0 0 160px; }
+  .child-row .remove-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 18px; padding: 4px; border-radius: 6px; line-height: 1; flex-shrink: 0; transition: background 0.2s; }
+  .child-row .remove-btn:hover { background: var(--red-light); }
+
+  .add-child-btn { width: 100%; padding: 13px; border: 2px dashed var(--teal); border-radius: 10px; background: transparent; color: var(--teal-dark); font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 4px; }
   .add-child-btn:hover { background: var(--teal-light); }
   .add-child-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+  /* ── STEP 4: Pizza grid ── */
+  .grid-prompt { color: var(--text-light); font-size: 14px; font-style: italic; text-align: center; padding: 16px 0; }
+  .pizza-grid { display: flex; flex-direction: column; gap: 20px; }
+
+  .grid-child-block { border: 2px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .grid-child-header { background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; padding: 10px 16px; font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; }
+
+  .grid-dates { display: flex; flex-direction: column; gap: 0; }
+  .grid-date-row { display: flex; align-items: stretch; border-top: 1px solid var(--border); background: white; }
+  .grid-date-row:first-child { border-top: none; }
+  .grid-date-label { width: 130px; flex-shrink: 0; padding: 12px 14px; font-size: 13px; font-weight: 700; color: var(--teal-dark); display: flex; flex-direction: column; justify-content: center; border-right: 1px solid var(--border); background: var(--teal-light); }
+  .grid-date-label .gdl-day { font-size: 14px; }
+  .grid-date-label .gdl-date { font-size: 12px; color: var(--text-light); font-weight: 600; }
+
+  .grid-cell { flex: 1; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+
+  .product-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .product-chip { display: flex; align-items: center; gap: 5px; padding: 6px 10px; border: 2px solid var(--border); border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; background: white; transition: all 0.15s; white-space: nowrap; }
+  .product-chip:hover { border-color: var(--teal); color: var(--teal-dark); }
+  .product-chip.selected { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
+  .product-chip input[type="radio"] { width: 13px; height: 13px; accent-color: var(--teal); cursor: pointer; }
+  .chip-price { font-weight: 700; color: var(--teal-dark); }
+
+  .cell-flavour select { font-size: 13px; padding: 7px 10px; }
+  .cell-flavour { display: none; }
+  .cell-flavour.visible { display: block; }
+
+  /* ── STEP 5: Summary ── */
   .summary { background: var(--orange-light); border-radius: 10px; padding: 18px; }
-  .summary-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--orange-dark); margin-bottom: 10px; }
+  .summary-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: var(--orange-dark); margin-bottom: 12px; }
+  .summary-date-group { margin-bottom: 12px; }
+  .summary-date-heading { font-family: 'Fredoka', sans-serif; font-size: 14px; font-weight: 700; color: var(--orange-dark); margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.08); }
   .summary-items { list-style: none; }
-  .summary-items li { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .summary-items li { display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; border-bottom: 1px solid rgba(0,0,0,0.05); }
   .summary-items li:last-child { border-bottom: none; }
-  .summary-date { font-size: 13px; color: var(--orange-dark); font-weight: 600; margin-bottom: 8px; }
   .summary-total { display: flex; justify-content: space-between; padding-top: 12px; margin-top: 8px; border-top: 2px solid var(--orange); font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 700; color: var(--orange-dark); }
   .empty-summary { color: var(--text-light); font-size: 14px; font-style: italic; }
 
@@ -89,57 +139,66 @@
   .error-banner { background: var(--red-light); color: var(--red); padding: 14px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-bottom: 16px; display: none; }
   .error-banner.visible { display: block; }
   .closed-banner { background: var(--orange-light); color: var(--orange-dark); padding: 24px; border-radius: var(--radius); font-size: 16px; font-weight: 600; text-align: center; margin-bottom: 16px; border: 2px solid var(--orange); line-height: 1.7; }
-  .cutoff-note { font-size: 12px; color: var(--text-light); margin-top: 4px; font-weight: 400; text-transform: none; letter-spacing: 0; }
-
-  #profileHint { display: none; margin-top: 10px; padding: 10px 14px; border-radius: 8px; font-size: 15px; font-weight: 700; background: var(--teal-light); color: var(--teal-dark); border: 2px solid var(--teal); }
-  #profileHint.visible { display: block; }
 
   .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
 
-  @media (max-width: 480px) {
+  /* ── Cards that depend on earlier steps ── */
+  .card.locked { opacity: 0.5; pointer-events: none; }
+  .card.locked .card-title { color: var(--text-light); }
+  .card.locked .step { background: #CCC; }
+
+  @media (max-width: 540px) {
     .field-row { grid-template-columns: 1fr; }
     .header h1 { font-size: 24px; }
     .header-logo { width: 90px; height: 90px; }
+    .child-row { flex-wrap: wrap; }
+    .child-row select { flex: 1 1 100%; }
+    .grid-date-label { width: 90px; }
+    .grid-date-label .gdl-date { display: none; }
+    .product-chips { gap: 4px; }
+    .product-chip { font-size: 12px; padding: 5px 8px; }
   }
 </style>
 </head>
 <body>
-
 <div class="container">
 
   <div class="header">
     <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="header-logo">
     <h1>🍕 Pizza Lunch Order 🍕</h1>
-    <p>Order your child's Friday pizza lunch — one form for the whole family! 🎉</p>
+    <p>Order for multiple Fridays in one go — one payment at the end! 🎉</p>
   </div>
 
   <div class="error-banner" id="errorBanner"></div>
-
   <div class="closed-banner" id="closedBanner" style="display:none">
     🍕 Orders are currently closed!<br>Check back when the next order window opens 📅
   </div>
 
   <form id="orderForm">
-    <!-- Step 1: Delivery date -->
-    <div class="card" id="dateCard">
-      <div class="card-title"><span class="step">1</span> 📅 Delivery Date</div>
-      <div class="field">
-        <label for="deliveryDate" class="required">Choose a Friday</label>
-        <select id="deliveryDate" required>
-          <option value="">Select delivery date...</option>
-        </select>
-        <div class="cutoff-note">⏰ Orders close at 12pm on the Wednesday before each delivery date.</div>
+
+    <!-- Step 1: Pick dates -->
+    <div class="card" id="card1">
+      <div class="card-title"><span class="step">1</span> 📅 Choose Delivery Dates</div>
+      <button type="button" class="date-accordion-trigger" id="dateAccordionTrigger" onclick="toggleDateAccordion()">
+        <div class="trigger-left">
+          <div class="trigger-label">
+            <div class="trigger-title">Select Fridays</div>
+            <div class="trigger-summary" id="triggerSummary">No dates selected</div>
+          </div>
+        </div>
+        <svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+      <div class="date-accordion-panel" id="dateAccordionPanel">
+        <div class="date-grid" id="dateGrid"></div>
       </div>
+      <div class="cutoff-note">⏰ Orders for each Friday close at 12pm on the Wednesday before.</div>
     </div>
 
     <!-- Step 2: Parent details -->
-    <div class="card">
+    <div class="card" id="card2">
       <div class="card-title"><span class="step">2</span> 👋 Your Details</div>
-      <div class="field">
-        <label for="parentEmail" class="required">Email Address</label>
-        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
-        <div id="profileHint"></div>
-      </div>
       <div class="field-row">
         <div class="field">
           <label for="parentName" class="required">Parent / Caregiver Name</label>
@@ -150,24 +209,34 @@
           <input type="tel" id="parentPhone" required placeholder="e.g. 027 123 4567">
         </div>
       </div>
+      <div class="field">
+        <label for="parentEmail" class="required">Email Address</label>
+        <input type="email" id="parentEmail" required placeholder="e.g. sarah@example.com">
+      </div>
     </div>
 
-    <!-- Step 3: Children's orders -->
-    <div class="card">
-      <div class="card-title"><span class="step">3</span> 🧒 Children's Orders</div>
+    <!-- Step 3: Add children -->
+    <div class="card" id="card3">
+      <div class="card-title"><span class="step">3</span> 🧒 Your Children</div>
+      <p style="font-size:14px;color:var(--text-light);margin-bottom:14px;">Add each child once — you'll choose their pizza for each date in the next step.</p>
       <div id="childrenContainer"></div>
       <button type="button" class="add-child-btn" id="addChildBtn" onclick="addChild()">➕ Add Another Child</button>
     </div>
 
-    <!-- Step 4: Summary & pay -->
-    <div class="card">
-      <div class="card-title"><span class="step">4</span> 🧾 Order Summary & Payment</div>
+    <!-- Step 4: Pizza grid -->
+    <div class="card" id="card4">
+      <div class="card-title"><span class="step">4</span> 🍕 Choose Pizzas</div>
+      <div id="pizzaGrid">
+        <div class="grid-prompt">Select dates and add children above to configure pizzas 🍕</div>
+      </div>
+    </div>
+
+    <!-- Step 5: Summary & pay -->
+    <div class="card" id="card5">
+      <div class="card-title"><span class="step">5</span> 🧾 Order Summary & Payment</div>
       <div class="summary">
         <div class="summary-title">Your Order</div>
-        <div class="summary-date" id="summaryDate"></div>
-        <ul class="summary-items" id="summaryItems">
-          <li class="empty-summary">No items yet — add a child above ☝️</li>
-        </ul>
+        <div id="summaryContent"><p class="empty-summary">No items yet — complete the steps above ☝️</p></div>
         <div class="summary-total" id="summaryTotal" style="display:none">
           <span>Total</span>
           <span id="totalAmount">$0.00</span>
@@ -175,6 +244,7 @@
       </div>
       <button type="submit" class="submit-btn" id="submitBtn" disabled>💳 Pay Now — $0.00</button>
     </div>
+
   </form>
 
   <div class="footer">
@@ -185,14 +255,10 @@
 
 <script>
 // ============================================================
-// CONFIGURATION
+// CONFIGURATION — edit these each term
 // ============================================================
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNX8kPNKRdlAD4qxrY1mgoYj5x8iJ-DOQd-MpILc8yxwugDiPqxgYdr7HuR_aeOVLwcg/exec';
 
-// DELIVERY DATES — Update this list each term.
-// Add all available Fridays as 'YYYY-MM-DD'.
-// Skip public holidays and non-term days.
-// Orders close at 12pm on the Wednesday before each date.
 const DELIVERY_DATES = [
   '2026-05-29',
   '2026-06-05',
@@ -211,24 +277,28 @@ const DELIVERY_DATES = [
   '2026-09-11',
   '2026-09-18',
   '2026-09-25',
-  // Add more dates as needed
 ];
 
 const PRODUCTS = [
-  { id: 'pizza-combo', name: 'Pizza Combo', desc: '', price: 7.50 },
-  { id: 'single-pizza', name: 'Single Pizza', desc: '', price: 6.50 },
-  { id: 'gf-pizza', name: 'Gluten Free Single Pizza', desc: '', price: 11.50 },
+  { id: 'pizza-combo',  name: 'Combo',   fullName: 'Pizza Combo',                  price: 7.50 },
+  { id: 'single-pizza', name: 'Single',  fullName: 'Single Pizza',                 price: 6.50 },
+  { id: 'gf-pizza',     name: 'GF',      fullName: 'Gluten Free Single Pizza',      price: 11.50 },
 ];
 
 const FLAVOURS = ['Cheese', 'Ham and Cheese', 'Hawaiian'];
-const CLASSES = ['Kanuka','Pohutukawa','Rimu','Harakeke','Matai','Titoki','Totara','Kauri','Rata','Manuka'];
+const CLASSES  = ['Kanuka','Pohutukawa','Rimu','Harakeke','Matai','Titoki','Totara','Kauri','Rata','Manuka'];
 const MAX_CHILDREN = 6;
+
+// ============================================================
+// STATE
+// ============================================================
 let childCount = 0;
+// selections[childId][dateStr] = { productId, flavour }
+const selections = {};
 
 // ============================================================
-// DELIVERY DATE LOGIC
+// DATE HELPERS
 // ============================================================
-
 function getCutoffDate(fridayStr) {
   const friday = new Date(fridayStr + 'T00:00:00+12:00');
   const wednesday = new Date(friday);
@@ -239,21 +309,61 @@ function getCutoffDate(fridayStr) {
 
 function getAvailableDates() {
   const now = new Date();
-  return DELIVERY_DATES.filter(dateStr => {
-    const cutoff = getCutoffDate(dateStr);
-    return now < cutoff;
-  });
+  return DELIVERY_DATES.filter(d => now < getCutoffDate(d));
 }
 
-function formatDateForDisplay(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00+12:00');
-  const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland' };
-  return date.toLocaleDateString('en-NZ', options);
+function formatDateFull(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00+12:00');
+  return d.toLocaleDateString('en-NZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland' });
 }
 
-function populateDateDropdown() {
-  const select = document.getElementById('deliveryDate');
+function formatDateShort(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00+12:00');
+  return d.toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', timeZone: 'Pacific/Auckland' });
+}
+
+function formatDayName(dateStr) {
+  // e.g. "Fri 29 May"
+  const d = new Date(dateStr + 'T00:00:00+12:00');
+  const day = d.toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', timeZone: 'Pacific/Auckland' });
+  return 'Fri ' + day;
+}
+
+function formatCutoff(dateStr) {
+  const c = getCutoffDate(dateStr);
+  return c.toLocaleDateString('en-NZ', { weekday: 'short', day: 'numeric', month: 'short' }) + ' 12pm';
+}
+
+// ============================================================
+// STEP 1 — DATE ACCORDION
+// ============================================================
+function toggleDateAccordion() {
+  const trigger = document.getElementById('dateAccordionTrigger');
+  const panel   = document.getElementById('dateAccordionPanel');
+  const isOpen  = trigger.classList.contains('open');
+  trigger.classList.toggle('open', !isOpen);
+  panel.classList.toggle('open', !isOpen);
+}
+
+function updateTriggerSummary() {
+  const selected = getSelectedDates();
+  const summary  = document.getElementById('triggerSummary');
+  if (selected.length === 0) {
+    summary.textContent = 'No dates selected';
+    summary.classList.remove('has-dates');
+  } else if (selected.length === 1) {
+    summary.textContent = '✓ ' + formatDateFull(selected[0]);
+    summary.classList.add('has-dates');
+  } else {
+    // Show first date + count of others
+    summary.textContent = `✓ ${formatDateFull(selected[0])} + ${selected.length - 1} more`;
+    summary.classList.add('has-dates');
+  }
+}
+
+function buildDateGrid() {
   const available = getAvailableDates();
+  const grid = document.getElementById('dateGrid');
 
   if (available.length === 0) {
     document.getElementById('orderForm').style.display = 'none';
@@ -261,107 +371,83 @@ function populateDateDropdown() {
     return;
   }
 
+  grid.innerHTML = '';
   available.forEach(dateStr => {
-    const option = document.createElement('option');
-    option.value = dateStr;
-    option.textContent = formatDateForDisplay(dateStr);
-    select.appendChild(option);
+    const label = document.createElement('label');
+    label.className = 'date-option';
+    label.innerHTML = `
+      <input type="checkbox" value="${dateStr}">
+      <div class="date-option-label">
+        <div>${formatDateFull(dateStr)}</div>
+        <div class="date-option-cutoff">⏰ Orders close ${formatCutoff(dateStr)}</div>
+      </div>
+    `;
+    const cb = label.querySelector('input');
+    cb.addEventListener('change', () => {
+      label.classList.toggle('selected', cb.checked);
+      onDateChange();
+    });
+    grid.appendChild(label);
   });
+
+  // Open the accordion by default so the first interaction is obvious
+  toggleDateAccordion();
 }
 
-// ============================================================
-// CHILD ORDER LOGIC
-// ============================================================
+function getSelectedDates() {
+  return Array.from(document.querySelectorAll('#dateGrid input[type="checkbox"]:checked')).map(cb => cb.value);
+}
 
-let childUid = 0;
-
-function addChild() {
-  if (childCount >= MAX_CHILDREN) return;
-  childCount++;
-  childUid++;
-  const uid = childUid;
-  const displayNum = childCount;
-  const div = document.createElement('div');
-  div.className = 'child-order active';
-  div.id = `child-${uid}`;
-  div.innerHTML = `
-    <div class="child-header">
-      <span class="child-label">🧒 Child ${displayNum}</span>
-      <button type="button" class="remove-child" style="${displayNum === 1 ? 'display:none' : ''}">❌ Remove</button>
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label class="required">Child's Name</label>
-        <input type="text" class="child-name" required placeholder="First and last name">
-      </div>
-      <div class="field">
-        <label class="required">Class</label>
-        <select class="child-class" required>
-          <option value="">Select class...</option>
-          ${CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
-        </select>
-      </div>
-    </div>
-    <label style="margin-top:4px" class="required">🍕 Choose a Pizza</label>
-    <div class="products">
-      ${PRODUCTS.map(p => `
-        <label class="product-option" data-product="${p.id}">
-          <input type="radio" name="product-${uid}" value="${p.id}" required>
-          <div class="product-info">
-            <div class="product-name">${p.name}</div>
-          </div>
-          <div class="product-price">$${p.price.toFixed(2)}</div>
-        </label>
-      `).join('')}
-    </div>
-    <div class="flavour-row field">
-      <label class="required">🧀 Flavour</label>
-      <select class="child-flavour" required>
-        <option value="">Select flavour...</option>
-        ${FLAVOURS.map(f => `<option value="${f}">${f}</option>`).join('')}
-      </select>
-    </div>
-  `;
-  document.getElementById('childrenContainer').appendChild(div);
-
-  // Attach remove button via addEventListener — no inline onclick, no stale references
-  div.querySelector('.remove-child').addEventListener('click', function() {
-    div.remove();
-    childCount--;
-    refreshChildLabels();
-    updateAddButton();
-    updateSummary();
-  });
-
-  // Attach product selection via addEventListener
-  div.querySelectorAll('.product-option').forEach(opt => {
-    opt.addEventListener('click', function() {
-      div.querySelectorAll('.product-option').forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
-      opt.querySelector('input[type="radio"]').checked = true;
-      updateSummary();
-    });
-  });
-
-  div.querySelectorAll('input, select').forEach(el => {
-    el.addEventListener('change', updateSummary);
-    el.addEventListener('input', updateSummary);
-  });
-
-  updateAddButton();
+function onDateChange() {
+  updateTriggerSummary();
+  rebuildPizzaGrid();
   updateSummary();
 }
 
-function refreshChildLabels() {
-  const children = document.querySelectorAll('.child-order');
-  children.forEach((child, i) => {
-    child.querySelector('.child-label').textContent = `🧒 Child ${i + 1}`;
-    const rb = child.querySelector('.remove-child');
-    if (rb) rb.style.display = children.length === 1 ? 'none' : '';
-  });
+// ============================================================
+// STEP 3 — CHILDREN
+// ============================================================
+function addChild() {
+  if (childCount >= MAX_CHILDREN) return;
+  childCount++;
+  const id = childCount;
+  selections[id] = {};
+
+  const row = document.createElement('div');
+  row.className = 'child-row';
+  row.id = `child-${id}`;
+  row.innerHTML = `
+    <span class="child-num">🧒 Child ${id}</span>
+    <input type="text" placeholder="Full name" class="child-name" data-id="${id}" required>
+    <select class="child-class" data-id="${id}" required>
+      <option value="">Class...</option>
+      ${CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
+    </select>
+    ${id > 1 ? `<button type="button" class="remove-btn" onclick="removeChild(${id})" title="Remove">✕</button>` : ''}
+  `;
+  row.querySelector('.child-name').addEventListener('input', () => { rebuildPizzaGrid(); updateSummary(); });
+  row.querySelector('.child-class').addEventListener('change', updateSummary);
+  document.getElementById('childrenContainer').appendChild(row);
+
+  updateAddButton();
+  rebuildPizzaGrid();
+  updateSummary();
 }
 
+function removeChild(id) {
+  document.getElementById(`child-${id}`)?.remove();
+  delete selections[id];
+  childCount--;
 
+  // Re-number remaining children visually
+  document.querySelectorAll('.child-row').forEach((row, i) => {
+    row.querySelector('.child-num').textContent = `🧒 Child ${i + 1}`;
+  });
+
+  updateAddButton();
+  rebuildPizzaGrid();
+  updateSummary();
+}
 
 function updateAddButton() {
   const btn = document.getElementById('addChildBtn');
@@ -369,36 +455,129 @@ function updateAddButton() {
   btn.textContent = childCount >= MAX_CHILDREN ? '✋ Maximum 6 children reached' : '➕ Add Another Child';
 }
 
-function getOrders() {
-  const orders = [];
-  document.querySelectorAll('.child-order').forEach(child => {
-    const childName = child.querySelector('.child-name')?.value.trim() || '';
-    const childClass = child.querySelector('.child-class')?.value || '';
-    const sel = child.querySelector('input[type="radio"]:checked');
-    const product = sel ? sel.value : '';
-    const flavour = child.querySelector('.child-flavour')?.value || '';
-    orders.push({ childName, childClass, product, flavour });
-  });
-  return orders;
+function getChildren() {
+  return Array.from(document.querySelectorAll('.child-row')).map(row => ({
+    id: parseInt(row.id.replace('child-', '')),
+    name: row.querySelector('.child-name').value.trim(),
+    cls: row.querySelector('.child-class').value,
+  }));
 }
 
+// ============================================================
+// STEP 4 — PIZZA GRID
+// ============================================================
+function rebuildPizzaGrid() {
+  const dates = getSelectedDates();
+  const children = getChildren();
+  const container = document.getElementById('pizzaGrid');
+
+  if (dates.length === 0 || children.length === 0) {
+    container.innerHTML = '<div class="grid-prompt">Select dates and add children above to configure pizzas 🍕</div>';
+    return;
+  }
+
+  // Preserve existing selections before rebuilding
+  // (selections object is the source of truth)
+
+  container.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'pizza-grid';
+
+  children.forEach(child => {
+    if (!selections[child.id]) selections[child.id] = {};
+
+    const block = document.createElement('div');
+    block.className = 'grid-child-block';
+
+    const childName = child.name || `Child ${child.id}`;
+    block.innerHTML = `<div class="grid-child-header">🧒 ${childName}</div><div class="grid-dates" id="dates-${child.id}"></div>`;
+
+    const datesDiv = block.querySelector(`#dates-${child.id}`);
+    dates.forEach(dateStr => {
+      if (!selections[child.id][dateStr]) selections[child.id][dateStr] = { productId: '', flavour: '' };
+      const sel = selections[child.id][dateStr];
+
+      const row = document.createElement('div');
+      row.className = 'grid-date-row';
+      row.innerHTML = `
+        <div class="grid-date-label">
+          <div class="gdl-day">Fri ${formatDateShort(dateStr)}</div>
+        </div>
+        <div class="grid-cell">
+          <div class="product-chips">
+            ${PRODUCTS.map(p => `
+              <label class="product-chip${sel.productId === p.id ? ' selected' : ''}" data-child="${child.id}" data-date="${dateStr}" data-product="${p.id}">
+                <input type="radio" name="prod-${child.id}-${dateStr}" value="${p.id}" ${sel.productId === p.id ? 'checked' : ''}>
+                ${p.name} <span class="chip-price">$${p.price.toFixed(2)}</span>
+              </label>
+            `).join('')}
+          </div>
+          <div class="cell-flavour${sel.productId ? ' visible' : ''}" id="flavour-${child.id}-${dateStr}">
+            <select onchange="onFlavourChange(${child.id}, '${dateStr}', this.value)">
+              <option value="">Select flavour...</option>
+              ${FLAVOURS.map(f => `<option value="${f}"${sel.flavour === f ? ' selected' : ''}>${f}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      `;
+
+      // Wire up product chip clicks
+      row.querySelectorAll('.product-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const productId = chip.dataset.product;
+          const cid = parseInt(chip.dataset.child);
+          const ds = chip.dataset.date;
+          onProductSelect(cid, ds, productId, row);
+        });
+      });
+
+      datesDiv.appendChild(row);
+    });
+
+    grid.appendChild(block);
+  });
+
+  container.appendChild(grid);
+}
+
+function onProductSelect(childId, dateStr, productId, row) {
+  if (!selections[childId]) selections[childId] = {};
+  if (!selections[childId][dateStr]) selections[childId][dateStr] = { productId: '', flavour: '' };
+  selections[childId][dateStr].productId = productId;
+
+  // Update chip visuals
+  row.querySelectorAll('.product-chip').forEach(chip => {
+    chip.classList.toggle('selected', chip.dataset.product === productId);
+  });
+  row.querySelector(`input[value="${productId}"]`).checked = true;
+
+  // Show flavour
+  const flavourDiv = row.querySelector('.cell-flavour');
+  flavourDiv.classList.add('visible');
+
+  updateSummary();
+}
+
+function onFlavourChange(childId, dateStr, flavour) {
+  if (!selections[childId]) selections[childId] = {};
+  if (!selections[childId][dateStr]) selections[childId][dateStr] = { productId: '', flavour: '' };
+  selections[childId][dateStr].flavour = flavour;
+  updateSummary();
+}
+
+// ============================================================
+// STEP 5 — SUMMARY
+// ============================================================
 function updateSummary() {
-  const summaryItems = document.getElementById('summaryItems');
+  const dates = getSelectedDates();
+  const children = getChildren();
+  const summaryContent = document.getElementById('summaryContent');
   const summaryTotal = document.getElementById('summaryTotal');
   const totalAmount = document.getElementById('totalAmount');
   const submitBtn = document.getElementById('submitBtn');
-  const summaryDate = document.getElementById('summaryDate');
-  const orders = getOrders();
-  const deliveryDate = document.getElementById('deliveryDate').value;
 
-  if (deliveryDate) {
-    summaryDate.textContent = '📅 Delivery: ' + formatDateForDisplay(deliveryDate);
-  } else {
-    summaryDate.textContent = '';
-  }
-
-  if (orders.length === 0) {
-    summaryItems.innerHTML = '<li class="empty-summary">No items yet — add a child above ☝️</li>';
+  if (dates.length === 0 || children.length === 0) {
+    summaryContent.innerHTML = '<p class="empty-summary">No items yet — complete the steps above ☝️</p>';
     summaryTotal.style.display = 'none';
     submitBtn.disabled = true;
     submitBtn.textContent = '💳 Pay Now — $0.00';
@@ -406,124 +585,72 @@ function updateSummary() {
   }
 
   let total = 0;
-  let allValid = true;
+  let missingCount = 0;
+  let hasAnyItem = false;
   let html = '';
 
-  orders.forEach(o => {
-    if (!o.childName || !o.childClass || !o.product || !o.flavour) allValid = false;
-    if (o.product) {
-      const p = PRODUCTS.find(pr => pr.id === o.product);
-      const flavStr = o.flavour ? ` (${o.flavour})` : '';
-      html += `<li><span>🍕 ${o.childName || 'Child'} — ${p.name}${flavStr}</span><span>$${p.price.toFixed(2)}</span></li>`;
-      total += p.price;
+  const parentName  = document.getElementById('parentName').value.trim();
+  const parentPhone = document.getElementById('parentPhone').value.trim();
+  const parentEmail = document.getElementById('parentEmail').value.trim();
+  const parentValid = !!(parentName && parentPhone && parentEmail);
+
+  // Every child must have a name and class
+  const childrenValid = children.every(c => c.name && c.cls);
+
+  dates.forEach(dateStr => {
+    let dateHtml = '';
+    children.forEach(child => {
+      const sel = (selections[child.id] || {})[dateStr] || {};
+      if (!sel.productId || !sel.flavour) {
+        missingCount++;
+        return; // don't add to summary yet
+      }
+      const product = PRODUCTS.find(p => p.id === sel.productId);
+      if (!product) return;
+      const childName = child.name || `Child ${child.id}`;
+      dateHtml += `<li><span>🍕 ${childName} — ${product.fullName} (${sel.flavour})</span><span>$${product.price.toFixed(2)}</span></li>`;
+      total += product.price;
+      hasAnyItem = true;
+    });
+
+    if (dateHtml) {
+      html += `<div class="summary-date-group">
+        <div class="summary-date-heading">📅 ${formatDateFull(dateStr)}</div>
+        <ul class="summary-items">${dateHtml}</ul>
+      </div>`;
     }
   });
 
-  summaryItems.innerHTML = html || '<li class="empty-summary">Select a pizza for each child 🍕</li>';
+  if (!hasAnyItem) {
+    summaryContent.innerHTML = '<p class="empty-summary">Choose pizzas for each child and date above 🍕</p>';
+    summaryTotal.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = '💳 Pay Now — $0.00';
+    return;
+  }
+
+  // Show what's been filled in so far, even if incomplete
+  if (missingCount > 0) {
+    html += `<p style="font-size:13px;color:var(--orange-dark);margin-top:8px;">⚠️ ${missingCount} pizza choice${missingCount > 1 ? 's' : ''} still needed above.</p>`;
+  }
+
+  summaryContent.innerHTML = html;
   summaryTotal.style.display = total > 0 ? 'flex' : 'none';
   totalAmount.textContent = `$${total.toFixed(2)}`;
 
-  const parentName = document.getElementById('parentName').value.trim();
-  const parentPhone = document.getElementById('parentPhone').value.trim();
-  const parentEmail = document.getElementById('parentEmail').value.trim();
-  const valid = allValid && parentName && parentPhone && parentEmail && deliveryDate && orders.length > 0;
-  submitBtn.disabled = !valid;
+  const allComplete = missingCount === 0 && childrenValid && parentValid;
+  submitBtn.disabled = !allComplete;
   submitBtn.textContent = total > 0 ? `💳 Pay Now — $${total.toFixed(2)}` : '💳 Pay Now — $0.00';
 }
 
-document.getElementById('parentName').addEventListener('input', updateSummary);
-document.getElementById('parentPhone').addEventListener('input', updateSummary);
-document.getElementById('parentEmail').addEventListener('input', updateSummary);
-document.getElementById('deliveryDate').addEventListener('change', updateSummary);
-
-// ============================================================
-// PROFILE LOOKUP — pre-fill form for returning parents
-// ============================================================
-
-// Set to true while testing with Stripe test mode
-const TEST_MODE = true;
-
-let profileLookupTimer = null;
-let lastLookedUpEmail = '';
-
-// Fire lookup 600ms after the parent stops typing, as long as the email looks valid.
-// Also fires on blur in case they paste an address and immediately tab away.
-function scheduleProfileLookup(email) {
-  clearTimeout(profileLookupTimer);
-  if (!email || !email.includes('@') || !email.includes('.')) return;
-  if (email === lastLookedUpEmail) return; // don't repeat the same lookup
-  profileLookupTimer = setTimeout(() => triggerProfileLookup(email), 300);
-}
-
-document.getElementById('parentEmail').addEventListener('input', function() {
-  scheduleProfileLookup(this.value.trim());
+// Wire up parent field changes
+['parentName','parentPhone','parentEmail'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateSummary);
 });
 
-document.getElementById('parentEmail').addEventListener('blur', function() {
-  scheduleProfileLookup(this.value.trim());
-});
-
-async function triggerProfileLookup(email) {
-  lastLookedUpEmail = email;
-  const hint = document.getElementById('profileHint');
-  hint.textContent = '🔍 Looking up your details...';
-  hint.classList.add('visible');
-
-  try {
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'lookup_profile', email: email, testMode: TEST_MODE })
-    });
-    const result = await response.json();
-
-    if (result.success && result.profile) {
-      applyProfile(result.profile);
-      hint.textContent = '👋 Welcome back! We\'ve filled in your details.';
-      setTimeout(() => { hint.classList.remove('visible'); }, 5000);
-    } else {
-      hint.classList.remove('visible');
-    }
-  } catch (err) {
-    hint.classList.remove('visible');
-  }
-}
-
-function applyProfile(profile) {
-  // Only fill parent fields if they're currently empty
-  const nameField  = document.getElementById('parentName');
-  const phoneField = document.getElementById('parentPhone');
-  if (!nameField.value.trim())  nameField.value  = profile.parentName  || '';
-  if (!phoneField.value.trim()) phoneField.value = profile.parentPhone || '';
-
-  // Replace children with saved ones — but only if the form is still at the
-  // default single empty child (i.e. the parent hasn't started filling it in)
-  if (profile.children && profile.children.length > 0) {
-    const existingChildren = document.querySelectorAll('.child-order');
-    const firstChildName = existingChildren[0]?.querySelector('.child-name')?.value.trim();
-    const firstChildClass = existingChildren[0]?.querySelector('.child-class')?.value;
-
-    // Only auto-populate if no child details have been entered yet
-    if (existingChildren.length === 1 && !firstChildName && !firstChildClass) {
-      // Remove the default empty child
-      document.getElementById('childrenContainer').innerHTML = '';
-      childCount = 0;
-
-      // Add a child block for each saved child
-      profile.children.forEach(child => {
-        addChild();
-        const blocks = document.querySelectorAll('.child-order');
-        const block = blocks[blocks.length - 1];
-        block.querySelector('.child-name').value = child.name || '';
-        const classSelect = block.querySelector('.child-class');
-        classSelect.value = child.childClass || '';
-      });
-    }
-  }
-
-  updateSummary();
-}
-
+// ============================================================
+// SUBMIT
+// ============================================================
 document.getElementById('orderForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
@@ -531,43 +658,63 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   const errorBanner = document.getElementById('errorBanner');
   errorBanner.classList.remove('visible');
 
-  const deliveryDate = document.getElementById('deliveryDate').value;
-  const parentName = document.getElementById('parentName').value.trim();
+  const dates = getSelectedDates();
+  const children = getChildren();
+  const parentName  = document.getElementById('parentName').value.trim();
   const parentPhone = document.getElementById('parentPhone').value.trim();
   const parentEmail = document.getElementById('parentEmail').value.trim();
-  const orders = getOrders();
-  const total = orders.reduce((sum, o) => {
-    const p = PRODUCTS.find(pr => pr.id === o.product);
-    return sum + (p ? p.price : 0);
-  }, 0);
 
-  const cutoff = getCutoffDate(deliveryDate);
-  if (new Date() >= cutoff) {
-    errorBanner.textContent = '⏰ Sorry, orders for this date have now closed. Please select a different delivery date.';
-    errorBanner.classList.add('visible');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    const select = document.getElementById('deliveryDate');
-    select.innerHTML = '<option value="">Select delivery date...</option>';
-    populateDateDropdown();
-    updateSummary();
-    return;
+  // Check all cutoffs are still valid
+  for (const dateStr of dates) {
+    if (new Date() >= getCutoffDate(dateStr)) {
+      errorBanner.textContent = `⏰ Orders for ${formatDateFull(dateStr)} have now closed. Please unselect that date and try again.`;
+      errorBanner.classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
   }
 
+  // Build line items: one entry per child × date
+  const lineItems = [];
+  let total = 0;
+
+  dates.forEach(dateStr => {
+    children.forEach(child => {
+      const sel = (selections[child.id] || {})[dateStr] || {};
+      const product = PRODUCTS.find(p => p.id === sel.productId);
+      if (!product || !sel.flavour) return;
+      lineItems.push({
+        name: child.name,
+        'class': child.cls,
+        product: product.fullName,
+        productId: product.id,
+        flavour: sel.flavour,
+        price: product.price,
+        deliveryDate: dateStr,
+        deliveryDateFormatted: formatDateFull(dateStr),
+      });
+      total += product.price;
+    });
+  });
+
+  // Group line items by date for the Apps Script
+  // We send each date as a separate "order" within the same payload
+  const ordersByDate = {};
+  lineItems.forEach(item => {
+    if (!ordersByDate[item.deliveryDate]) ordersByDate[item.deliveryDate] = [];
+    ordersByDate[item.deliveryDate].push(item);
+  });
+
   const orderData = {
-    deliveryDate,
-    deliveryDateFormatted: formatDateForDisplay(deliveryDate),
+    multiDate: true,
     parentName,
     parentPhone,
     parentEmail,
     total: total.toFixed(2),
-    children: orders.map(o => ({
-      name: o.childName,
-      class: o.childClass,
-      product: PRODUCTS.find(p => p.id === o.product)?.name || '',
-      productId: o.product,
-      flavour: o.flavour,
-      price: PRODUCTS.find(p => p.id === o.product)?.price || 0,
-    }))
+    // For Stripe: all items flattened (productId + quantity used for line items)
+    children: lineItems,
+    // For Google Sheet: grouped by date
+    ordersByDate,
   };
 
   submitBtn.classList.add('loading');
@@ -580,9 +727,7 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(orderData)
     });
-
     const result = await response.json();
-
     if (result.success && result.checkoutUrl) {
       window.location.href = result.checkoutUrl;
     } else {
@@ -598,9 +743,11 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   }
 });
 
-populateDateDropdown();
-addChild();
+// ============================================================
+// INIT
+// ============================================================
+buildDateGrid();
+addChild(); // start with one child
 </script>
-
 </body>
 </html>
