@@ -177,6 +177,7 @@
   </div>
 
   <div class="error-banner" id="errorBanner"></div>
+  <div id="debugPanel" style="display:none;background:#1a1a2e;color:#00ff88;font-family:monospace;font-size:12px;padding:14px;border-radius:10px;margin-bottom:12px;white-space:pre-wrap;line-height:1.6;max-height:300px;overflow-y:auto;"></div>
 
   <div class="closed-banner" id="closedBanner" style="display:none">
     🍕 Orders are currently closed!<br>Check back when the next order window opens 📅
@@ -697,22 +698,23 @@ document.getElementById('parentEmail').addEventListener('blur', function() {
 async function triggerLookup(email) {
   lastLookedUp = email;
   const hint = document.getElementById('profileHint');
+  const dbg = m => { const p = document.getElementById('debugPanel'); if(p){p.textContent+='[LOOKUP] '+m+'\n';p.style.display='block';p.scrollTop=p.scrollHeight;} };
   hint.textContent = '🔍 Looking up your details...';
   hint.classList.add('visible');
-
+  dbg('firing for: '+email+' testMode='+TEST_MODE);
   try {
-    // Single fetch returns both profile (for autofill) and orders (for duplicate check)
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ action: 'lookup_all', email, testMode: TEST_MODE })
     });
     const result = await response.json();
-
-    // Pre-populate the orders cache so checkForDuplicates needs no second fetch
+    dbg('response: success='+result.success+' orders='+(result.orders||[]).length+' profile='+(!!result.profile));
+    if (result.orders && result.orders.length) {
+      result.orders.forEach((o,i) => dbg('  order['+i+']: date='+JSON.stringify(o.deliveryDate)+' status='+o.status));
+    }
     orderCache.email  = email;
     orderCache.orders = result.success ? (result.orders || []) : [];
-
     if (result.success && result.profile) {
       applyProfile(result.profile);
       hint.textContent = '👋 Welcome back! We\'ve filled in your details.';
@@ -720,11 +722,9 @@ async function triggerLookup(email) {
     } else {
       hint.classList.remove('visible');
     }
-
-    // Run duplicate check now — cache is warm, no second fetch needed
     checkForDuplicates();
-
   } catch (err) {
+    dbg('ERROR: '+err.message);
     hint.classList.remove('visible');
   }
 }
@@ -768,14 +768,16 @@ function checkForDuplicates() {
   const email   = document.getElementById('parentEmail').value.trim();
   const dates   = getSelectedDates();
   const warning = document.getElementById('duplicateWarning');
-
-  // Need both email and dates; if email not yet looked up, set flag for later
+  const dbg = m => { const p = document.getElementById('debugPanel'); if(p){p.textContent+='[DUPCHK] '+m+'\n';p.style.display='block';p.scrollTop=p.scrollHeight;} };
+  dbg('called: email='+JSON.stringify(email)+' cacheEmail='+JSON.stringify(orderCache.email)+' dates='+dates.length+' orders='+(orderCache.orders||[]).length);
   if (!email || !email.includes('@') || email !== orderCache.email) {
+    dbg('EXIT: email not yet looked up (pending=true)');
     pendingDuplicateCheck = true;
     warning.classList.remove('visible');
     return;
   }
   if (dates.length === 0) {
+    dbg('EXIT: no dates selected');
     warning.classList.remove('visible');
     return;
   }
