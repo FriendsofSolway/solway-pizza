@@ -334,9 +334,10 @@ const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct
 const DAYS_LONG    = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 function parseDateNZ(dateStr) {
-  // Parse YYYY-MM-DD safely, treating it as NZ time (UTC+12)
+  // Parse YYYY-MM-DD as a UTC date — we only need year/month/day for display,
+  // so we don't apply any timezone offset (avoids day-shift bugs).
   const parts = dateStr.split('-');
-  return new Date(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]) - 12 * 60 * 60 * 1000);
+  return new Date(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]));
 }
 
 function formatDateFull(dateStr) {
@@ -834,10 +835,29 @@ function checkForDuplicates() {
 
   if (duplicateDates.length > 0) {
     if (!warning) { dbg3('ERROR: warning element not found in DOM!'); return; }
-    const dateList = duplicateDates.map(d => '&nbsp;&nbsp;' + d).join('<br>');
+
+    // Build detail lines grouped by duplicate date
+    let detailHtml = '';
+    duplicateDates.forEach(function(fullDate) {
+      // Find all paid orders for this date
+      const matchingOrders = orders.filter(function(order) {
+        if (order.status !== 'Paid') return false;
+        const raw = String(order.deliveryDate || '').trim();
+        const isoDate = raw.length >= 10 ? raw.substring(0, 10) : raw;
+        // Find which dateStr matches this fullDate
+        return dates.some(function(ds) { return formatDateFull(ds) === fullDate && (isoDate === ds || raw === fullDate); });
+      });
+      detailHtml += '<div style="margin:6px 0 2px;font-weight:700;">\uD83D\uDCC5 ' + fullDate + '</div>';
+      if (matchingOrders.length > 0) {
+        matchingOrders.forEach(function(o) {
+          detailHtml += '<div style="padding-left:12px;font-weight:400;">\uD83D\uDC66 ' + (o.childName||'Unknown') + ' \u2014 ' + (o.product||'') + ' (' + (o.flavour||'') + ')</div>';
+        });
+      }
+    });
+
     warning.innerHTML =
-      '<strong>Heads up!</strong> It looks like you\'ve already placed a paid order for:<br>' +
-      dateList +
+      '<strong>\u26A0\uFE0F Heads up!</strong> It looks like you\'ve already placed a paid order for:<br>' +
+      detailHtml +
       '<br><span style="font-weight:400">If you\'re adding extra children or correcting a mistake, ' +
       'that\'s fine \u2014 just continue. Otherwise, you may be ordering twice.</span>';
     warning.classList.add('visible');
