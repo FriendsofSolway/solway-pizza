@@ -177,6 +177,8 @@
   </div>
 
   <div class="error-banner" id="errorBanner"></div>
+  <div id="debugPanel" style="display:none;background:#1a1a2e;color:#00ff88;font-family:monospace;font-size:12px;padding:14px;border-radius:10px;margin-bottom:12px;white-space:pre-wrap;line-height:1.6;max-height:300px;overflow-y:auto;"></div>
+  <button type="button" onclick="document.getElementById('debugPanel').style.display='none'" style="display:none;margin-bottom:12px;padding:6px 14px;background:#888;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;" id="debugClose">Hide Debug</button>
   <div class="closed-banner" id="closedBanner" style="display:none">
     🍕 Orders are currently closed!<br>Check back when the next order window opens 📅
   </div>
@@ -735,22 +737,25 @@ async function checkForDuplicates() {
   const dates   = getSelectedDates();
   const warning = document.getElementById('duplicateWarning');
 
-  // DEBUG — log everything to console AND show on page if warning element exists
+  // DEBUG panel helper
   const dbg = (msg) => {
-    console.log('[DUP CHECK] ' + msg);
-    if (warning) {
-      warning.innerHTML = '<strong>DEBUG:</strong> ' + msg;
-      warning.style.display = 'block';
-      warning.style.background = '#fff3cd';
-      warning.style.border = '2px solid orange';
-      warning.style.padding = '10px';
+    const panel = document.getElementById('debugPanel');
+    const closeBtn = document.getElementById('debugClose');
+    if (panel) {
+      panel.textContent += '[DUP] ' + msg + '\n';
+      panel.style.display = 'block';
+      panel.scrollTop = panel.scrollHeight;
     }
+    if (closeBtn) closeBtn.style.display = 'inline-block';
   };
-  dbg('called — email=' + JSON.stringify(email) + ' dates=' + dates.length + ' warningEl=' + !!warning);
+  dbg('checkForDuplicates called');
+  dbg('email=' + JSON.stringify(email));
+  dbg('dates selected=' + dates.length + ' ' + JSON.stringify(dates));
+  dbg('cache.email=' + JSON.stringify(orderCache.email));
+  dbg('cache.orders=' + (orderCache.orders === null ? 'null' : orderCache.orders.length + ' items'));
 
   if (!email || !email.includes('@') || dates.length === 0) {
-    dbg('EXITING EARLY — email empty/invalid or no dates selected');
-    if (warning) warning.style.display = 'none';
+    dbg('EXIT EARLY: email invalid or no dates');
     return;
   }
 
@@ -765,12 +770,12 @@ async function checkForDuplicates() {
       const result = await response.json();
       orderCache.email  = email;
       orderCache.orders = result.success ? (result.orders || []) : [];
-      // DEBUG — remove once working
-      warning.innerHTML = '<strong>DEBUG:</strong> fetch returned ' + orderCache.orders.length + ' order(s). Raw: <pre style="font-size:11px;white-space:pre-wrap">' + JSON.stringify(result).substring(0, 500) + '</pre>';
-      warning.classList.add('visible');
+      dbg('fetch complete: success=' + result.success + ' orders=' + orderCache.orders.length);
+      if (orderCache.orders.length > 0) {
+        orderCache.orders.forEach((o, i) => dbg('  order[' + i + '] date=' + JSON.stringify(o.deliveryDate) + ' status=' + JSON.stringify(o.status)));
+      }
     } catch (err) {
-      warning.innerHTML = '<strong>DEBUG fetch error:</strong> ' + err.message;
-      warning.classList.add('visible');
+      dbg('FETCH ERROR: ' + err.message);
       return;
     }
   }
@@ -783,12 +788,12 @@ async function checkForDuplicates() {
   // We match using formatDateShort ("30 May") as a substring - robust to locale
   // differences - and also try raw YYYY-MM-DD in case it was stored that way.
   const duplicateDates = [];
+  dbg('checking ' + dates.length + ' date(s) against ' + orders.length + ' order(s)');
   dates.forEach(dateStr => {
     const shortDate = formatDateShort(dateStr);
     const fullDate  = formatDateFull(dateStr);
-    // DEBUG
-    console.log('Checking date:', dateStr, 'short:', shortDate, 'full:', fullDate);
-    orders.forEach(o => console.log('  order deliveryDate:', JSON.stringify(o.deliveryDate), 'status:', o.status));
+    dbg('date: ' + dateStr + ' short=' + shortDate);
+    orders.forEach(o => dbg('  vs order: ' + JSON.stringify(o.deliveryDate) + ' status=' + o.status));
     const hasDupe = orders.some(order => {
       if (order.status !== 'Paid') return false;
       const od = String(order.deliveryDate || '').trim();
