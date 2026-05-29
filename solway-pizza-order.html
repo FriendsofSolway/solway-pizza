@@ -29,7 +29,7 @@
     --radius: 14px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; }
   .page-wrap { max-width: 720px; margin: 0 auto; padding: 0 20px 20px; }
 
   /* ── NAV ── */
@@ -169,7 +169,7 @@
   .step-reveal { animation: stepReveal 0.4s ease both; }
   @keyframes stepReveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   /* ── FOOTER ── */
-  .site-footer { background: var(--text); color: rgba(255,255,255,0.75); padding: 40px 24px 28px; text-align: center; margin-top: 24px; }
+  .site-footer { background: var(--text); color: rgba(255,255,255,0.75); padding: 40px 24px 28px; text-align: center; margin-top: auto; }
   .site-footer.step-hidden { display: none; }
   .site-footer.step-reveal { animation: stepReveal 0.4s ease both; }
   .footer-logo { width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 16px; display: block; border: 2px solid rgba(255,255,255,0.2); object-fit: cover; }
@@ -214,7 +214,7 @@
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a href="https://friendsofsolway.github.io/solway-pizza/" class="nav-brand">
+    <a href="https://friendsofsolway.github.io/friends-of-solway/" class="nav-brand">
       <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="nav-logo">
       <span class="nav-brand-text">
         Friends of Solway
@@ -222,9 +222,9 @@
       </span>
     </a>
     <ul class="nav-links" id="navLinks">
-      <li><a href="https://friendsofsolway.github.io/solway-pizza/">Home</a></li>
-      <li><a href="https://friendsofsolway.github.io/solway-pizza/past-fundraisers.html">Past Fundraisers</a></li>
-      <li><a href="https://friendsofsolway.github.io/solway-pizza/sponsors.html">Sponsors</a></li>
+      <li><a href="https://friendsofsolway.github.io/friends-of-solway/">Home</a></li>
+      <li><a href="https://friendsofsolway.github.io/friends-of-solway/past-fundraisers.html">Past Fundraisers</a></li>
+      <li><a href="https://friendsofsolway.github.io/friends-of-solway/sponsors.html">Sponsors</a></li>
       <li><a href="solway-pizza-order.html" class="active">🍕 Order Pizza</a></li>
     </ul>
     <button class="nav-hamburger" onclick="toggleNav()" aria-label="Menu">
@@ -345,7 +345,7 @@
 
 </div><!-- end page-wrap -->
 
-<div class="step-hidden my-orders-bar" id="myOrdersBar">
+<div class="my-orders-bar" id="myOrdersBar">
   <a href="solway-pizza-my-orders.html">📋 View My Placed Orders</a>
 </div>
 
@@ -355,11 +355,10 @@
   <div class="footer-name">Friends of Solway</div>
   <div style="font-size:13px;margin-bottom:4px;color:rgba(255,255,255,0.6)">Fundraising committee for Solway Primary School, Masterton</div>
   <ul class="footer-links">
-    <li><a href="https://friendsofsolway.github.io/solway-pizza/">Home</a></li>
-    <li><a href="https://friendsofsolway.github.io/solway-pizza/past-fundraisers.html">Past Fundraisers</a></li>
-    <li><a href="https://friendsofsolway.github.io/solway-pizza/sponsors.html">Sponsors</a></li>
+    <li><a href="https://friendsofsolway.github.io/friends-of-solway/">Home</a></li>
+    <li><a href="https://friendsofsolway.github.io/friends-of-solway/past-fundraisers.html">Past Fundraisers</a></li>
+    <li><a href="https://friendsofsolway.github.io/friends-of-solway/sponsors.html">Sponsors</a></li>
     <li><a href="solway-pizza-order.html">🍕 Order Pizza</a></li>
-    <li><a href="solway-pizza-my-orders.html">📋 My Orders</a></li>
   </ul>
   <div class="footer-copy">© 2026 Friends of Solway. All fundraising goes to Solway Primary School. 🌿</div>
 </footer>
@@ -823,7 +822,7 @@ document.getElementById('parentEmail').addEventListener('blur', function() {
 });
 
 function revealSteps() {
-  var ids = ['card2-details','card3-dates','card4-children','card5-pizza','card6-summary','myOrdersBar'];
+  var ids = ['card2-details','card3-dates','card4-children','card5-pizza','card6-summary'];
   ids.forEach(function(id, i) {
     var el = document.getElementById(id);
     if (!el || !el.classList.contains('step-hidden')) return;
