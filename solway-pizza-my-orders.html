@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Friends of Solway — View My Orders</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
     --teal: #2BBCB3;
@@ -28,13 +28,31 @@
     --radius: 14px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; padding: 20px; }
-  .container { max-width: 640px; margin: 0 auto; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; }
+  .page-wrap { max-width: 640px; margin: 0 auto; padding: 0 20px 20px; width: 100%; }
 
-  .header { text-align: center; padding: 24px 20px 20px; margin-bottom: 24px; }
-  .header-logo { width: 130px; height: 130px; margin: 0 auto 16px; display: block; }
-  .header h1 { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 700; color: var(--teal-dark); margin-bottom: 4px; }
-  .header p { color: var(--text-light); font-size: 15px; }
+  /* ── NAV ── */
+  nav { background: white; border-bottom: 2px solid var(--border); padding: 0 24px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+  .nav-inner { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--teal-light); }
+  .nav-brand-text { font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 600; color: var(--teal-dark); line-height: 1.2; }
+  .nav-brand-sub { font-size: 11px; font-weight: 400; color: var(--text-light); font-family: 'Nunito', sans-serif; display: block; }
+  .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--text-light); font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 8px; transition: all 0.15s; }
+  .nav-links a:hover { background: var(--teal-light); color: var(--teal-dark); }
+  .nav-links a.active { background: var(--teal-light); color: var(--teal-dark); }
+  .nav-cta { background: linear-gradient(135deg, var(--teal), var(--blue)); color: white !important; padding: 8px 16px !important; border-radius: 10px !important; font-weight: 700 !important; }
+  .nav-hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+  .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text-light); margin: 5px 0; border-radius: 2px; }
+
+  /* ── PAGE HEADER ── */
+  .page-header { background: linear-gradient(160deg, #E8FAF9 0%, #EAF2FF 50%, #FFF8E1 100%); padding: 48px 24px 40px; text-align: center; position: relative; overflow: hidden; margin-bottom: 24px; }
+  .page-header::before { content: ''; position: absolute; top: -80px; right: -80px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(43,188,179,0.12) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
+  .page-header-inner { max-width: 680px; margin: 0 auto; position: relative; z-index: 1; }
+  .page-header-logo { width: 100px; height: 100px; margin: 0 auto 16px; display: block; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 16px rgba(43,188,179,0.2); }
+  .page-header h1 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5vw, 36px); font-weight: 700; color: var(--teal-dark); margin-bottom: 8px; }
+  .page-header p { font-size: 15px; color: var(--text-light); max-width: 520px; margin: 0 auto; }
 
   .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; border: 1px solid var(--border); }
   .card-title { font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; color: var(--teal-dark); margin-bottom: 16px; }
@@ -72,24 +90,62 @@
   .back-link { display: block; text-align: center; margin-top: 16px; color: var(--teal-dark); font-weight: 600; font-size: 14px; text-decoration: none; }
   .back-link:hover { text-decoration: underline; }
 
-  .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
+  /* ── FOOTER ── */
+  .site-footer { background: var(--text); color: rgba(255,255,255,0.75); padding: 40px 24px 28px; text-align: center; margin-top: auto; }
+  .footer-logo { width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 16px; display: block; border: 2px solid rgba(255,255,255,0.2); object-fit: cover; }
+  .footer-name { font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; color: white; margin-bottom: 4px; }
+  .footer-links { display: flex; justify-content: center; gap: 20px; list-style: none; margin: 14px 0; flex-wrap: wrap; }
+  .footer-links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 13px; font-weight: 600; transition: color 0.15s; }
+  .footer-links a:hover { color: var(--teal); }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 14px; }
 
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .nav-hamburger { display: block; }
+    .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: white; padding: 12px 16px 16px; border-bottom: 2px solid var(--border); box-shadow: var(--shadow); gap: 2px; }
+    .nav-links.open a { padding: 10px 12px; }
+  }
   @media (max-width: 480px) {
-    .header h1 { font-size: 24px; }
-    .header-logo { width: 90px; height: 90px; }
+    .page-header h1 { font-size: 22px; }
+    .page-header-logo { width: 72px; height: 72px; }
     .order-item { flex-wrap: wrap; }
   }
 </style>
 </head>
 <body>
 
-<div class="container">
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://friendsofsolway.github.io/friends-of-solway/" class="nav-brand">
+      <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="nav-logo">
+      <span class="nav-brand-text">
+        Friends of Solway
+        <span class="nav-brand-sub">Solway Primary School</span>
+      </span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="https://friendsofsolway.github.io/friends-of-solway/">Home</a></li>
+      <li><a href="https://friendsofsolway.github.io/friends-of-solway/past-fundraisers.html">Past Fundraisers</a></li>
+      <li><a href="https://friendsofsolway.github.io/friends-of-solway/sponsors.html">Sponsors</a></li>
+      <li><a href="solway-pizza-order.html" class="nav-cta">🍕 Order Pizza</a></li>
+    </ul>
+    <button class="nav-hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
 
-  <div class="header">
-    <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="header-logo">
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="page-header-logo">
     <h1>📋 My Pizza Orders</h1>
     <p>Enter your email to see your order history</p>
   </div>
+</div>
+
+<div class="page-wrap">
 
   <div class="card">
     <div class="card-title">🔍 Look Up Orders</div>
@@ -102,15 +158,31 @@
 
   <div class="results" id="results"></div>
 
-  <a href="index.html" class="back-link">🍕 Back to Order Form</a>
+  <a href="solway-pizza-order.html" class="back-link">🍕 Back to Order Form</a>
 
-  <div class="footer">
-    🌊 Friends of Solway — Fundraising for Solway Primary School, Masterton 🌿
-  </div>
 </div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="footer-logo">
+  <div class="footer-name">Friends of Solway</div>
+  <div style="font-size:13px;margin-bottom:4px;color:rgba(255,255,255,0.6)">Fundraising committee for Solway Primary School, Masterton</div>
+  <ul class="footer-links">
+    <li><a href="https://friendsofsolway.github.io/friends-of-solway/">Home</a></li>
+    <li><a href="https://friendsofsolway.github.io/friends-of-solway/past-fundraisers.html">Past Fundraisers</a></li>
+    <li><a href="https://friendsofsolway.github.io/friends-of-solway/sponsors.html">Sponsors</a></li>
+    <li><a href="solway-pizza-order.html">🍕 Order Pizza</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 Friends of Solway. All fundraising goes to Solway Primary School. 🌿</div>
+</footer>
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNX8kPNKRdlAD4qxrY1mgoYj5x8iJ-DOQd-MpILc8yxwugDiPqxgYdr7HuR_aeOVLwcg/exec';
+const TEST_MODE = true; // set to false when going live
+
+function toggleNav() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
 
 document.getElementById('lookupEmail').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') {
@@ -135,7 +207,7 @@ async function lookupOrders() {
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'lookup_orders', email: email })
+      body: JSON.stringify({ action: 'lookup_orders', email: email, testMode: TEST_MODE })
     });
 
     const result = await response.json();
@@ -154,6 +226,24 @@ async function lookupOrders() {
   btn.disabled = false;
 }
 
+// IE-safe date formatter — converts YYYY-MM-DD to "Friday, 29 May 2026"
+const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS_LONG   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function formatDateNice(dateStr) {
+  // Handle YYYY-MM-DD or ISO timestamp; fall back to raw string if not parseable
+  const s = String(dateStr || '').trim();
+  const ymd = s.length >= 10 ? s.substring(0, 10) : s;
+  const parts = ymd.split('-');
+  if (parts.length === 3 && parts[0].length === 4) {
+    const d = new Date(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]));
+    if (!isNaN(d.getTime())) {
+      return DAYS_LONG[d.getUTCDay()] + ', ' + d.getUTCDate() + ' ' + MONTHS_LONG[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
+    }
+  }
+  return s || 'Unknown date';
+}
+
 function displayOrders(orders) {
   const results = document.getElementById('results');
 
@@ -162,12 +252,13 @@ function displayOrders(orders) {
     return;
   }
 
-  // Group orders by delivery date
+  // Group orders by delivery date (normalised to YYYY-MM-DD for reliable sorting)
   const grouped = {};
   orders.forEach(order => {
-    const date = order.deliveryDate || 'Unknown date';
-    if (!grouped[date]) grouped[date] = [];
-    grouped[date].push(order);
+    const raw = String(order.deliveryDate || '').trim();
+    const key = raw.length >= 10 ? raw.substring(0, 10) : (raw || 'Unknown date');
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(order);
   });
 
   let html = '';
@@ -177,7 +268,7 @@ function displayOrders(orders) {
 
   dates.forEach(date => {
     html += '<div class="order-group">';
-    html += '<div class="order-date">📅 ' + date + '</div>';
+    html += '<div class="order-date">📅 ' + formatDateNice(date) + '</div>';
     html += '<div class="order-items">';
 
     grouped[date].forEach(order => {
