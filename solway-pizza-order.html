@@ -107,7 +107,7 @@
 
   .child-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: linear-gradient(135deg, var(--teal-light), var(--blue-light)); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; }
   .child-row .child-num { font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; color: var(--teal-dark); white-space: nowrap; }
-  .child-row input[type="text"] { flex: 0 1 140px; min-width: 80px; }
+  .child-row input[type="text"] { flex: 1; min-width: 0; }
   .child-row select { flex: 1; min-width: 0; }
   .child-row .remove-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 18px; padding: 4px; border-radius: 6px; line-height: 1; flex-shrink: 0; transition: background 0.2s; }
   .child-row .remove-btn:hover { background: var(--red-light); }
@@ -179,9 +179,9 @@
   .footer-links a:hover { color: var(--teal); }
   .footer-copy { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 14px; }
 
-  .my-orders-bar { text-align: center; padding: 16px; }
-  .my-orders-bar a { color: var(--teal-dark); font-weight: 600; font-size: 14px; text-decoration: none; }
-  .my-orders-bar a:hover { text-decoration: underline; }
+  .my-orders-bar { text-align: center; padding: 20px 16px; }
+  .my-orders-bar a { display: inline-block; color: white; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 18px; text-decoration: none; background: linear-gradient(135deg, var(--teal), var(--blue)); padding: 14px 32px; border-radius: 10px; transition: opacity 0.2s; }
+  .my-orders-bar a:hover { opacity: 0.9; }
   .my-orders-bar.step-hidden { display: none; }
   .my-orders-bar.step-reveal { animation: stepReveal 0.4s ease both; }
 
@@ -346,11 +346,11 @@
 </div><!-- end page-wrap -->
 
 <div class="step-hidden my-orders-bar" id="myOrdersBar">
-  <a href="solway-pizza-my-orders.html">📋 View My Orders</a>
+  <a href="solway-pizza-my-orders.html">📋 View My Placed Orders</a>
 </div>
 
 <!-- FOOTER -->
-<footer class="site-footer step-hidden" id="formFooter">
+<footer class="site-footer" id="formFooter">
   <img src="Friends_of_Solway_Logo.png" alt="Friends of Solway" class="footer-logo">
   <div class="footer-name">Friends of Solway</div>
   <div style="font-size:13px;margin-bottom:4px;color:rgba(255,255,255,0.6)">Fundraising committee for Solway Primary School, Masterton</div>
@@ -823,7 +823,7 @@ document.getElementById('parentEmail').addEventListener('blur', function() {
 });
 
 function revealSteps() {
-  var ids = ['card2-details','card3-dates','card4-children','card5-pizza','card6-summary','myOrdersBar','formFooter'];
+  var ids = ['card2-details','card3-dates','card4-children','card5-pizza','card6-summary','myOrdersBar'];
   ids.forEach(function(id, i) {
     var el = document.getElementById(id);
     if (!el || !el.classList.contains('step-hidden')) return;
