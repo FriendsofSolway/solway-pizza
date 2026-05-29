@@ -416,10 +416,10 @@ const DELIVERY_DATES = [
 ];
 
 const PRODUCTS = [
-  { id: 'pizza-combo',  name: 'Mini Pizza Combo',   fullName: 'Mini Pizza Combo',                  price: 7.00 },
   { id: 'single-pizza', name: 'Mini Pizza',  fullName: 'Mini Pizza',                 price: 5.50 },
-  { id: 'gf-pizza',     name: 'GF Pizza',      fullName: 'Gluten Free Mini Pizza',      price: 10.60 },
-  { id: 'gf-pizza-combo',     name: 'GF Pizza Combo',      fullName: 'Gluten Free Mini Pizza',      price: 12.10 },
+  { id: 'pizza-combo',  name: 'Mini Pizza Combo',   fullName: 'Mini Pizza Combo',                  price: 7.00 },
+  { id: 'gf-pizza',     name: 'GF Mini Pizza',      fullName: 'Gluten Free Mini Pizza',      price: 10.60 },
+  { id: 'gf-pizza-combo',     name: 'GF Mini Pizza Combo',      fullName: 'Gluten Free Mini Pizza',      price: 12.10 },
 ];
 
 // Processing fee passed on to parents — must match Apps Script values
@@ -985,7 +985,7 @@ function checkForDuplicates() {
     warning.innerHTML =
       '<strong>\u26A0\uFE0F Heads up!</strong> It looks like you\'ve already placed a paid order for:' +
       detailHtml +
-      '<div style="margin-top:10px;font-weight:400;">If you\'re adding extra children or correcting a mistake, ' +
+      '<div style="margin-top:10px;font-weight:400;">If you\'re adding extra children ' +
       'that\'s fine \u2014 just continue. Otherwise, you may be ordering twice.</div>';
     warning.classList.add('visible');
   } else {
